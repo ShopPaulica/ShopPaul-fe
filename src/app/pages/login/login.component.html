@@ -1,0 +1,25 @@
+<header class="header-log-in">
+  <h2>Log In</h2>
+</header>
+<section class="log-in-body">
+  <div class="log-in" [formGroup]="formLogIn">
+    <div class="input-wrapper">
+    <label>Name</label>
+    <input formControlName="name" />
+    </div>
+
+    <div class="input-wrapper">
+      <label> Password</label>
+      <input formControlName="password" />
+    </div>
+
+    <div class="popBot">
+      <label>PopBot</label>
+      <input formControlName="popBot" />
+    </div>
+
+    <button class="log-in-button">
+      Login
+    </button>
+  </div>
+</section>
