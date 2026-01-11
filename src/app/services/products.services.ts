@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import {ProductModel} from '../shared/interfaces/product.model';
 
 @Injectable({
