@@ -1,3 +1,5 @@
+@import "app/style/breakpoints";
+
 .header {
   display: flex;
   align-items: center;
@@ -15,7 +17,19 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 2rem;
+  gap: 1rem;
+}
+
+.menu-item {
+  @include respond-min(mls) {
+  display: none !important;
+  }
+}
+
+.header-items {
+  @include respond(mls) {
+    display: none !important;
+  }
 }
 
 .cursor-box {
@@ -51,5 +65,16 @@
 
 .text:hover {
   transform: scale(1.05);
+  letter-spacing: 2px;
+}
+
+.cart-icon {
+  width: 20px;
+  height: 20px;
+  fill: #fff;
+}
+
+.cart-icon:hover {
+  transform: scale(1.15);
   letter-spacing: 2px;
 }

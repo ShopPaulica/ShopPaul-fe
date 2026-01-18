@@ -1,3 +1,5 @@
+@import "app/style/breakpoints";
+
 .body-home {
   display: flex;
   width: 100%;
@@ -16,7 +18,6 @@
 
 .body-home-card {
   background-color: rgb(0 0 0 / 70%);
-  width: 40%;
   margin-left: 10%;
   display: flex;
   color: white;
@@ -27,17 +28,30 @@
   h2 {
     margin-top: 0;
   }
+
+  @include respond(xl) {
+    width: 60%;
+  }
+
+  @include respond(lg) {
+    width: 80%;
+    margin: auto;
+  }
+
+  @include respond-min(xl) {
+    width: 800px;
+  }
 }
 
 
 .shop-now {
   background: #ff7100;
   color: white;
-  font-size: 1.5rem;
+  width: 250px;
+  font-size: 1.2rem;
   font-weight: 600;
-  line-height: 2rem;
+  line-height: 1.5rem;
   border-radius: 4px;
-  width: 50%;
   height: 50px;
   border: 0;
   margin-top: 2rem;
@@ -53,6 +67,10 @@
     background-color 180ms ease,
     box-shadow 180ms ease,
     filter 180ms ease;
+
+  @include respond(lg) {
+    width: 100%;
+  }
 }
 
 .shop-now:hover {
@@ -83,3 +101,7 @@
     transform: none;
   }
 }
+
+
+
+

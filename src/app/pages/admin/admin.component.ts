@@ -1,12 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {NgOptimizedImage} from '@angular/common';
 
 @Component({
   selector: 'app-admin',
   imports: [
     ReactiveFormsModule,
-    NgOptimizedImage
   ],
   templateUrl: './admin.component.html',
   standalone: true,
