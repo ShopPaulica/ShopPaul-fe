@@ -1,17 +1,17 @@
 <header class="header">
   <h2> PCL Garage </h2>
   <div class="header-menu">
-    <h4 class="header-items cursor-box text" (click)="router.goToHome()"> Home </h4>
-    <h4 class="header-items cursor-box text" (click)="router.goToProducts()"> Products </h4>
-    <h4 class="header-items cursor-box text" (click)="router.goToLogin()"> Sign In</h4>
-    <h4 class="header-items cursor-box text" (click)="router.goToAdmin()"> Admin </h4>
-    <h4 class="menu-item cursor-box" >
+    <h4 class="cursor-box" >
       <svg class="cart-icon" viewBox="0 0 24 24" aria-hidden="true">
         <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2Zm10 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2ZM7.2 14h9.9c.8 0 1.5-.5 1.8-1.2l2-4.6c.3-.7-.2-1.5-1-1.5H6.2L5.8 4.7C5.6 4.3 5.2 4 4.7 4H2v2h2.1l2.2 10.4c.2 1 1.1 1.6 2.1 1.6Z"/>
       </svg>
     </h4>
+    <h4 class="header-items cursor-box text" (click)="router.goToHome()"> Home </h4>
+    <h4 class="header-items cursor-box text" (click)="router.goToProducts()"> Products </h4>
+    <h4 class="header-items cursor-box text" (click)="router.goToLogin()"> Sign In</h4>
+    <h4 class="header-items cursor-box text" (click)="router.goToAdmin()"> Admin </h4>
     <h4 class="menu-item cursor-box text" (click)="toggleMenu = !toggleMenu"> Menu </h4>
   </div>
 </header>
-<app-slide-shopping-cart-menu [toggleMenu]="toggleMenu"  position="right">
-</app-slide-shopping-cart-menu>
+<app-cart-menu [toggleMenu]="toggleMenu"  position="right">
+</app-cart-menu>

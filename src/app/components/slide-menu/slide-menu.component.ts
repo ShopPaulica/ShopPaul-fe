@@ -1,9 +1,9 @@
 import {NgForOf, NgIf, NgOptimizedImage} from '@angular/common';
-import {Component, EventEmitter, inject, input, Input, output, Output} from '@angular/core';
+import {Component, inject, input, Input, output } from '@angular/core';
 import {NavigationService} from '../../services/router-service';
 
 @Component({
-  selector: 'app-slide-shopping-cart-menu',
+  selector: 'app-cart-menu',
   imports: [NgForOf, NgIf, NgOptimizedImage],
   standalone: true,
   templateUrl: './slide-menu.component.html',
