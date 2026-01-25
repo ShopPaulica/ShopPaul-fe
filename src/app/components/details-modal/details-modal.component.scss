@@ -1,5 +1,3 @@
-
-/* Meniu lateral */
 .side-menu {
   display: flex;
   align-content: center;
@@ -7,8 +5,9 @@
   justify-content: space-between;
   position: fixed;
   top: 0;
-  width: 150px;
-  height: 100%;
+  width: 60%;
+  height: 60%;
+  border-radius: 12px;
   background: #222;
   color: white;
   padding: 20px;
@@ -16,18 +15,15 @@
   z-index: 100;
 }
 
-/* Meniu din dreapta */
+
 .side-menu.right {
   left: auto;
-  right: -3550px; /* ascuns în dreapta */
-}
-
-.side-menu.open {
-  right: 0; /* apare din stânga */
+  right: -3550px;
 }
 
 .side-menu.open.right {
-  right: 0; /* apare din dreapta */
+  right: 20%;
+  top: 20%;
 }
 
 .close-btn {
@@ -89,3 +85,32 @@
   padding-top: 5rem;
 }
 
+.card-product__img {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 50%;
+  height: 100%;
+  border-radius: 12px;
+}
+
+.details-modal-wrapper {
+  height: 150px;
+  display: flex;
+  margin-top: 35px;
+  gap: 1rem;
+  flex-direction: row;
+  align-items: center;
+}
+
+.info-wrapper {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.description-wrapper {
+  display: flex;
+  flex-direction: column;
+}

@@ -3,7 +3,6 @@ import {LoginComponent} from './pages/login/login.component';
 import {HomeComponent} from './pages/home/home.component';
 import {AdminComponent} from './pages/admin/admin.component';
 import {ProductsComponent} from './pages/products/products.component';
-import {ProductComponent} from './pages/product/product.component';
 
 export const routes: Routes = [
   {
@@ -17,10 +16,6 @@ export const routes: Routes = [
   {
     path: 'products',
     component: ProductsComponent
-  },
-  {
-    path: 'product/:id',
-    component: ProductComponent
   },
   {
     path: '',

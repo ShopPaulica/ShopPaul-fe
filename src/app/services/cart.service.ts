@@ -79,7 +79,7 @@ export class CartService implements CartServiceModel<ProductModel>{
     this.cartSubject.next(this.cart);
   }
 
-  public howManyAreOfOne(id: number): number {
+  public howManyAreOfOne(id: number | undefined): number {
     return this.cart.find(product => product.id === id)?.howMany ?? 0
   }
 }

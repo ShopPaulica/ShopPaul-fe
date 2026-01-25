@@ -12,7 +12,7 @@
   </section>
   <section class="cards">
     @for (product of products; track product.id) {
-      <article class="card-product" (click)="goToDetails(product.id)">
+      <article class="card-product" (click)="goToDetails(product)">
         <div class="card-product__info-hover">
 
           <div class="card-product__price">
@@ -56,3 +56,5 @@
   </section>
 
 </main>
+<app-details-modal [toggleMenu]="toggleDetails" [selectedItem]="selectedItem" (openChange)="toggleDetails = $event"  position="right">
+</app-details-modal>

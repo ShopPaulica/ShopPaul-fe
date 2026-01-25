@@ -13,7 +13,7 @@
     <h4 class="menu-item cursor-box text" (click)="toggleMenu = !toggleMenu"> Menu </h4>
   </div>
 </header>
-<app-cart-menu [toggleMenu]="toggleMenu"  position="right">
+<app-cart-menu [toggleMenu]="toggleMenu" (positionChange)="toggleMenu = $event"  position="right">
 </app-cart-menu>
 <app-slide-shopping-cart-menu [toggleMenu]="toggleCart" (isOpenChange)="toggleCart = $event">
 </app-slide-shopping-cart-menu>

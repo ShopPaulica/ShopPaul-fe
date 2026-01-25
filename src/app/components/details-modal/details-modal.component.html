@@ -1,0 +1,43 @@
+<div class="overlay" *ngIf="isOpen" (click)="closeMenu()"></div>
+
+<div class="side-menu" [class.open]="isOpen" [class.right]="true">
+  <div class="shopping-cart-upper">
+    <button class="close-btn" (click)="closeMenu()">✖</button>
+
+  <section class="details-modal-wrapper">
+    <div
+      class="card-product__img"
+      [style.background-image]="'url(' +  selectedItem()?.image + ')'"
+    ></div>
+    <section class="info-wrapper">
+      <h3 class="card-product__title">{{ selectedItem()?.title }}</h3>
+      <div class="card-product__price">
+      Price:  {{ selectedItem()?.price | number:'1.2-2' }} RON
+      </div>
+      @if (isInCart < 1) {
+        <button class="shop-now" (click)="addToCart(); $event.stopPropagation()">
+          Add To Cart
+        </button>
+      } @else {
+        <div class="numbers-selectors">
+          <button class="shop-now add-remove-buttons" (click)="removeFromCart(); $event.stopPropagation()">
+            -
+          </button>
+          <input type="number" [disabled]="true" [value]="isInCart ?? 0"/>
+          <button class="shop-now add-remove-buttons" (click)="addToCart(); $event.stopPropagation()">
+            +
+          </button>
+        </div>
+      }
+    </section>
+  </section>
+
+  <section class="description-wrapper">
+    <h4>Description:</h4>
+    <span>
+    {{ selectedItem()?.description }}
+      </span>
+  </section>
+  </div>
+
+</div>
