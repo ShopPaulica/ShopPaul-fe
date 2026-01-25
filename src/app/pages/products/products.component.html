@@ -12,7 +12,7 @@
   </section>
   <section class="cards">
     @for (product of products; track product.id) {
-      <article class="card-product">
+      <article class="card-product" >
         <div class="card-product__info-hover">
 
           <div class="card-product__price">
@@ -36,16 +36,16 @@
           <h3 class="card-product__title">{{ product.title }}</h3>
           <span class="card-product__by">{{ product.description }}</span>
           @if (isInCart(product.id) < 1) {
-            <button class="shop-now" (click)="addToCart(product)">
+            <button class="shop-now" (click)="addToCart(product); $event.stopPropagation()">
               Add To Cart
             </button>
           } @else {
             <div class="numbers-selectors">
-              <button class="shop-now add-remove-buttons" (click)="removeFromCart(product)">
+              <button class="shop-now add-remove-buttons" (click)="removeFromCart(product); $event.stopPropagation()">
                 -
               </button>
               <input type="number" [disabled]="true" [value]="isInCart(product.id) ?? 0"/>
-              <button class="shop-now add-remove-buttons" (click)="addToCart(product)">
+              <button class="shop-now add-remove-buttons" (click)="addToCart(product); $event.stopPropagation()">
                 +
               </button>
             </div>
