@@ -21,6 +21,15 @@ export class CartService implements CartServiceModel<ProductModel>{
     this.cart$ = this.cartSubject.asObservable();
   }
 
+  public get getTotal(): number {
+    let total: number = 0
+    this.cart.forEach(res => {
+      total = total + (res.price * (res?.howMany ?? 0));
+    })
+
+    return total
+  }
+
   public addMore(item: ProductModel, times: number): void {
     const itemFromTheCart: ShoppingCartProduct | undefined = this.cart.find((res: ShoppingCartProduct) => res.id === item.id)
     if(itemFromTheCart) {

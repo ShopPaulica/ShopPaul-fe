@@ -1,57 +1,54 @@
-<!--<div class="overlay" *ngIf="isOpen" (click)="closeMenu()"></div>-->
+<div class="overlay" *ngIf="isOpen" (click)="closeMenu()"></div>
 
-<!--<div class="side-menu" [class.open]="isOpen" [class.right]="position() === 'right'">-->
-<!--  <div class="shopping-cart-upper">-->
-<!--    <button class="close-btn" (click)="closeMenu()">✖</button>-->
+<div class="side-menu" [class.open]="isOpen" [class.right]="position() === 'right'">
+  <div class="shopping-cart-upper">
+    <button class="close-btn" (click)="closeMenu()">✖</button>
 
-<!--    <section class="shopping-cart-wrapper">-->
-<!--      @for (item of shoppingCart; track item.id) {-->
-<!--        <div class="separator"></div>-->
-<!--        <div class="shopping-cart-item-wrapper">-->
-<!--          <div class="background-image-wrapper">-->
-<!--            <div-->
-<!--              class="card-product__img"-->
-<!--              [style.background-image]="'url(' + item.image + ')'"-->
-<!--            ></div>-->
-<!--          <div class="shopping-item-selected">-->
-<!--            <div class="shopping-items">-->
-<!--              <h4 class="shopping-cart-title">{{ item.title }}</h4>-->
-<!--            </div>-->
-<!--            <div class="numbers-selectors">-->
-<!--              <button class="plus-minus-button" (click)="removeOne(item)">-->
-<!--                <span class="material-icons" >remove</span>-->
-<!--              </button>-->
-<!--              <input type="number" [value]="item.howMany"/>-->
-<!--              <button class="plus-minus-button" (click)="addOne(item)">-->
-<!--                <span class="material-icons" >add</span>-->
-<!--              </button>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        </div>-->
-<!--       }-->
-<!--    </section>-->
-<!--  </div>-->
-<!--  <div class="separator2"></div>-->
-<!--  <div class="shopping-cart-bottom">-->
-<!--    <section class="shopping-cart-calculation-wrapper">-->
-<!--      <span-->
-<!--        class="shopping-cart-calculation"><span>Subtotal:</span> <span>{{ getTotal }} RON</span></span>-->
-<!--      <div class="separator"></div>-->
-<!--    </section>-->
+    <section class="shopping-cart-wrapper">
+      @for (item of shoppingCart; track item.id) {
+        <div class="separator"></div>
+        <div class="shopping-cart-item-wrapper">
+          <div class="background-image-wrapper">
+          <div class="shopping-item-selected">
+            <div class="shopping-items">
+              <h4 class="shopping-cart-title">{{ item.title }}</h4>
+              <span class="card-product__by"> {{item.description }}</span>
+            </div>
+            <div class="numbers-selectors">
+              <button class="shop-now add-remove-buttons" (click)="removeOne(item)">
+                -
+              </button>
+              <input type="number" [disabled]="true" [value]="isInCart(item.id) ?? 0"/>
+              <button class="shop-now add-remove-buttons" (click)="addOne(item)">
+                +
+              </button>
+            </div>
+          </div>
+        </div>
+        </div>
+       }
+    </section>
+  </div>
+  <div class="separator2"></div>
+  <div class="shopping-cart-bottom">
+    <section class="shopping-cart-calculation-wrapper">
+      <span
+        class="shopping-cart-calculation"><span>Subtotal:</span> <span>{{ getTotal | number:'1.2-2'}} RON</span></span>
+      <div class="separator"></div>
+    </section>
 
-<!--    <section class="shopping-cart-total">-->
-<!--      <span class="shopping-cart-calculation">-->
-<!--            <h2>Total:</h2>-->
-<!--      <h2> {{ getTotal }} RON</h2>-->
-<!--      </span>-->
-<!--      <span class="transport-free">-->
-<!--            Transport Gratuit - mai adauga produse de-->
-<!--        <br/>-->
-<!--        <span> 154 RON</span>-->
-<!--      </span>-->
-<!--    </section>-->
-<!--    <button class="shop-now">Go To Command</button>-->
-<!--    <button class="shop-now">Details</button>-->
-<!--  </div>-->
-<!--</div>-->
+    <section class="shopping-cart-total">
+      <span class="shopping-cart-calculation">
+            <h2>Total:</h2>
+      <h2> {{ getTotal | number:'1.2-2'}} RON</h2>
+      </span>
+      <span class="transport-free">
+            Transport Gratuit - mai adauga produse de
+        <br/>
+        <span> 154 RON</span>
+      </span>
+    </section>
+    <button class="shop-now">Go To Command</button>
+    <button class="shop-now">Details</button>
+  </div>
+</div>

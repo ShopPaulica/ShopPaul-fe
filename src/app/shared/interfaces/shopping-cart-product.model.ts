@@ -1,8 +1,5 @@
-export interface ShoppingCartProduct {
+import {ProductModel} from './product.model';
+
+export interface ShoppingCartProduct extends ProductModel{
   howMany: number;
-  id?: number;
-  title: string;
-  description: string;
-  price: number;
-  image?: string;
 }

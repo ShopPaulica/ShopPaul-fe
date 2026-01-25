@@ -15,5 +15,5 @@
 </header>
 <app-cart-menu [toggleMenu]="toggleMenu"  position="right">
 </app-cart-menu>
-<app-slide-shopping-cart-menu [toggleMenu]="toggleCart">
+<app-slide-shopping-cart-menu [toggleMenu]="toggleCart" (isOpenChange)="toggleCart = $event">
 </app-slide-shopping-cart-menu>

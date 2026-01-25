@@ -1,63 +1,54 @@
-import {NgForOf, NgIf, NgOptimizedImage} from '@angular/common';
-import {Component, EventEmitter, input, Input, output, Output} from '@angular/core';
-import {ProductModel} from '../../shared/interfaces/product.model';
+import {DecimalPipe, NgForOf, NgIf, NgOptimizedImage} from '@angular/common';
+import {Component, DestroyRef, inject, input, Input, OnInit, output, Output} from '@angular/core';
+import {CartService} from '../../services/cart.service';
+import {ShoppingCartProduct} from '../../shared/interfaces/shopping-cart-product.model';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-slide-shopping-cart-menu',
-  imports: [NgForOf, NgIf, NgOptimizedImage],
+  imports: [NgForOf, NgIf, NgOptimizedImage, DecimalPipe],
   standalone: true,
   templateUrl: './slide-shopping-cart-menu.component.html',
   styleUrl: './slide-shopping-cart-menu.component.scss'
 })
-export class SlideShoppingCartMenuComponent {
-  @Output() public changeShoppingCart: EventEmitter<ProductModel[]> = new EventEmitter<ProductModel[]>();
+export class SlideShoppingCartMenuComponent implements OnInit {
+  public position = input<string>('right') ;
+  public isOpenChange = output<boolean>();
+  private readonly destroyRef = inject(DestroyRef);
 
-   public position = input<string>('right') ;
-  public positionChange = output<boolean>();
   @Input() public set toggleMenu(bool: boolean) {
     this.isOpen = bool;
   }
 
-  @Input() public set setShoppingCart(shoppingCart: ProductModel[]) {
-    this.shoppingCart = shoppingCart;
+  public shoppingCart: ShoppingCartProduct[] = []
+  public isOpen = false;
+
+  constructor(private cartService: CartService) {}
+
+  public ngOnInit() {
+    this.cartService.cart$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((products: ShoppingCartProduct[]) => {
+      this.shoppingCart = products;
+    })
   }
 
-  public shoppingCart: ProductModel[] = []
-  public isOpen = false;
-  //
-  // public get getTotal(): number {
-  //   let total: number = 0
-  //   this.shoppingCart.forEach(res => {
-  //     total = total + (res.price * (res?.howMany ?? 0));
-  //   })
-  //
-  //   return total
-  // }
-  //
-  // public closeMenu(): void {
-  //   this.isOpen = false;
-  //   this.positionChange.emit(false)
-  // }
-  //
-  // public removeOne(item: ProductModel): void {
-  //   if(item && (item?.howMany ?? 0) > 1) {
-  //     if(!item?.howMany) {
-  //       item.howMany = 0;
-  //     }
-  //     item.howMany--;
-  //   } else {
-  //     this.shoppingCart = this.shoppingCart.filter((res) => res.id !== item.id)
-  //   }
-  //   this.changeShoppingCart.emit(this.shoppingCart)
-  // }
-  //
-  // public addOne(item: ProductModel): void {
-  //   if(item) {
-  //     if(!item?.howMany) {
-  //       item.howMany = 0;
-  //     }
-  //     item.howMany++;
-  //   }
-  //   this.changeShoppingCart.emit(this.shoppingCart)
-  // }
+  public get getTotal(): number {
+    return this.cartService.getTotal;
+  }
+
+  public closeMenu(): void {
+    this.isOpen = false;
+    this.isOpenChange.emit(false)
+  }
+
+  public removeOne(item: ShoppingCartProduct): void {
+    this.cartService.removeOne(item)
+  }
+
+  public addOne(item: ShoppingCartProduct): void {
+    this.cartService.addOne(item)
+  }
+
+  public isInCart(id: number | undefined): number {
+    return id ? this.cartService.howManyAreOfOne(id) ?? 0 : 0;
+  }
 }
