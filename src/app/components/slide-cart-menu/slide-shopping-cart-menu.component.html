@@ -3,7 +3,7 @@
 <div class="side-menu" [class.open]="isOpen" [class.right]="position() === 'right'">
   <div class="shopping-cart-upper">
     <button class="close-btn" (click)="closeMenu()">✖</button>
-    <button class="clean-btn" (click)="cleanCart()">Clean</button>
+    <button class="clean-btn" (click)="cleanCart()">🗑️</button>
     <section class="shopping-cart-wrapper">
       @for (item of shoppingCart; track item.id) {
         <div class="separator"></div>
