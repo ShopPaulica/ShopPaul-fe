@@ -51,4 +51,8 @@ export class SlideShoppingCartMenuComponent implements OnInit {
   public isInCart(id: number | undefined): number {
     return id ? this.cartService.howManyAreOfOne(id) ?? 0 : 0;
   }
+
+  public cleanCart(): void {
+    this.cartService.cleanCart();
+  }
 }

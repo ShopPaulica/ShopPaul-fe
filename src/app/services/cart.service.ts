@@ -92,4 +92,9 @@ export class CartService implements CartServiceModel<ProductModel> {
     this.cart = list ?? [];
     this.fetchData();
   }
+
+  public cleanCart(): void {
+    this.cart = [];
+    this.fetchData();
+  }
 }
