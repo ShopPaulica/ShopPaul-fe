@@ -82,4 +82,8 @@ export class CartService implements CartServiceModel<ProductModel>{
   public howManyAreOfOne(id: number | undefined): number {
     return this.cart.find(product => product.id === id)?.howMany ?? 0
   }
+
+  public howManyAreThere(): number {
+    return this.cart.length ?? 0
+  }
 }
