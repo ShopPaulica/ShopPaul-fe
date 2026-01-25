@@ -12,7 +12,7 @@
   </section>
   <section class="cards">
     @for (product of products; track product.id) {
-      <article class="card-product" >
+      <article class="card-product" (click)="goToDetails(product.id)">
         <div class="card-product__info-hover">
 
           <div class="card-product__price">
@@ -25,7 +25,7 @@
           [style.background-image]="'url(' + product.image + ')'"
         ></div>
 
-        <a class="card-product__link" href="#" (click)="$event.preventDefault(); $event.stopPropagation();">
+        <a class="card-product__link" href="#" (click)="$event.preventDefault();">
           <div
             class="card-product__img--hover"
             [style.background-image]="'url(' + product.image + ')'"

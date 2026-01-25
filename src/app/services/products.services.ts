@@ -96,5 +96,14 @@ export class ProductsServices {
     ];
   }
 
+  public getProductAfterId(id: number): ProductModel {
+    return   {
+    id: 0,
+      title: 'Test',
+      description: 'test DEscription',
+      price: 100,
+      image: 'https://images.pexels.com/photos/45202/brownie-dessert-cake-sweet-45202.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
+  }
+  }
 
 }

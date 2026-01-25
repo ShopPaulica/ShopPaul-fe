@@ -19,6 +19,10 @@ export class NavigationService {
     void this.router.navigate(['/products']);
   }
 
+  public goToProduct(id: number | undefined): void {
+    void this.router.navigate([`/product/${id}`]);
+  }
+
   public goToAdmin(): void {
     void this.router.navigate(['/admin']);
   }
