@@ -39,7 +39,6 @@ export class ProductsComponent implements OnInit {
   }
 
   public goToDetails(id: number | undefined): void {
-    console.log(1)
     this.routersService.goToProduct(id);
   }
 }
