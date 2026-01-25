@@ -3,12 +3,12 @@ import {BehaviorSubject, Observable} from "rxjs";
 import {CartServiceModel} from '../shared/interfaces/cart.service.model';
 import {ProductModel} from '../shared/interfaces/product.model';
 import {ShoppingCartProduct} from '../shared/interfaces/shopping-cart-product.model';
-
+import {LocalStorageService} from './local-server.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CartService implements CartServiceModel<ProductModel>{
+export class CartService implements CartServiceModel<ProductModel> {
   private cart: ShoppingCartProduct[] = [];
 
 
@@ -16,7 +16,7 @@ export class CartService implements CartServiceModel<ProductModel>{
   private readonly cartSubject: BehaviorSubject<ShoppingCartProduct[]>;
   readonly cart$: Observable<ShoppingCartProduct[]>;
 
-  constructor() {
+  constructor(private localStorage: LocalStorageService) {
     this.cartSubject = new BehaviorSubject<ShoppingCartProduct[]>([]);
     this.cart$ = this.cartSubject.asObservable();
   }
@@ -77,6 +77,7 @@ export class CartService implements CartServiceModel<ProductModel>{
 
   public fetchData(): void {
     this.cartSubject.next(this.cart);
+    this.localStorage.set('cart', this.cart);
   }
 
   public howManyAreOfOne(id: number | undefined): number {
@@ -85,5 +86,10 @@ export class CartService implements CartServiceModel<ProductModel>{
 
   public howManyAreThere(): number {
     return this.cart.length ?? 0
+  }
+
+  public setCart(list: ShoppingCartProduct[]): void {
+    this.cart = list ?? [];
+    this.fetchData();
   }
 }
