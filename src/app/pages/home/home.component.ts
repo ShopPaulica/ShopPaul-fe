@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {NgOptimizedImage} from '@angular/common';
+import {NavigationService} from '../../services/router-service';
 
 @Component({
   selector: 'app-home',
@@ -11,5 +12,5 @@ import {NgOptimizedImage} from '@angular/common';
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
-
+  protected router: NavigationService = inject(NavigationService);
 }

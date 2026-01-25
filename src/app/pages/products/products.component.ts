@@ -2,8 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {ProductsServices} from '../../services/products.services';
 import {ProductModel} from '../../shared/interfaces/product.model';
 import {FormsModule} from '@angular/forms';
-import {of} from 'rxjs';
 import {DecimalPipe} from '@angular/common';
+import {CartService} from '../../services/cart.service';
 
 @Component({
   selector: 'app-products',
@@ -19,11 +19,21 @@ export class ProductsComponent implements OnInit {
   protected products: ProductModel[] = [];
   public search: string = '';
 
-  constructor(private _products: ProductsServices) {}
+  constructor(private _products: ProductsServices, private cartService: CartService,) {}
 
   ngOnInit(): void {
   this.products = this._products.getProducts()
   }
 
-  protected readonly of = of;
+  public removeFromCart(product: ProductModel): void {
+    this.cartService.removeOne(product);
+  }
+
+  public addToCart(product: ProductModel): void {
+    this.cartService.addOne(product);
+  }
+
+  public isInCart(id: number | undefined): number {
+    return id ? this.cartService.howManyAreOfOne(id) : 0;
+  }
 }

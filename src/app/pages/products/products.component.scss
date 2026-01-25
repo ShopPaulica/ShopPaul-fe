@@ -175,7 +175,6 @@
 
 .card-product__info {
   z-index: 2;
-  height: 150px;
   background-color: #fff;
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
@@ -201,6 +200,9 @@
   font-weight: 500;
   color: #444;
   display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .card-product:hover .card-product__img--hover {

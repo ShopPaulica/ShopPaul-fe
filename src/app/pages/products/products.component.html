@@ -25,7 +25,7 @@
           [style.background-image]="'url(' + product.image + ')'"
         ></div>
 
-        <a class="card-product__link" href="#">
+        <a class="card-product__link" href="#" (click)="$event.preventDefault(); $event.stopPropagation();">
           <div
             class="card-product__img--hover"
             [style.background-image]="'url(' + product.image + ')'"
@@ -35,6 +35,21 @@
         <div class="card-product__info">
           <h3 class="card-product__title">{{ product.title }}</h3>
           <span class="card-product__by">{{ product.description }}</span>
+          @if (isInCart(product.id) < 1) {
+            <button class="shop-now" (click)="addToCart(product)">
+              Add To Cart
+            </button>
+          } @else {
+            <div class="numbers-selectors">
+              <button class="shop-now add-remove-buttons" (click)="removeFromCart(product)">
+                -
+              </button>
+              <input type="number" [disabled]="true" [value]="isInCart(product.id) ?? 0"/>
+              <button class="shop-now add-remove-buttons" (click)="addToCart(product)">
+                +
+              </button>
+            </div>
+          }
         </div>
       </article>
     }

@@ -1,0 +1,81 @@
+@import "breakpoints";
+
+.shop-now {
+  background: #ff7100;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.5rem;
+  border-radius: 4px;
+  border: 0;
+  margin-top: 2rem;
+
+  cursor: pointer;
+  text-decoration: none;
+
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+  transform: translate3d(0, 0, 0);
+
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease;
+
+  @include respond(lg) {
+    width: 100%;
+  }
+}
+
+.shop-now:hover {
+  background: #ff8e3c;
+  transform: translate3d(4px, -4px, 0);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.28);
+  filter: brightness(1.03);
+}
+
+.shop-now:active {
+  transform: translate3d(2px, -2px, 0) scale(0.99);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.22);
+}
+
+.shop-now:focus-visible {
+  outline: none;
+  box-shadow:
+    0 16px 30px rgba(0, 0, 0, 0.28),
+    0 0 0 3px rgba(240, 127, 47, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-now {
+    transition: none;
+  }
+  .shop-now:hover,
+  .shop-now:active {
+    transform: none;
+  }
+}
+
+.add-remove-buttons {
+  width: 40px !important;
+  height: 100%;
+  padding: 0 !important;
+  margin-top: 0 !important;
+}
+
+.numbers-selectors {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  margin-top: 2rem;
+  height: 35px;
+
+  input {
+    height: 100%;
+  }
+}
+
