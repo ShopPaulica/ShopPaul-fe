@@ -14,6 +14,7 @@ export class AdminComponent  implements OnInit {
   public formProduct!: FormGroup;
   public previewUrl: string | null = null;
   public selectedFileName!: string;
+  public selectedTab: number = 2;
 
   constructor(private _fb: FormBuilder) {}
 
@@ -45,5 +46,13 @@ export class AdminComponent  implements OnInit {
     reader.readAsDataURL(file);
 
     this.selectedFileName = file.name;
+  }
+
+  public commands(): void {
+    this.selectedTab = 1;
+  }
+
+  public addSection(): void {
+    this.selectedTab = 2;
   }
 }

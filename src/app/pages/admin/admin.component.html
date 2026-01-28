@@ -1,49 +1,60 @@
 <header class="header-admin">
-  <h2>Admin</h2>
+  <h2 (click)="addSection()">Adauga</h2>
+  <h2>||</h2>
+  <h2 (click)="commands()">Comenzi</h2>
 </header>
 <section class="admin-body">
-  <div class="admin" [formGroup]="formProduct">
+  @switch (selectedTab) {
+    @case (2) {
+      <div class="admin" [formGroup]="formProduct">
 
 
-  <div class="file-preview">
-    @if(previewUrl){
-      <img [src]="previewUrl" alt="Preview">
+        <div class="file-preview">
+          @if(previewUrl){
+            <img [src]="previewUrl" alt="Preview">
+          }
+        </div>
+
+
+
+
+        <div class="file-field">
+          <input
+            #fileInput
+            class="file-input"
+            type="file"
+            (change)="onImageSelected($event)"
+          />
+
+          <button type="button" class="file-btn" (click)="fileInput.click()">
+            {{ selectedFileName || 'Chose an image' }}
+          </button>
+        </div>
+
+        <div class="input-wrapper">
+          <label>Title</label>
+          <input type="text" formControlName="title" />
+        </div>
+
+        <div class="input-wrapper">
+          <label> Description</label>
+          <input type="text" formControlName="description" />
+        </div>
+
+        <div class="input-wrapper">
+          <label>Price</label>
+          <input type="number" formControlName="price" />
+        </div>
+
+        <button class="save-button">
+          save
+        </button>
+      </div>
     }
-  </div>
+    @case (1) {
+      <div class="admin">
 
-
-
-
-    <div class="file-field">
-      <input
-        #fileInput
-        class="file-input"
-        type="file"
-        (change)="onImageSelected($event)"
-      />
-
-    <button type="button" class="file-btn" (click)="fileInput.click()">
-      {{ selectedFileName || 'Chose an image' }}
-    </button>
-    </div>
-
-    <div class="input-wrapper">
-      <label>Title</label>
-      <input type="text" formControlName="title" />
-    </div>
-
-    <div class="input-wrapper">
-      <label> Description</label>
-      <input type="text" formControlName="description" />
-    </div>
-
-    <div class="input-wrapper">
-      <label>Price</label>
-      <input type="number" formControlName="price" />
-    </div>
-
-    <button class="save-button">
-      save
-    </button>
-  </div>
+      </div>
+    }
+  }
 </section>
