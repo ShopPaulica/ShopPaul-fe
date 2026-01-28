@@ -1,10 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {commandsListComponent} from '../../components/commands-list/commands-list.component';
 
 @Component({
   selector: 'app-admin',
   imports: [
     ReactiveFormsModule,
+    commandsListComponent,
   ],
   templateUrl: './admin.component.html',
   standalone: true,
