@@ -21,13 +21,13 @@
 }
 
 .menu-item {
-  @include respond-min(mls) {
+  @include respond-min(mlg2) {
   display: none !important;
   }
 }
 
 .header-items {
-  @include respond(mls) {
+  @include respond(mlg2) {
     display: none !important;
   }
 }

@@ -118,10 +118,10 @@
 
 .card-product:hover {
   box-shadow: 0 30px 18px -8px rgba(0, 0, 0, 0.1);
-  transform: scale(1.10);
+  transform: scale(1.05);
 
   @include respond(mds) {
-    transform: scale(1.05);
+    transform: scale(1.03);
   }
 }
 
@@ -228,5 +228,5 @@
  }
 
  .page-active {
-   background: #f89a55;
+   background: rgba(255, 142, 60, 0.9);
  }
