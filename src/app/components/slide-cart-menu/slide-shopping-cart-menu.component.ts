@@ -1,5 +1,5 @@
 import {DecimalPipe, NgForOf, NgIf, NgOptimizedImage} from '@angular/common';
-import {Component, DestroyRef, inject, input, Input, OnInit, output, Output} from '@angular/core';
+import {Component, DestroyRef, inject, input, Input, OnInit, output } from '@angular/core';
 import {CartService} from '../../services/cart.service';
 import {ShoppingCartProduct} from '../../shared/interfaces/shopping-cart-product.model';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';

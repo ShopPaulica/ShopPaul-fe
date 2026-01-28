@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import {HeaderComponent} from './components/header/header.component';
 import {ShoppingCartProduct} from './shared/interfaces/shopping-cart-product.model';

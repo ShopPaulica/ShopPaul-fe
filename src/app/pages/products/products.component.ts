@@ -7,6 +7,7 @@ import {CartService} from '../../services/cart.service';
 import {NavigationService} from '../../services/router-service';
 import {SlideMenuComponent} from '../../components/slide-menu/slide-menu.component';
 import {detailsModalComponent} from '../../components/details-modal/details-modal.component';
+import {of} from 'rxjs';
 
 @Component({
   selector: 'app-products',
@@ -25,11 +26,34 @@ export class ProductsComponent implements OnInit {
   public search: string = '';
   public toggleDetails: boolean = false;
   public selectedItem!: ProductModel;
+  public totalPages: number = 0;
+  public currentPage = 1;
 
   constructor(private _products: ProductsServices, private cartService: CartService, protected routersService: NavigationService) {}
 
   ngOnInit(): void {
-  this.products = this._products.getProducts()
+    this.products = this._products.getProducts();
+    this.totalPages = this._products.getPages();
+  }
+
+  get pagesToShow(): number[] {
+    const p = this.currentPage;
+    const last = this.totalPages;
+
+    if (last <= 3) return Array.from({ length: last }, (_, i) => i + 1);
+
+    // capete
+    if (p === 1) return [1, 2, 3];
+    if (p === last) return [last - 2, last - 1, last];
+
+    // middle
+    return [p - 1, p, p + 1];
+  }
+
+  public goToPage(page: number, ev?: Event): void {
+    ev?.stopPropagation();
+    this.currentPage = page;
+    // aici faci fetch / filtrare / ce ai tu
   }
 
   public removeFromCart(product: ProductModel): void {
@@ -48,4 +72,6 @@ export class ProductsComponent implements OnInit {
     this.selectedItem = product;
     this.toggleDetails = true;
   }
+
+  protected readonly of = of;
 }

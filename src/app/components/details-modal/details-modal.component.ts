@@ -1,10 +1,8 @@
 import {DecimalPipe, NgForOf, NgIf, NgOptimizedImage} from '@angular/common';
-import {Component, inject, input, Input, OnInit, output} from '@angular/core';
+import {Component, inject, input, Input, output} from '@angular/core';
 import {NavigationService} from '../../services/router-service';
 import {ProductModel} from '../../shared/interfaces/product.model';
-import {ActivatedRoute} from '@angular/router';
 import {CartService} from '../../services/cart.service';
-import {ProductsServices} from '../../services/products.services';
 
 @Component({
   selector: 'app-details-modal',

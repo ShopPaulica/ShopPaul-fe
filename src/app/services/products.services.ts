@@ -45,49 +45,84 @@ export class ProductsServices {
         image: 'https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
       },
       {
-        id: 22,
+        id: 21242142,
         title: 'Test4',
         description: 'test5 DEscription',
         price: 1012.124,
         image: 'https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
       },
       {
-        id: 33,
+        id: 31241243,
         title: 'Test3',
         description: 'test3 DEscription',
         price: 12,
         image: 'https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
       },
       {
-        id: 22,
+        id: 21241242,
         title: 'Test4',
         description: 'test5 DEscription',
         price: 1012.124,
         image: 'https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
       },
       {
-        id: 33,
+        id: 3214123,
         title: 'Test3',
         description: 'test3 DEscription',
         price: 12,
         image: 'https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
       },
       {
-        id: 22,
+        id: 2124122,
         title: 'Test4',
         description: 'test5 DEscription',
         price: 1012.124,
         image: 'https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
       },
       {
-        id: 33,
+        id: 3321421,
         title: 'Test3',
         description: 'test3 DEscription',
         price: 12,
         image: 'https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
       },
       {
-        id: 194,
+        id: 19214124214,
+        title: 'Testwrwq4',
+        description: 'tesqwrwqt5 DEscription',
+        price: 1.21,
+        image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
+      },
+      {
+        id: 22412412,
+        title: 'Test4',
+        description: 'test5 DEscription',
+        price: 1012.124,
+        image: 'https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
+      },
+      {
+        id: 3334,
+        title: 'Test3',
+        description: 'test3 DEscription',
+        price: 12,
+        image: 'https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
+      },
+      {
+        id: 1914,
+        title: 'Testwrwq4',
+        description: 'tesqwrwqt5 DEscription',
+        price: 1.21,
+        image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
+      },
+      {
+        id: 3334112,
+        title: 'Test3',
+        description: 'test3 DEscription',
+        price: 12,
+        image: 'https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
+      },
+      {
+        id: 1911122224,
         title: 'Testwrwq4',
         description: 'tesqwrwqt5 DEscription',
         price: 1.21,
@@ -104,6 +139,11 @@ export class ProductsServices {
       price: 100,
       image: 'https://images.pexels.com/photos/45202/brownie-dessert-cake-sweet-45202.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
   }
+  }
+
+
+  public getPages(): number {
+    return 5
   }
 
 }

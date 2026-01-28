@@ -55,6 +55,31 @@
     }
   </section>
 
+  @if (totalPages > 0) {
+    <footer>
+      <div class="pagination-wrapper">
+        <button class="shop-now add-remove-buttons" (click)=" $event.stopPropagation()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        @for (page of pagesToShow; track page) {
+        <button
+          class="shop-now add-remove-buttons"
+          (click)="goToPage(page, $event)"
+          [class.page-active]="page === currentPage"
+        >
+          {{ page }}
+        </button>
+        }
+        <button class="shop-now add-remove-buttons" (click)=" $event.stopPropagation()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 6L15 12L9 18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </footer>
+  }
 </main>
-<app-details-modal [toggleMenu]="toggleDetails" [selectedItem]="selectedItem" (openChange)="toggleDetails = $event"  position="right">
+<app-details-modal [toggleMenu]="toggleDetails" [selectedItem]="selectedItem" (openChange)="toggleDetails = $event">
 </app-details-modal>
