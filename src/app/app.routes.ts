@@ -3,11 +3,16 @@ import {LoginComponent} from './pages/login/login.component';
 import {HomeComponent} from './pages/home/home.component';
 import {AdminComponent} from './pages/admin/admin.component';
 import {ProductsComponent} from './pages/products/products.component';
+import {RegisterComponent} from './pages/register/register.component';
 
 export const routes: Routes = [
   {
     path: 'logIn',
     component: LoginComponent
+  },
+  {
+    path: 'register',
+    component: RegisterComponent
   },
   {
     path: 'admin',

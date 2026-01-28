@@ -19,8 +19,8 @@ export class NavigationService {
     void this.router.navigate(['/products']);
   }
 
-  public goToProduct(id: number | undefined): void {
-    void this.router.navigate([`/product/${id}`]);
+  public goToRegister(): void {
+    void this.router.navigate([`/register`]);
   }
 
   public goToAdmin(): void {
