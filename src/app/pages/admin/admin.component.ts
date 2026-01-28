@@ -1,12 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {commandsListComponent} from '../../components/commands-list/commands-list.component';
+import {ordersListComponent} from '../../components/commands-list/orders-list.component';
 
 @Component({
   selector: 'app-admin',
   imports: [
     ReactiveFormsModule,
-    commandsListComponent,
+    ordersListComponent,
   ],
   templateUrl: './admin.component.html',
   standalone: true,
@@ -50,7 +50,7 @@ export class AdminComponent  implements OnInit {
     this.selectedFileName = file.name;
   }
 
-  public commands(): void {
+  public orders(): void {
     this.selectedTab = 1;
   }
 

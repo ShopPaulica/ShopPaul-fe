@@ -1,0 +1,32 @@
+<div class="order-details-modal">
+  <div class="admin" [formGroup]="formOrder">
+    <div class="input-wrapper">
+      <label>Name</label>
+      <input type="text" formControlName="name"/>
+    </div>
+
+    <div class="input-wrapper">
+      <label>Email</label>
+      <input type="text" formControlName="email"/>
+    </div>
+
+    <div class="input-wrapper">
+      <label>Phone</label>
+      <input type="text" formControlName="phone"/>
+    </div>
+
+    <div class="input-wrapper">
+      <label>Vin</label>
+      <input type="text" formControlName="vin"/>
+    </div>
+
+    <div class="input-wrapper">
+      <label>Details</label>
+      <input type="text" formControlName="details"/>
+    </div>
+
+    <button class="save-button">
+      Send
+    </button>
+  </div>
+</div>

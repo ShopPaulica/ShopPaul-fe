@@ -2,12 +2,12 @@ import {DecimalPipe, NgForOf, NgIf, NgOptimizedImage} from '@angular/common';
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'app-commands-list',
+  selector: 'app-orders-list',
   imports: [NgForOf, NgIf, NgOptimizedImage, DecimalPipe],
   standalone: true,
-  templateUrl: './commands-list.component.html',
-  styleUrl: './commands-list.component.scss'
+  templateUrl: './orders-list.component.html',
+  styleUrl: './orders-list.component.scss'
 })
-export class commandsListComponent {
+export class ordersListComponent {
 
 }

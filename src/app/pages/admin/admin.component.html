@@ -1,7 +1,7 @@
 <header class="header-admin">
   <h2 (click)="addSection()">Adauga</h2>
-  <h2>||</h2>
-  <h2 (click)="commands()">Comenzi</h2>
+  <h2>|</h2>
+  <h2 (click)="orders()">Orders</h2>
 </header>
 <section class="admin-body">
   @switch (selectedTab) {
@@ -52,7 +52,7 @@
       </div>
     }
     @case (1) {
-       <app-commands-list></app-commands-list>
+       <app-orders-list></app-orders-list>
     }
   }
 </section>
