@@ -4,13 +4,13 @@
 <section class="log-in-body">
   <div class="log-in" [formGroup]="formLogIn">
     <div class="input-wrapper">
-    <label>Name</label>
-    <input formControlName="name" />
+    <label>Email</label>
+    <input formControlName="email" />
     </div>
 
     <div class="input-wrapper">
       <label> Password</label>
-      <input formControlName="password" />
+      <input type="password"  formControlName="password" />
     </div>
 
     <div class="popBot">
@@ -18,7 +18,7 @@
       <input formControlName="popBot" />
     </div>
 
-    <button class="log-in-button">
+    <button class="log-in-button" [disabled]="formLogIn.invalid" (click)="logIn()">
       Login
     </button>
   </div>

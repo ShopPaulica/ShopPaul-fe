@@ -1,10 +1,10 @@
 import {DecimalPipe, NgForOf, NgIf, NgOptimizedImage} from '@angular/common';
 import {Component, DestroyRef, inject, input, Input, OnInit, output } from '@angular/core';
-import {CartService} from '../../services/cart.service';
+import {CartService} from '../../shared/services/cart.service';
 import {ShoppingCartProduct} from '../../shared/interfaces/shopping-cart-product.model';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {routes} from '../../app.routes';
-import {NavigationService} from '../../services/router-service';
+import {NavigationService} from '../../shared/services/router-service';
 
 @Component({
   selector: 'app-slide-shopping-cart-menu',

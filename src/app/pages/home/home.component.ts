@@ -1,6 +1,6 @@
 import {Component, inject} from '@angular/core';
 import {NgOptimizedImage} from '@angular/common';
-import {NavigationService} from '../../services/router-service';
+import {NavigationService} from '../../shared/services/router-service';
 
 @Component({
   selector: 'app-home',

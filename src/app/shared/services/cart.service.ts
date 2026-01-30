@@ -1,8 +1,8 @@
 import {Injectable} from "@angular/core";
 import {BehaviorSubject, Observable} from "rxjs";
-import {CartServiceModel} from '../shared/interfaces/cart.service.model';
-import {ProductModel} from '../shared/interfaces/product.model';
-import {ShoppingCartProduct} from '../shared/interfaces/shopping-cart-product.model';
+import {CartServiceModel} from '../interfaces/cart.service.model';
+import {ProductModel} from '../interfaces/product.model';
+import {ShoppingCartProduct} from '../interfaces/shopping-cart-product.model';
 import {LocalStorageService} from './local-server.service';
 
 @Injectable({

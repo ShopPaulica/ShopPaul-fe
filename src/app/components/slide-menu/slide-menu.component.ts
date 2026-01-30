@@ -1,6 +1,6 @@
 import {NgForOf, NgIf, NgOptimizedImage} from '@angular/common';
 import {Component, inject, input, Input, output } from '@angular/core';
-import {NavigationService} from '../../services/router-service';
+import {NavigationService} from '../../shared/services/router-service';
 
 @Component({
   selector: 'app-cart-menu',

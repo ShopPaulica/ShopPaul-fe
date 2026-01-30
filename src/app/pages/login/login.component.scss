@@ -115,3 +115,35 @@
   position: absolute;
   left: -1000px;
 }
+
+.log-in-button {
+  // ... stilurile tale existente
+
+  &:disabled,
+  &[disabled] {
+    opacity: 0.55;            // vizibil “disabled”
+    cursor: not-allowed;
+    filter: grayscale(0.25) saturate(0.75);
+    box-shadow: none;         // scoate glow-ul / elevatia
+    transform: none;          // fără “lift”
+    pointer-events: none;     // blochează hover/click chiar dacă mai ai listeners
+
+    // păstrează fundalul în aceeași familie, dar mai “flat”
+    background: rgba(0, 0, 83, 0.35);
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  // ca să nu mai facă hover effect când e enabled doar
+  &:not(:disabled):hover {
+    // aici pui hover-ul tău normal (dacă ai)
+  }
+
+  &:not(:disabled):active {
+    // active normal (dacă ai)
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(0, 0, 83, 0.35);
+    outline-offset: 3px;
+  }
+}

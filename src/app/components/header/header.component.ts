@@ -1,8 +1,8 @@
 import {Component, inject} from '@angular/core';
-import {NavigationService} from '../../services/router-service';
+import {NavigationService} from '../../shared/services/router-service';
 import {SlideMenuComponent} from '../slide-menu/slide-menu.component';
 import {SlideShoppingCartMenuComponent} from '../slide-cart-menu/slide-shopping-cart-menu.component';
-import {CartService} from '../../services/cart.service';
+import {CartService} from '../../shared/services/cart.service';
 
 @Component({
   selector: 'app-header',

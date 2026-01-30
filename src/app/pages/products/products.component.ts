@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {ProductsServices} from '../../services/products.services';
+import {ProductsServices} from '../../shared/services/products.services';
 import {ProductModel} from '../../shared/interfaces/product.model';
 import {FormsModule} from '@angular/forms';
 import {DecimalPipe} from '@angular/common';
-import {CartService} from '../../services/cart.service';
-import {NavigationService} from '../../services/router-service';
+import {CartService} from '../../shared/services/cart.service';
+import {NavigationService} from '../../shared/services/router-service';
 import {SlideMenuComponent} from '../../components/slide-menu/slide-menu.component';
 import {detailsModalComponent} from '../../components/details-modal/details-modal.component';
 import {of} from 'rxjs';
