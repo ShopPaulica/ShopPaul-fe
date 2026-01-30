@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {AuthService} from '../../shared/services/auth.service';
-import {LoginRequest, LoginResponse} from '../../shared/interfaces/auth.model';
 
 @Component({
   selector: 'app-login',
@@ -31,9 +30,6 @@ export class LoginComponent implements OnInit {
         {
           email: this.formLogIn.controls['email'].value,
           password: this.formLogIn.controls['password'].value,
-        }
-      ).subscribe( (res: LoginResponse) => {
-        console.log(res)
         }
       )
     }

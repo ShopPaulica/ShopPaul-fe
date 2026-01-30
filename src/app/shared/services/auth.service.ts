@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import {LocalStorageService} from './local-server.service';
 import {AuthToken, LoginRequest, LoginResponse, LS_TOKEN_KEY} from '../interfaces/auth.model';
 import {NotificationService} from './notification.service';
+import {NavigationService} from './router-service';
 
 
 @Injectable({ providedIn: 'root' })
@@ -15,7 +16,8 @@ export class AuthService {
   constructor(
     private readonly _http: HttpClient,
     private readonly _storage: LocalStorageService,
-    private readonly notificationService: NotificationService
+    private readonly _notificationService: NotificationService,
+    private readonly _navigationService: NavigationService
   ) {
     const initialToken = this._storage.get<string | null>(LS_TOKEN_KEY, null);
     this._token$ = new BehaviorSubject<string | null>(initialToken);
@@ -30,22 +32,24 @@ export class AuthService {
     return !!this.token;
   }
 
-  public login(payload: LoginRequest): Observable<LoginResponse> {
-    return this._http
+  public login(payload: LoginRequest): void {
+     this._http
       .post<LoginResponse>(`${environment.apiUrl}/auth/login`, payload)
       .pipe(
         tap((res: LoginResponse) => {
           const token = res?.token;
           if (!token) return;
           this.setToken(token);
+          this._navigationService.goToAdmin();
+          this._notificationService.success('Success', { title: 'Login', durationMs: 4000 })
         }),
     catchError((err: HttpErrorResponse) => {
-      const message = this.notificationService.getLoginErrorMessage(err);
-      this.notificationService.error(message, { title: 'Login', durationMs: 4000 });
+      const message: string = this._notificationService.getLoginErrorMessage(err);
+      this._notificationService.error(message, { title: 'Login', durationMs: 4000 });
 
       return throwError(() => err);
     })
-      );
+   ).subscribe();
   }
 
   public logout(): void {
