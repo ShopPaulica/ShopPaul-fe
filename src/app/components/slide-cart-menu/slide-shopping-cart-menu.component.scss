@@ -38,7 +38,6 @@
 
 .close-btn {
   background: none;
-  position: absolute;
   border: none;
   color: white;
   font-size: 20px;
@@ -65,7 +64,6 @@
 }
 
 .shopping-cart-wrapper {
-  margin-top: 3rem;
   width: 100%;
   display: flex;
   height: auto;
@@ -128,6 +126,7 @@
 }
 
 .shopping-cart-upper {
+  position: relative;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -162,4 +161,11 @@
     margin-top: 0;
   }
 }
+}
+
+.side-menu-option {
+  border: none;
+  background: #222;
+  width: 100%;
+  margin-bottom: 1rem
 }

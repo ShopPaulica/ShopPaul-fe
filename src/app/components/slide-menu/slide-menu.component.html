@@ -1,8 +1,10 @@
 <div class="overlay" *ngIf="isOpen" (click)="closeMenu()"></div>
 
 <div class="side-menu" [class.open]="isOpen" [class.right]="position() === 'right'">
-  <div class="shopping-cart-upper">
+  <section class="side-menu-option">
     <button class="close-btn" (click)="closeMenu()">✖</button>
+  </section>
+  <div class="shopping-cart-upper">
     <h4 class="header-items cursor-box text" (click)="router.goToHome()"> Home </h4>
     <h4 class="header-items cursor-box text" (click)="router.goToProducts()"> Products </h4>
     <h4 class="header-items cursor-box text" (click)="router.goToLogin()"> Sign In</h4>
