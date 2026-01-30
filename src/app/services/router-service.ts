@@ -23,6 +23,10 @@ export class NavigationService {
     void this.router.navigate([`/register`]);
   }
 
+  public goToDetailsOrder(): void {
+    void this.router.navigate(['/order-details']);
+  }
+
   public goToAdmin(): void {
     void this.router.navigate(['/admin']);
   }

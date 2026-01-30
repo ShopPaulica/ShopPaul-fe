@@ -3,6 +3,8 @@ import {Component, DestroyRef, inject, input, Input, OnInit, output } from '@ang
 import {CartService} from '../../services/cart.service';
 import {ShoppingCartProduct} from '../../shared/interfaces/shopping-cart-product.model';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {routes} from '../../app.routes';
+import {NavigationService} from '../../services/router-service';
 
 @Component({
   selector: 'app-slide-shopping-cart-menu',
@@ -15,6 +17,7 @@ export class SlideShoppingCartMenuComponent implements OnInit {
   public position = input<string>('right') ;
   public isOpenChange = output<boolean>();
   private readonly destroyRef = inject(DestroyRef);
+  protected router: NavigationService = inject(NavigationService);
 
   @Input() public set toggleMenu(bool: boolean) {
     this.isOpen = bool;
@@ -55,4 +58,6 @@ export class SlideShoppingCartMenuComponent implements OnInit {
   public cleanCart(): void {
     this.cartService.cleanCart();
   }
+
+  protected readonly routes = routes;
 }
