@@ -1,0 +1,144 @@
+.card-product__img {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 200px;
+  height: 200px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+.truncate-multiline {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* număr de linii */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere; /* rupe oriunde dacă e nevoie */
+  word-break: break-word;
+}
+
+.numbers-selectors {
+  display: flex
+;
+  gap: 10px;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+  height: 35px;
+}
+
+@import "app/style/breakpoints";
+
+.header-log-in {
+  display: flex;
+  align-items: center;
+  background: #000053bd;
+  justify-content: center;
+  padding: 10px;
+
+  h2 {
+    color: white;
+  }
+}
+
+.log-in-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.log-in {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.input-wrapper {
+  display: flex;
+  gap: 5px;
+  flex-direction: column;
+  width: 300px;
+
+  input {
+    height: 40px;
+    padding: 5px;
+    line-height: 23px;
+    font-size: 18px;
+    border-radius: 4px;
+    border: 2px solid rgb(0 0 0 / 18%);
+  }
+
+  input:active {
+    border: 2px solid  #000053bd;
+  }
+  input:focus {
+    border: 2px solid  #000053bd;
+    outline: none;
+    box-shadow: none;
+  }
+
+  @include respond(sm) {
+    width: 100%;
+    margin: auto;
+  }
+}
+
+
+.log-in-button {
+  background: #000053bd;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 2rem;
+  border-radius: 4px;
+  width: 100%;
+  height: 50px;
+  border: 0;
+
+  cursor: pointer;
+  text-decoration: none;
+
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+  transform: translate3d(0, 0, 0);
+
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease;
+}
+
+.log-in-button:hover {
+  background: rgba(0, 0, 83, 0.6);
+  transform: translate3d(4px, -4px, 0);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.28);
+  filter: brightness(1.03);
+}
+
+.log-in-button:active {
+  transform: translate3d(2px, -2px, 0) scale(0.99);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.22);
+}
+
+.log-in-button:focus-visible {
+  outline: none;
+  box-shadow:
+    0 16px 30px rgba(0, 0, 0, 0.28),
+    0 0 0 3px rgba(240, 127, 47, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .log-in-button {
+    transition: none;
+  }
+  .log-in-button:hover,
+  .log-in-button:active {
+    transform: none;
+  }
+}
+
+.popBot {
+  position: absolute;
+  left: -1000px;
+}
