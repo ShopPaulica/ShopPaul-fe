@@ -36,7 +36,7 @@
           <h3 class="card-product__title">{{ product.title }}</h3>
           <span class="card-product__by">{{ product.description }}</span>
           @if (isInCart(product.id) < 1) {
-            <button class="shop-now" (click)="addToCart(product); $event.stopPropagation()">
+            <button class="shop-now add-to-card" (click)="addToCart(product); $event.stopPropagation()">
               Add To Cart
             </button>
           } @else {
