@@ -3,7 +3,7 @@ export interface ProductModel {
   title: string;
   description: string;
   price: number;
-  image?: string;
+  image?: File;
 }
 
 export interface CreateProductModel {
@@ -11,4 +11,11 @@ export interface CreateProductModel {
   description: string;
   price: number;
   image: string;
+}
+
+export interface ProductsPaginationModel {
+  page: number,
+  totalItems: number,
+  totalPages: number,
+  items: ProductModel[],
 }

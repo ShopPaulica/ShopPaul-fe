@@ -32,7 +32,12 @@ export class ProductsComponent implements OnInit {
   constructor(private _products: ProductsServices, private cartService: CartService, protected routersService: NavigationService) {}
 
   ngOnInit(): void {
-    this.products = this._products.getProducts();
+    this._products.getProducts().subscribe((res)=>
+    {
+      console.log(res)
+      // this.products = res;
+    })
+
     this.totalPages = this._products.getPages();
   }
 
