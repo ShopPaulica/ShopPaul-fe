@@ -41,11 +41,19 @@ export class AuthService {
           if (!token) return;
           this.setToken(token);
           this._navigationService.goToAdmin();
-          this._notificationService.success('Success', { title: 'Login', durationMs: 4000 })
-        }),
+          this._notificationService.success(
+            'Te-ai autentificat cu succes.',
+            { title: 'Log In', durationMs: 4000 }
+          );        }),
     catchError((err: HttpErrorResponse) => {
-      const message: string = this._notificationService.getLoginErrorMessage(err);
-      this._notificationService.error(message, { title: 'Login', durationMs: 4000 });
+      if(err.error['code'] === 401) {
+        this._notificationService.error('Datele introduse nu sunt corecte. Te rugăm să încerci din nou.', { title: 'Log in', durationMs: 4000 });
+      } else {
+        this._notificationService.error(
+          'Nu am putut realiza autentificarea. Server indisponibil.',
+          { title: 'Log In', durationMs: 4000 }
+        );
+      }
 
       return throwError(() => err);
     })

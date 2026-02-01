@@ -169,10 +169,14 @@
 }
 
 .file-preview {
-  width: 100%;
+  width: 300px;
   background-color: white;
   height: 200px;
   object-fit: cover;
   border-radius: 10px;
   border: 2px solid rgba(0, 0, 0, 0.12);
+
+  img {
+    object-fit: cover;
+  }
 }
