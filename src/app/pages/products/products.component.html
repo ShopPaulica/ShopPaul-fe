@@ -18,6 +18,7 @@
           <div class="card-product__price">
             {{ product.price | number:'1.2-2' }} lei
           </div>
+          <button class="card-product__delete" (click)="$event.stopPropagation(); deleteProduct(product.id)">🗑️</button>
         </div>
 
         <div

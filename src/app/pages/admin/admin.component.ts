@@ -94,9 +94,7 @@ export class AdminComponent  implements OnInit {
 
 
         return throwError(() => err);
-    })).subscribe(
-      (res) => {
-        console.log(res)
+    })).subscribe(() => {
         this._ns.success('Success', { title: 'Create', durationMs: 4000 })
       }
     )

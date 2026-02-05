@@ -80,7 +80,7 @@ export class CartService implements CartServiceModel<ProductModel> {
     this.localStorage.set('cart', this.cart);
   }
 
-  public howManyAreOfOne(id: number | undefined): number {
+  public howManyAreOfOne(id: string | undefined): number {
     return this.cart.find(product => product.id === id)?.howMany ?? 0
   }
 

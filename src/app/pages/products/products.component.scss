@@ -165,6 +165,22 @@
   width: 18px;
 }
 
+.card-product__delete {
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(255,255,255,0.9);
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: none;
+
+  &:hover {
+    background: rgb(195, 195, 195);
+    transform: translate3d(4px, -4px, 0);
+    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.28);
+    filter: brightness(1.03);
+  }
+}
+
 .card-product__price {
   font-size: 12px;
   font-weight: 600;

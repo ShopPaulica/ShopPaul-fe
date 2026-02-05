@@ -7,7 +7,9 @@ import {CartService} from '../../shared/services/cart.service';
 import {NavigationService} from '../../shared/services/router-service';
 import {SlideMenuComponent} from '../../components/slide-menu/slide-menu.component';
 import {detailsModalComponent} from '../../components/details-modal/details-modal.component';
-import {of} from 'rxjs';
+import {catchError, of, throwError} from 'rxjs';
+import {HttpErrorResponse} from '@angular/common/http';
+import {NotificationService} from '../../shared/services/notification.service';
 
 @Component({
   selector: 'app-products',
@@ -30,15 +32,15 @@ export class ProductsComponent implements OnInit {
   public currentPage = 1;
   public pages: number[] = [];
 
-  constructor(private _products: ProductsServices, private cartService: CartService, protected routersService: NavigationService) {}
+  constructor(private _products: ProductsServices,private readonly _ns: NotificationService, private cartService: CartService, protected routersService: NavigationService) {}
 
   ngOnInit(): void {
-    this._products.getProducts().subscribe((res: ProductsPaginationModel) => {
+    //todo move it in a behavior subject
+    this._products.getProducts(this.currentPage).subscribe((res: ProductsPaginationModel) => {
       this.products = res.items;
       this.pages = res.pages;
       this.currentPage = res.page;
       this.totalPages = res.totalPages;
-      console.log(res)
     });
   }
 
@@ -67,7 +69,7 @@ export class ProductsComponent implements OnInit {
     this.cartService.addOne(product);
   }
 
-  public isInCart(id: number | undefined): number {
+  public isInCart(id: string | undefined): number {
     return id ? this.cartService.howManyAreOfOne(id) : 0;
   }
 
@@ -80,5 +82,22 @@ export class ProductsComponent implements OnInit {
     const img = product?.image;
     if (!img?.base64 || !img?.contentType) return 'none';
     return `url("data:${img.contentType};base64,${img.base64}")`;
+  }
+
+  public deleteProduct(id: string): void {
+   this._products.deleteProduct(id).pipe(
+     catchError((err: HttpErrorResponse) => {
+       if (err.error?.code === 404) {
+         this._ns.error(
+           'Produs inexistent.',
+           { title: 'Delete Product', durationMs: 4000 }
+         );
+       }
+
+       return throwError(() => err);
+     })).subscribe(() => {
+       this._ns.success('Success', { title: 'Delete Product', durationMs: 4000 })
+     }
+   )
   }
 }

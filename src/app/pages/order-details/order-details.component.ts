@@ -49,7 +49,7 @@ export class OrderDetailsComponent implements OnInit{
     this.cartService.addOne(item)
   }
 
-  public isInCart(id: number | undefined): number {
+  public isInCart(id: string | undefined): number {
     return id ? this.cartService.howManyAreOfOne(id) ?? 0 : 0;
   }
 }

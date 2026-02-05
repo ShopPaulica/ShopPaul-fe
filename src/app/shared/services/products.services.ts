@@ -35,8 +35,12 @@ export class ProductsServices {
    return this._http.post(`${environment.apiUrl}/products`, fd);
   }
 
-  public getProducts(): Observable<ProductsPaginationModel> {
-    return this._http.post<ProductsPaginationModel>(`${environment.apiUrl}/products/list`,{ page: 1 });
+  public getProducts(page: number): Observable<ProductsPaginationModel> {
+    return this._http.post<ProductsPaginationModel>(`${environment.apiUrl}/products/list`,{ page: page });
+  }
+
+  public deleteProduct(id: string): Observable<Object> {
+    return this._http.delete<Object>(`${environment.apiUrl}/products/${id}`);
   }
 
   public getPages(): number {
