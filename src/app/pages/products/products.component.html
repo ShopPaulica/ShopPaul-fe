@@ -22,13 +22,13 @@
 
         <div
           class="card-product__img"
-          [style.background-image]="'url(' + product.image + ')'"
+          [style.background-image]="getBgImage(product)"
         ></div>
 
         <a class="card-product__link" href="#" (click)="$event.preventDefault();">
           <div
             class="card-product__img--hover"
-            [style.background-image]="'url(' + product.image + ')'"
+            [style.background-image]="getBgImage(product)"
           ></div>
         </a>
 

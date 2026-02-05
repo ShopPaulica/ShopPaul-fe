@@ -3,7 +3,7 @@ export interface ProductModel {
   title: string;
   description: string;
   price: number;
-  image?: File;
+  image?: ProductImageDto;
 }
 
 export interface CreateProductModel {
@@ -17,5 +17,14 @@ export interface ProductsPaginationModel {
   page: number,
   totalItems: number,
   totalPages: number,
+  pages: number[],
   items: ProductModel[],
 }
+
+export interface ProductImageDto {
+  base64: string;
+  contentType: string;
+  filename?: string;
+}
+
+

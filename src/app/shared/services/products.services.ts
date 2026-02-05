@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {CreateProductModel} from '../interfaces/product.model';
+import {CreateProductModel, ProductsPaginationModel} from '../interfaces/product.model';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import {from, Observable} from 'rxjs';
@@ -35,8 +35,8 @@ export class ProductsServices {
    return this._http.post(`${environment.apiUrl}/products`, fd);
   }
 
-  public getProducts(): Observable<Object> {
-    return this._http.post(`${environment.apiUrl}/products/list`,{ page: 1 });
+  public getProducts(): Observable<ProductsPaginationModel> {
+    return this._http.post<ProductsPaginationModel>(`${environment.apiUrl}/products/list`,{ page: 1 });
   }
 
   public getPages(): number {
