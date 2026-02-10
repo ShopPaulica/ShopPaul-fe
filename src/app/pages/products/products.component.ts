@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {ProductsServices} from '../../shared/services/products.services';
 import {ProductModel, ProductsPaginationModel} from '../../shared/interfaces/product.model';
 import {FormsModule} from '@angular/forms';
@@ -7,9 +7,11 @@ import {CartService} from '../../shared/services/cart.service';
 import {NavigationService} from '../../shared/services/router-service';
 import {SlideMenuComponent} from '../../components/slide-menu/slide-menu.component';
 import {detailsModalComponent} from '../../components/details-modal/details-modal.component';
-import {catchError, of, throwError} from 'rxjs';
+import {catchError, throwError} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {NotificationService} from '../../shared/services/notification.service';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {AuthService} from '../../shared/services/auth.service';
 
 @Component({
   selector: 'app-products',
@@ -24,6 +26,8 @@ import {NotificationService} from '../../shared/services/notification.service';
   styleUrl: './products.component.scss'
 })
 export class ProductsComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+  private _isLoggedIn: boolean = false;
   protected products: ProductModel[] = [];
   public search: string = '';
   public toggleDetails: boolean = false;
@@ -31,20 +35,37 @@ export class ProductsComponent implements OnInit {
   public totalPages: number = 0;
   public currentPage = 1;
   public pages: number[] = [];
+  public firstPage!: number;
+  public lastPage!: number;
 
-  constructor(private _products: ProductsServices,private readonly _ns: NotificationService, private cartService: CartService, protected routersService: NavigationService) {}
 
-  ngOnInit(): void {
-    //todo move it in a behavior subject
-    this._products.getProducts(this.currentPage).subscribe((res: ProductsPaginationModel) => {
-      this.products = res.items;
-      this.pages = res.pages;
-      this.currentPage = res.page;
-      this.totalPages = res.totalPages;
+  constructor(
+    private _products: ProductsServices,
+    private _auth: AuthService,
+    private readonly _ns: NotificationService,
+    private cartService: CartService,
+    protected routersService: NavigationService) {}
+
+  public ngOnInit(): void {
+    this._products.loadProducts(this.currentPage);
+    this._isLoggedIn = this._auth.isLoggedIn ?? false;
+    this._products.productsPage$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((res: ProductsPaginationModel | null) => {
+      if(res) {
+        this.products = res.items;
+        this.pages = res.pages;
+        this.firstPage = res.pages[0];
+        this.lastPage = res.totalPages;
+        this.currentPage = res.page;
+        this.totalPages = res.totalPages;
+      }
     });
   }
 
-  get pagesToShow(): number[] {
+  public get isLoggedIn(): boolean {
+    return this._isLoggedIn;
+  }
+
+  public get pagesToShow(): number[] {
     const p = this.currentPage;
     const last = this.totalPages;
 
@@ -59,6 +80,7 @@ export class ProductsComponent implements OnInit {
   public goToPage(page: number, ev?: Event): void {
     ev?.stopPropagation();
     this.currentPage = page;
+    this._products.loadProducts(page);
   }
 
   public removeFromCart(product: ProductModel): void {
@@ -97,6 +119,7 @@ export class ProductsComponent implements OnInit {
        return throwError(() => err);
      })).subscribe(() => {
        this._ns.success('Success', { title: 'Delete Product', durationMs: 4000 })
+       this._products.loadProducts(this.currentPage);
      }
    )
   }

@@ -18,7 +18,9 @@
           <div class="card-product__price">
             {{ product.price | number:'1.2-2' }} lei
           </div>
+          @if (isLoggedIn) {
           <button class="card-product__delete" (click)="$event.stopPropagation(); deleteProduct(product.id)">🗑️</button>
+          }
         </div>
 
         <div
@@ -59,25 +61,41 @@
   @if (totalPages > 0) {
     <footer>
       <div class="pagination-wrapper">
-        <button class="shop-now add-remove-buttons" (click)=" $event.stopPropagation()">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        @for (page of pagesToShow; track page) {
-        <button
-          class="shop-now add-remove-buttons"
-          (click)="goToPage(page, $event)"
-          [class.page-active]="page === currentPage"
-        >
-          {{ page }}
-        </button>
+        @if (pagesToShow?.length) {
+          @if (currentPage > firstPage) {
+            <button
+              class="shop-now add-remove-buttons"
+              (click)="$event.stopPropagation(); goToPage(currentPage - 1, $event)"
+              aria-label="Previous page"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          }
+
+          @for (page of pagesToShow; track page) {
+            <button
+              class="shop-now add-remove-buttons"
+              (click)="goToPage(page, $event)"
+              [class.page-active]="page === currentPage"
+            >
+              {{ page }}
+            </button>
+          }
+
+          @if (currentPage < lastPage) {
+            <button
+              class="shop-now add-remove-buttons"
+              (click)="$event.stopPropagation(); goToPage(currentPage + 1, $event)"
+              aria-label="Next page"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 6L15 12L9 18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          }
         }
-        <button class="shop-now add-remove-buttons" (click)=" $event.stopPropagation()">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9 6L15 12L9 18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
       </div>
     </footer>
   }

@@ -2,17 +2,41 @@ import { Injectable } from '@angular/core';
 import {CreateProductModel, ProductsPaginationModel} from '../interfaces/product.model';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
-import {from, Observable} from 'rxjs';
+import {BehaviorSubject, catchError, EMPTY, finalize, from, Observable, tap} from 'rxjs';
 import {NotificationService} from './notification.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductsServices {
+  private readonly _productsPageSubject = new BehaviorSubject<ProductsPaginationModel | null>(null);
+  public readonly productsPage$: Observable<ProductsPaginationModel | null> =
+    this._productsPageSubject.asObservable();
+
+  private readonly _loadingSubject = new BehaviorSubject<boolean>(false);
+  public readonly loading$ = this._loadingSubject.asObservable();
+
+  private readonly _errorSubject = new BehaviorSubject<string | null>(null);
+  public readonly error$ = this._errorSubject.asObservable();
+
   constructor(
     private readonly _http: HttpClient,
     private readonly _notificationService: NotificationService
   ) {}
+
+  public loadProducts(page: number): void {
+    this._loadingSubject.next(true);
+    this._errorSubject.next(null);
+
+    this.getProducts(page).pipe(
+      tap((res: ProductsPaginationModel) => this._productsPageSubject.next(res)),
+      catchError((err) => {
+        this._errorSubject.next(err?.error?.message ?? 'Eroare la încărcarea produselor');
+        return EMPTY;
+      }),
+      finalize(() => this._loadingSubject.next(false))
+    ).subscribe();
+  }
 
   public saveProduct(product: CreateProductModel): Observable<Object> {
     const fd: FormData = new FormData();
