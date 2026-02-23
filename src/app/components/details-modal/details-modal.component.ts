@@ -36,6 +36,12 @@ export class detailsModalComponent {
     this.cartService.removeOne(this.selectedItem());
   }
 
+  public getBgImage(product: ProductModel): string {
+    const img = product?.image;
+    if (!img?.base64 || !img?.contentType) return 'none';
+    return `url("data:${img.contentType};base64,${img.base64}")`;
+  }
+
   public addToCart(): void {
       this.cartService.addOne(this.selectedItem());
   }

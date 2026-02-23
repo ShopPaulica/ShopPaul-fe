@@ -12,8 +12,16 @@
   -webkit-line-clamp: 2; /* număr de linii */
   -webkit-box-orient: vertical;
   overflow: hidden;
+  width: 100%;
   overflow-wrap: anywhere; /* rupe oriunde dacă e nevoie */
   word-break: break-word;
+}
+
+.side-info-details {
+  padding: 1.5rem;    height: calc(100vh - 100px);   display: flex
+;
+  width: 40%;
+  justify-content: center;
 }
 
 .numbers-selectors {
@@ -37,6 +45,31 @@
   h2 {
     color: white;
   }
+}
+
+.shopping-item-selected {
+  flex: 1;
+  padding-left: 1.5rem;
+  justify-content: space-around;
+}
+
+.shopping-items {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.info-order-form {
+  background-color: #fff;
+  width: 100%;
+  position: relative;
+  border-radius: 12px;
+  display: flex
+;
+  overflow: hidden;
+  padding: 1.5rem;
+  box-shadow: 0 13px 10px -7px rgba(0, 0, 0, 0.1);
+  align-items: center;
 }
 
 .log-in-body {

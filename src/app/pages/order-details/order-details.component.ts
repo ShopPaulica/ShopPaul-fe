@@ -5,6 +5,7 @@ import {CartService} from '../../shared/services/cart.service';
 import {NavigationService} from '../../shared/services/router-service';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {DecimalPipe} from '@angular/common';
+import {ProductModel} from '../../shared/interfaces/product.model';
 
 @Component({
   selector: 'app-order-details',
@@ -51,5 +52,11 @@ export class OrderDetailsComponent implements OnInit{
 
   public isInCart(id: string | undefined): number {
     return id ? this.cartService.howManyAreOfOne(id) ?? 0 : 0;
+  }
+
+  public getBgImage(product: ProductModel): string {
+    const img = product?.image;
+    if (!img?.base64 || !img?.contentType) return 'none';
+    return `url("data:${img.contentType};base64,${img.base64}")`;
   }
 }
