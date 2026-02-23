@@ -1,6 +1,6 @@
 export interface ProductModel {
   id: string;
-  title: string;
+  name: string;
   description: string;
   price: number;
   image?: ProductImageDto;

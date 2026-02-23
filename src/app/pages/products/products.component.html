@@ -36,7 +36,7 @@
         </a>
 
         <div class="card-product__info">
-          <h3 class="card-product__title">{{ product.title }}</h3>
+          <h3 class="card-product__title">{{ product.name }}</h3>
           <span class="card-product__by">{{ product.description }}</span>
           @if (isInCart(product.id) < 1) {
             <button class="shop-now add-to-card" (click)="addToCart(product); $event.stopPropagation()">

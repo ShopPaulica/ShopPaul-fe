@@ -1,33 +1,16 @@
-<div style="display: flex;
-    flex-direction: row;
-    align-items: center;">
-  <aside class="shopping-cart-upper" style="width: 60%;    overflow: auto;
-    height: calc(100vh - 100px);
-    overflow-y: auto;
-    min-height: 0;">
-    <section class="shopping-cart-wrapper" style="    padding: 1.5rem;
-    gap: 1.5rem;
-    display: flex
-;
-    flex-direction: column;">
+<div class="order-wrapper">
+  <aside class="shopping-cart-upper">
+    <section class="shopping-cart-wrapper">
       @for (item of shoppingCart; track item.id) {
-        <div class="shopping-cart-item-wrapper" style="
-    background-color: #fff;
-    width: 100%;
-    position: relative;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 13px 10px -7px rgba(0, 0, 0, 0.1);">
-          <div class="background-image-wrapper" style="    display: flex
-;
-    flex-direction: row;">
+        <div class="shopping-cart-item-wrapper">
+          <div class="background-image-wrapper">
             <div
               class="card-product__img"
               [style.background-image]="getBgImage(item)"
             ></div>
             <div class="shopping-item-selected">
               <div class="shopping-items">
-                <span class="card-product__by truncate-multiline">{{ item.title }}</span>
+                <span class="card-product__by truncate-multiline">{{ item.name }}</span>
                 <span class="card-product__by truncate-multiline"> {{item.description }}</span>
                 <span class="card-product__by truncate-multiline">Price: {{item.price }}</span>
                 <span class="card-product__by truncate-multiline">Total Price of this Item: {{item.price * (isInCart(item.id) ?? 0) }}</span>

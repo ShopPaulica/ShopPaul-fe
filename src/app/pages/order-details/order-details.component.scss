@@ -59,6 +59,40 @@
   gap: 15px;
 }
 
+.shopping-cart-upper{
+  width: 60%;    overflow: auto;
+  height: calc(100vh - 100px);
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.shopping-cart-wrapper {
+  padding: 1.5rem;
+  gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.background-image-wrapper {
+  display: flex;
+  flex-direction: row;
+}
+
+.order-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.shopping-cart-item-wrapper {
+  background-color: #fff;
+  width: 100%;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 13px 10px -7px rgba(0, 0, 0, 0.1);
+}
+
 .info-order-form {
   background-color: #fff;
   width: 100%;
