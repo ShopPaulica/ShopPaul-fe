@@ -33,7 +33,7 @@ export class PartsService {
     private readonly _notificationService: NotificationService
   ) {}
 
-  public getFilters(section?: string, subsection?: string, title?: string): void {
+  public getFilters(section?: string, subsection?: string): void {
     let part: string;
     let params: Record<string,string> = {};
     if(section) {
