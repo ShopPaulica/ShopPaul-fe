@@ -5,22 +5,22 @@ import {ProductsServices} from '../../shared/services/products.services';
 import {NotificationService} from '../../shared/services/notification.service';
 import {catchError, throwError} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
-import {VehiclesServices} from '../../shared/services/vehicles.services';
-import {PartsService} from '../../shared/services/parts.service';
+import {VehiclesComponent} from './vehicles/vehicles.component';
+import {PartsComponent} from './parts/parts.component';
 
 @Component({
   selector: 'app-admin',
   imports: [
     ReactiveFormsModule,
     ordersListComponent,
+    VehiclesComponent,
+    PartsComponent,
   ],
   templateUrl: './admin.component.html',
   standalone: true,
   styleUrl: './admin.component.scss'
 })
 export class AdminComponent  implements OnInit {
-  public formVehicles!: FormGroup;
-  public formParts!: FormGroup;
   public formProduct!: FormGroup;
   public previewUrl: string | null = null;
   public selectedFileName!: string;
@@ -29,30 +29,15 @@ export class AdminComponent  implements OnInit {
   constructor(
     private _fb: FormBuilder,
     private _ps: ProductsServices,
-    private _vs: VehiclesServices,
-    private _partsService: PartsService,
     private readonly _ns: NotificationService
-
   ) {}
 
   ngOnInit(): void {
-    this.formParts = this._fb.group({
-      section: ['', [Validators.required]],
-      subsection: ['', [Validators.required]],
-      title: ['', [Validators.required]],
-    });
     this.formProduct = this._fb.group({
       image: [null as File | null, [Validators.required]],
       title: ['', [Validators.required]],
       description: ['', [Validators.required]],
       price: [0, [Validators.required]],
-    });
-    this.formVehicles = this._fb.group({
-      brand: ['', [Validators.required]],
-      model: ['', [Validators.required]],
-      fuel: ['', [Validators.required]],
-      power: ['', [Validators.required]],
-      engine: ['', [Validators.required]],
     });
   }
 
@@ -110,47 +95,6 @@ export class AdminComponent  implements OnInit {
         return throwError(() => err);
     })).subscribe(() => {
         this._ns.success('Success', { title: 'Create', durationMs: 4000 })
-      }
-    )
-  }
-
-  public saveParts(): void {
-    this._partsService.savePart({
-      section: this.formParts.controls['section'].value,
-      subsection: this.formParts.controls['subsection'].value,
-      title: this.formParts.controls['title'].value,
-      order: 0,
-    }).pipe(
-      catchError((err: HttpErrorResponse) => {
-          this._ns.error(
-            'Nu am putut salva produsul. Eroare de server.',
-            { title: 'Parts', durationMs: 4000 }
-          );
-
-        return throwError(() => err);
-      })).subscribe(() => {
-        this._ns.success('Success', { title: 'Create Part', durationMs: 4000 })
-      }
-    )
-  }
-
-  public saveVehicles() {
-    this._vs.saveVehicle({
-      brand: this.formVehicles.controls['brand'].value,
-      model: this.formVehicles.controls['model'].value,
-      fuel: this.formVehicles.controls['fuel'].value,
-      engine: this.formVehicles.controls['engine'].value,
-      power: this.formVehicles.controls['power'].value,
-    }).pipe(
-      catchError((err: HttpErrorResponse) => {
-        this._ns.error(
-          'Nu am putut salva produsul. Eroare de server.',
-          { title: 'Vehicle', durationMs: 4000 }
-        );
-
-        return throwError(() => err);
-      })).subscribe(() => {
-        this._ns.success('Success', { title: 'Create Vehicle', durationMs: 4000 })
       }
     )
   }

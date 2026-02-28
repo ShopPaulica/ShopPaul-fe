@@ -1,0 +1,97 @@
+<header class="header-admin">
+  <h2 [class.header-admin-active]="selectedTab ===2" (click)="selectTab(2)">Add</h2>
+  <h2>|</h2>
+  <h2 [class.header-admin-active]="selectedTab ===1"  (click)="selectTab(1)">Delete</h2>
+</header>
+@switch (selectedTab) {
+  @case (2) {
+<div class="admin" [formGroup]="formVehicles">
+  <div class="input-wrapper">
+    <label>Brand</label>
+    <input type="text" formControlName="brand" />
+  </div>
+
+  <div class="input-wrapper">
+    <label> Model</label>
+    <input type="text" formControlName="model" />
+  </div>
+
+  <div class="input-wrapper">
+    <label>Fuel</label>
+    <input type="text" formControlName="fuel" />
+  </div>
+
+  <div class="input-wrapper">
+    <label> Power</label>
+    <input type="text" formControlName="power" />
+  </div>
+
+  <div class="input-wrapper">
+    <label>Engine</label>
+    <input type="text" formControlName="engine" />
+  </div>
+
+  <button class="save-button" (click)="saveVehicles()">
+    save
+  </button>
+</div>
+  }
+  @case (1) {
+    <div class="admin">
+
+      <div class="input-wrapper">
+        <label>Brand</label>
+        <app-dropdown   [items]="brands"
+                        placeholder="Select Brand"
+                        (selectedItemChange)="brandSelected($event)"
+                        [allowClear]="true">
+
+        </app-dropdown>
+      </div>
+
+      <div class="input-wrapper">
+        <label>Model</label>
+        <app-dropdown   [items]="models"
+                        placeholder="Select Model"
+                        (selectedItemChange)="modelSelected($event)"
+                        [allowClear]="true">
+
+        </app-dropdown>
+      </div>
+
+      <div class="input-wrapper">
+        <label>Fuel</label>
+        <app-dropdown   [items]="fuels"
+                        placeholder="Select Fuel"
+                        (selectedItemChange)="fuelSelected($event)"
+                        [allowClear]="true">
+
+        </app-dropdown>
+      </div>
+
+      <div class="input-wrapper">
+        <label>Engine</label>
+        <app-dropdown   [items]="engines"
+                        placeholder="Select Engine"
+                        (selectedItemChange)="enginesSelected($event)"
+                        [allowClear]="true">
+
+        </app-dropdown>
+      </div>
+
+      <div class="input-wrapper">
+        <label>Power</label>
+        <app-dropdown   [items]="powers"
+                        placeholder="Select Engine"
+                        (selectedItemChange)="powersSelected($event)"
+                        [allowClear]="true">
+
+        </app-dropdown>
+      </div>
+
+      <button class="save-button" (click)="deleteVehicles()">
+        Delete
+      </button>
+    </div>
+  }
+}

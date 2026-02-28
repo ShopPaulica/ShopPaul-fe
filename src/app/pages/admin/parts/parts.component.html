@@ -1,0 +1,68 @@
+<header class="header-admin">
+  <h2 [class.header-admin-active]="selectedTab ===2" (click)="selectTab(2)">Add</h2>
+  <h2>|</h2>
+  <h2 [class.header-admin-active]="selectedTab ===1"  (click)="selectTab(1)">Delete</h2>
+</header>
+@switch (selectedTab) {
+  @case (2) {
+    <div class="admin" [formGroup]="formParts">
+
+      <div class="input-wrapper">
+        <label>Section</label>
+        <input type="text" formControlName="section" />
+      </div>
+
+      <div class="input-wrapper">
+        <label> Subsection</label>
+        <input type="text" formControlName="subsection" />
+      </div>
+
+      <div class="input-wrapper">
+        <label>Title</label>
+        <input type="text" formControlName="title" />
+      </div>
+
+      <button class="save-button" (click)="saveParts()">
+        save
+      </button>
+    </div>
+  }
+  @case (1) {
+    <div class="admin">
+
+      <div class="input-wrapper">
+        <label>Section</label>
+        <app-dropdown   [items]="sections"
+                        placeholder="Select Brand"
+                        (selectedItemChange)="sectionSelected($event)"
+                        [allowClear]="true">
+
+        </app-dropdown>
+      </div>
+
+      <div class="input-wrapper">
+        <label>Subsection</label>
+        <app-dropdown   [items]="subsections"
+                        placeholder="Select Model"
+                        (selectedItemChange)="subsectionSelected($event)"
+                        [allowClear]="true">
+
+        </app-dropdown>
+      </div>
+
+      <div class="input-wrapper">
+        <label>Title</label>
+        <app-dropdown   [items]="titles"
+                        placeholder="Select Fuel"
+                        (selectedItemChange)="titleSelected($event)"
+                        [allowClear]="true">
+
+        </app-dropdown>
+      </div>
+
+      <button class="save-button" (click)="deleteParts()">
+        Delete
+      </button>
+    </div>
+  }
+}

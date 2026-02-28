@@ -1,69 +1,21 @@
 <header class="header-admin">
-  <h2 (click)="selectTab(2)">Products</h2>
+  <h2 [class.header-admin-active]="selectedTab ===2"  (click)="selectTab(2)">Products</h2>
   <h2>|</h2>
-  <h2 (click)="selectTab(1)">Orders</h2>
+  <h2 [class.header-admin-active]="selectedTab ===1"  (click)="selectTab(1)">Orders</h2>
   <h2>|</h2>
-  <h2 (click)="selectTab(3)">Vehicles</h2>
+  <h2 [class.header-admin-active]="selectedTab ===3"  (click)="selectTab(3)">Vehicles</h2>
   <h2>|</h2>
-  <h2 (click)="selectTab(4)">Sections</h2>
+  <h2 [class.header-admin-active]="selectedTab ===4"  (click)="selectTab(4)">Sections</h2>
 </header>
 <section class="admin-body">
   @switch (selectedTab) {
     @case (4) {
-      <div class="admin" [formGroup]="formParts">
-
-        <div class="input-wrapper">
-          <label>Section</label>
-          <input type="text" formControlName="section" />
-        </div>
-
-        <div class="input-wrapper">
-          <label> Subsection</label>
-          <input type="text" formControlName="subsection" />
-        </div>
-
-        <div class="input-wrapper">
-          <label>Title</label>
-          <input type="text" formControlName="title" />
-        </div>
-
-        <button class="save-button" (click)="saveParts()">
-          save
-        </button>
-      </div>
+      <app-parts>
+      </app-parts>
     }
     @case (3) {
-      <div class="admin" [formGroup]="formVehicles">
-
-        <div class="input-wrapper">
-          <label>Brand</label>
-          <input type="text" formControlName="brand" />
-        </div>
-
-        <div class="input-wrapper">
-          <label> Model</label>
-          <input type="text" formControlName="model" />
-        </div>
-
-        <div class="input-wrapper">
-          <label>Fuel</label>
-          <input type="text" formControlName="fuel" />
-        </div>
-
-        <div class="input-wrapper">
-          <label> Power</label>
-          <input type="text" formControlName="power" />
-        </div>
-
-        <div class="input-wrapper">
-          <label>Engine</label>
-          <input type="text" formControlName="engine" />
-        </div>
-
-        <button class="save-button" (click)="saveVehicles()">
-          save
-        </button>
-      </div>
+      <app-vehicles class="admin" >
+      </app-vehicles>
     }
     @case (2) {
       <div class="admin" [formGroup]="formProduct">

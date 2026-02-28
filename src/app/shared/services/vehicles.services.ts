@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
-import {CreateProductModel, ProductsPaginationModel} from '../interfaces/product.model';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import {BehaviorSubject, catchError, EMPTY, finalize, from, Observable, tap} from 'rxjs';
-import {NotificationService} from './notification.service';
 import {VehiclesModel} from '../interfaces/vehicles.model';
 
 //todo token service and another interface service
@@ -39,10 +37,7 @@ export class VehiclesServices {
 
   constructor(
     private readonly _http: HttpClient,
-    private readonly _notificationService: NotificationService
-  ) {
-    this.getFilters('BMW','X6')
-  }
+  ) {}
 
   public getFilters(brand?: string, model?: string, fuel?: string, engine?: string, power?: string): void {
     let vehicle: string;
@@ -130,9 +125,10 @@ export class VehiclesServices {
     });
   }
 
-  public deleteProduct(id: string): Observable<Object> {
-    return this._http.delete<Object>(`${environment.apiUrl}/products/${id}`);
-  }
+  public deleteProduct(params: Record<string,string> = {}): Observable<Object> {
+    return this._http.delete<string[]>(`${environment.apiUrl}/vehicles`, {
+      params
+  });  }
 
   public getPages(): number {
     return 5
