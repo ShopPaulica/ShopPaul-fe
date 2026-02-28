@@ -79,7 +79,8 @@ export class PartsComponent implements OnInit {
 
         return throwError(() => err);
       })).subscribe(() => {
-        this._ns.success('Success', { title: 'Create Part', durationMs: 4000 })
+        this._ns.success('Success', { title: 'Create Part', durationMs: 4000 });
+        this.initPartsSections();
       }
     )
   }

@@ -94,7 +94,8 @@ export class VehiclesComponent implements OnInit {
 
         return throwError(() => err);
       })).subscribe(() => {
-        this._ns.success('Success', { title: 'Create Vehicle', durationMs: 4000 })
+        this._ns.success('Success', { title: 'Create Vehicle', durationMs: 4000 });
+        this.initVehicleBrands();
       }
     )
   }
