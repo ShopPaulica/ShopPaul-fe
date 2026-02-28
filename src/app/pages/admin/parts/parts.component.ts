@@ -108,11 +108,6 @@ export class PartsComponent implements OnInit {
   }
 
   public titleSelected(title: string) {
-    if(title) {
-      this._ps.getFilters(this.section, this.subsection, title);
-    } else if(this.section) {
-      this._ps.getFilters(this.section, this.subsection);
-    }
     this.title = title;
   }
 
