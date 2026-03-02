@@ -1,7 +1,11 @@
-import {OnDestroy} from '@angular/core';
+import {Component, OnDestroy} from '@angular/core';
 import {Subject} from 'rxjs';
 import {FormBuilder, FormGroup} from '@angular/forms';
 
+@Component({
+  template: '',
+  standalone: true
+})
 export abstract class AdminCrudActionsBase<T> implements OnDestroy{
   protected readonly destroy$ = new Subject<void>();
   public formGroup!: FormGroup;
