@@ -1,9 +1,9 @@
-export interface PartsModel {
+export interface PartsDTO {
   id?: string,
   section: string,
   subsection: string,
   title: string,
-  order: string,
+  order?: string,
 }
 
 

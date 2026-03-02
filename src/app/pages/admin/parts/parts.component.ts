@@ -2,12 +2,12 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ordersListComponent} from '../../../components/commands-list/orders-list.component';
 import {NotificationService} from '../../../shared/services/notification.service';
-import {catchError, Observable, throwError} from 'rxjs';
+import {catchError, throwError} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
-import {VehiclesServices} from '../../../shared/services/vehicles.services';
 import {DropdownComponent} from '../../../components/dropdown/dropdown.component';
 import {AsyncPipe} from '@angular/common';
-import {PartsService} from '../../../shared/services/parts.service';
+import {PartsFacade} from '../../../shared/services/admin/parts/facade/parts-facade.service';
+import {DATA_PROVIDER_TOKEN} from '../../../shared/services/admin/const/data-provider-token';
 
 @Component({
   selector: 'app-parts',
@@ -16,6 +16,12 @@ import {PartsService} from '../../../shared/services/parts.service';
     ordersListComponent,
     DropdownComponent,
     AsyncPipe,
+  ],
+  providers: [
+    {
+      provide: DATA_PROVIDER_TOKEN,
+      useExisting: PartsFacade,
+    }
   ],
   templateUrl: './parts.component.html',
   standalone: true,
@@ -33,7 +39,7 @@ export class PartsComponent implements OnInit {
 
   constructor(
     private _fb: FormBuilder,
-    private _ps: PartsService,
+    private _ps: PartsFacade,
     private readonly _ns: NotificationService
   ) {}
 
@@ -65,11 +71,10 @@ export class PartsComponent implements OnInit {
   }
 
   public saveParts(): void {
-    this._ps.savePart({
+    this._ps.saveData({
       section: this.formParts.controls['section'].value,
       subsection: this.formParts.controls['subsection'].value,
       title: this.formParts.controls['title'].value,
-      order: 0,
     }).pipe(
       catchError((err: HttpErrorResponse) => {
         this._ns.error(
@@ -91,7 +96,7 @@ export class PartsComponent implements OnInit {
 
   public sectionSelected(section: string) {
     if(section) {
-      this._ps.getFilters(section);
+      this._ps.fetchDataFilters(section);
     } else {
       this.initPartsSections();
     }
@@ -100,9 +105,9 @@ export class PartsComponent implements OnInit {
 
   public subsectionSelected(subsection: string) {
     if(subsection && this.section) {
-      this._ps.getFilters(this.section, subsection);
+      this._ps.fetchDataFilters(this.section, subsection);
     } else if(this.section) {
-      this._ps.getFilters(this.section);
+      this._ps.fetchDataFilters(this.section);
     }
     this.subsection = subsection;
   }
@@ -113,7 +118,7 @@ export class PartsComponent implements OnInit {
 
   //todo muta in service toate astea
   public deleteParts(): void {
-   this._ps.deleteProduct({
+   this._ps.deleteByFilters({
      section: this.section,
      subsection: this.subsection,
      title: this.title
@@ -127,6 +132,6 @@ export class PartsComponent implements OnInit {
   }
 
   private initPartsSections(): void {
-    this._ps.getFilters();
+    this._ps.fetchDataFilters();
   }
 }
