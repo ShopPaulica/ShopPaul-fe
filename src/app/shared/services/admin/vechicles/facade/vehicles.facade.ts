@@ -4,12 +4,12 @@ import {VehiclesApiService} from '../api/vehicles-api.service';
 import {VehiclesDTO} from '../models/vehiclesDTO';
 import {ApiItemResponse, ApiMessageResponse} from '../../../../interfaces/api/api-respons';
 import {DataProviderModel} from '../../model/data-provider-facade.model';
-import {VehiclesComponent} from '../../../../../pages/admin/vehicles/vehicles.component';
 import {VehicleArgs} from '../models/vehicle-filters-model';
 import {VehicleState} from '../models/vehicle-state-model';
 
-@Injectable({ providedIn: VehiclesComponent })
+@Injectable({ providedIn: 'root' })
 export class VehiclesFacade implements DataProviderModel<VehiclesDTO, VehicleArgs, VehicleState> {
+  //todo move it in a store so that it will be providedIn a module when is needed
   private readonly _brand$ = new BehaviorSubject<string[] | null>(null);
   readonly brandFiltersPage$ = this._brand$.asObservable();
 
@@ -54,7 +54,7 @@ export class VehiclesFacade implements DataProviderModel<VehiclesDTO, VehicleArg
   }
 
   public deleteByFilters(params: Record<string, string>): Observable<ApiMessageResponse> {
-    return this._api.deleteVehicles(params);
+    return this._api.deleteByFilters(params);
   }
 
   private resolveFilterRequest(

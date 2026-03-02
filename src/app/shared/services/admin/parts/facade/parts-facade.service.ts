@@ -47,7 +47,7 @@ export class PartsFacade implements DataProviderModel<PartsDTO,PartArgs ,PartsSt
   }
 
   public deleteByFilters(params: Record<string, string>): Observable<ApiMessageResponse> {
-    return this._api.deleteParts(params);
+    return this._api.deleteByFilters(params);
   }
 
   private resolveFilterRequest(

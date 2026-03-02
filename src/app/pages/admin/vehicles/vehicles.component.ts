@@ -1,8 +1,8 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ordersListComponent} from '../../../components/commands-list/orders-list.component';
 import {NotificationService} from '../../../shared/services/notification.service';
-import {catchError, takeUntil, throwError} from 'rxjs';
+import {catchError, takeUntil, tap, throwError} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {DropdownComponent} from '../../../components/dropdown/dropdown.component';
 import {AsyncPipe} from '@angular/common';
@@ -32,7 +32,7 @@ import {VehicleState} from '../../../shared/services/admin/vechicles/models/vehi
   standalone: true,
   styleUrl: './vehicles.component.scss'
 })
-export class VehiclesComponent extends AdminCrudActionsBase<any> implements OnInit {
+export class VehiclesComponent extends AdminCrudActionsBase<VehiclesDTO, VehicleArgs, VehicleState> implements OnInit {
   public brands: string[] = [];
   public models: string[] = [];
   public engines: string[] = [];
@@ -44,13 +44,12 @@ export class VehiclesComponent extends AdminCrudActionsBase<any> implements OnIn
   private fuel: string = '';
   private power: string = '';
 
-  readonly #dataProvider = inject<DataProviderModel<VehiclesDTO, VehicleArgs, VehicleState>>(DATA_PROVIDER_TOKEN)
-
   constructor(
     fb: FormBuilder,
+    @Inject(DATA_PROVIDER_TOKEN) dataProvider: DataProviderModel<VehiclesDTO, VehicleArgs, VehicleState>,
     private readonly _ns: NotificationService
   ) {
-    super(fb);
+    super(fb, dataProvider);
   }
 
   ngOnInit(): void {
@@ -59,7 +58,7 @@ export class VehiclesComponent extends AdminCrudActionsBase<any> implements OnIn
 
   public brandSelected(brand: string) {
     if(brand) {
-      this.#dataProvider.fetchDataFilters(brand);
+      this.dataProvider.fetchDataFilters(brand);
     } else {
       this.initFilters();
     }
@@ -68,18 +67,18 @@ export class VehiclesComponent extends AdminCrudActionsBase<any> implements OnIn
 
   public modelSelected(model: string) {
     if(model && this.brand) {
-      this.#dataProvider.fetchDataFilters(this.brand, model);
+      this.dataProvider.fetchDataFilters(this.brand, model);
     } else if(this.brand) {
-      this.#dataProvider.fetchDataFilters(this.brand);
+      this.dataProvider.fetchDataFilters(this.brand);
     }
     this.model = model;
   }
 
   public enginesSelected(engine: string) {
     if(engine) {
-      this.#dataProvider.fetchDataFilters(this.brand, this.model,this.fuel, engine);
+      this.dataProvider.fetchDataFilters(this.brand, this.model,this.fuel, engine);
     } else if(this.brand) {
-      this.#dataProvider.fetchDataFilters(this.brand, this.model,this.fuel);
+      this.dataProvider.fetchDataFilters(this.brand, this.model,this.fuel);
     }
     this.engine = engine;
   }
@@ -87,25 +86,24 @@ export class VehiclesComponent extends AdminCrudActionsBase<any> implements OnIn
 
   public powersSelected(power: string) {
     if(power) {
-      this.#dataProvider.fetchDataFilters(this.brand, this.model,this.fuel, this.engine, power);
+      this.dataProvider.fetchDataFilters(this.brand, this.model,this.fuel, this.engine, power);
     } else if(this.brand) {
-      this.#dataProvider.fetchDataFilters(this.brand, this.model,this.fuel, this.engine);
+      this.dataProvider.fetchDataFilters(this.brand, this.model,this.fuel, this.engine);
     }
     this.power = power;
   }
 
   public fuelSelected(fuel: string) {
     if(fuel) {
-      this.#dataProvider.fetchDataFilters(this.brand, this.model, fuel);
+      this.dataProvider.fetchDataFilters(this.brand, this.model, fuel);
     } else if(this.brand) {
-      this.#dataProvider.fetchDataFilters(this.brand, this.model);
+      this.dataProvider.fetchDataFilters(this.brand, this.model);
     }
     this.fuel = fuel;
   }
 
-  //todo muta in service toate astea
-  public deleteVehicles(): void {
-   this.#dataProvider.deleteByFilters({
+  public deleteByFilters(): void {
+   this.dataProvider.deleteByFilters({
      brand: this.brand,
      model: this.model,
      fuel: this.fuel,
@@ -113,37 +111,35 @@ export class VehiclesComponent extends AdminCrudActionsBase<any> implements OnIn
      power: this.power,
    }).subscribe(
        (res: any) => {
-       console.log(res)
+         //todo
+         this._ns.success('Success', { title: 'Delete Vehicle', durationMs: 4000 });
      }
    )
   }
 
-  public saveVehicles() {
-    this.#dataProvider.saveData(this.formGroup.getRawValue()).pipe(
-      catchError((err: HttpErrorResponse) => {
-        this._ns.error(
-          'Nu am putut salva produsul. Eroare de server.',
-          { title: 'Vehicle', durationMs: 4000 }
-        );
-
-        return throwError(() => err);
-      })).subscribe(() => {
+  public save() {
+    this.saveData().pipe(
+      tap(() => {
         this._ns.success('Success', { title: 'Create Vehicle', durationMs: 4000 });
         this.initFilters();
-      }
-    )
+      }),
+      catchError((err: HttpErrorResponse) => {
+        this._ns.error('Nu am putut salva produsul. Eroare de server.', { title: 'Vehicle', durationMs: 4000 });
+        return throwError(() => err);
+      })
+    ).subscribe();
   }
 
   protected initFilters(): void {
-    this.#dataProvider.fetchDataFilters();
+    this.dataProvider.fetchDataFilters();
   }
 
   protected initSubscription(): void {
-    this.#dataProvider.brandFiltersPage$.pipe(takeUntil(this.destroy$)).subscribe((brands: string[] | null) => this.brands = brands ?? []);
-    this.#dataProvider.modelFiltersPage$.pipe(takeUntil(this.destroy$)).subscribe((models: string[] | null) => this.models = models ?? []);
-    this.#dataProvider.engineFiltersPage$.pipe(takeUntil(this.destroy$)).subscribe((engines: string[] | null) => this.engines = engines ?? []);
-    this.#dataProvider.fuelFiltersPage$.pipe(takeUntil(this.destroy$)).subscribe((fuels: string[] | null) => this.fuels = fuels ?? []);
-    this.#dataProvider.powerFiltersPage$.pipe(takeUntil(this.destroy$)).subscribe((powers: string[] | null) => this.powers = powers ?? []);
+    this.dataProvider.brandFiltersPage$.pipe(takeUntil(this.destroy$)).subscribe((brands: string[] | null) => this.brands = brands ?? []);
+    this.dataProvider.modelFiltersPage$.pipe(takeUntil(this.destroy$)).subscribe((models: string[] | null) => this.models = models ?? []);
+    this.dataProvider.engineFiltersPage$.pipe(takeUntil(this.destroy$)).subscribe((engines: string[] | null) => this.engines = engines ?? []);
+    this.dataProvider.fuelFiltersPage$.pipe(takeUntil(this.destroy$)).subscribe((fuels: string[] | null) => this.fuels = fuels ?? []);
+    this.dataProvider.powerFiltersPage$.pipe(takeUntil(this.destroy$)).subscribe((powers: string[] | null) => this.powers = powers ?? []);
   }
 
   protected initGroupForm(): void {

@@ -4,10 +4,10 @@ import { Observable } from 'rxjs';
 import {environment} from '../../../../../../environments/environment';
 import {VehiclesDTO} from '../models/vehiclesDTO';
 import {ApiItemResponse, ApiMessageResponse} from '../../../../interfaces/api/api-respons';
+import {DataProviderApiModel} from '../../model/data-provider-api.model';
 
-//todo cum sa l fac pe acesta
 @Injectable({ providedIn: 'root' })
-export class VehiclesApiService {
+export class VehiclesApiService implements DataProviderApiModel<VehiclesDTO>{
   constructor(private readonly _http: HttpClient) {}
 
   fetchDataFilters(field: string, params: Record<string, string> = {}): Observable<string[]> {
@@ -28,7 +28,7 @@ export class VehiclesApiService {
     return this._http.post<ApiItemResponse<VehiclesDTO>>(`${environment.apiUrl}/vehicles`, fd);
   }
 
-  deleteVehicles(params: Record<string, string> = {}): Observable<ApiMessageResponse> {
+  deleteByFilters(params: Record<string, string> = {}): Observable<ApiMessageResponse> {
     return this._http.delete<ApiMessageResponse>(`${environment.apiUrl}/vehicles`, { params });
   }
 }

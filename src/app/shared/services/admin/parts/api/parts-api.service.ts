@@ -4,9 +4,10 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../../../environments/environment';
 import { PartsDTO } from '../models/partsDTO';
 import {ApiItemResponse, ApiMessageResponse} from '../../../../interfaces/api/api-respons';
+import {DataProviderApiModel} from '../../model/data-provider-api.model';
 
 @Injectable({ providedIn: 'root' })
-export class PartsApiService {
+export class PartsApiService implements DataProviderApiModel<PartsDTO> {
   constructor(private readonly _http: HttpClient) {}
 
   fetchDataFilters(field: string, params: Record<string, string> = {}): Observable<string[]> {
@@ -25,7 +26,7 @@ export class PartsApiService {
     return this._http.post<ApiItemResponse<PartsDTO>>(`${environment.apiUrl}/parts`, payload);
   }
 
-  deleteParts(params: Record<string, string> = {}): Observable<ApiMessageResponse> {
+  deleteByFilters(params: Record<string, string> = {}): Observable<ApiMessageResponse> {
     return this._http.delete<ApiMessageResponse>(`${environment.apiUrl}/parts`, { params });
   }
 }

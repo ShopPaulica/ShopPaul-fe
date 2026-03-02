@@ -5,7 +5,7 @@
 </header>
 @switch (selectedTab) {
   @case (2) {
-    <div class="admin" [formGroup]="formParts">
+    <div class="admin" [formGroup]="formGroup">
 
       <div class="input-wrapper">
         <label>Section</label>
@@ -22,7 +22,7 @@
         <input type="text" formControlName="title" />
       </div>
 
-      <button class="save-button" (click)="saveParts()">
+      <button class="save-button" (click)="save()">
         save
       </button>
     </div>
@@ -60,7 +60,7 @@
         </app-dropdown>
       </div>
 
-      <button class="save-button" (click)="deleteParts()">
+      <button class="save-button" (click)="deleteByFilters()">
         Delete
       </button>
     </div>

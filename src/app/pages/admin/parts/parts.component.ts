@@ -1,13 +1,18 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {Component, Inject, OnInit} from '@angular/core';
+import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ordersListComponent} from '../../../components/commands-list/orders-list.component';
 import {NotificationService} from '../../../shared/services/notification.service';
-import {catchError, throwError} from 'rxjs';
+import {catchError, takeUntil, tap, throwError} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {DropdownComponent} from '../../../components/dropdown/dropdown.component';
 import {AsyncPipe} from '@angular/common';
 import {PartsFacade} from '../../../shared/services/admin/parts/facade/parts-facade.service';
 import {DATA_PROVIDER_TOKEN} from '../../../shared/services/admin/const/data-provider-token';
+import {DataProviderModel} from '../../../shared/services/admin/model/data-provider-facade.model';
+import {PartsDTO} from '../../../shared/services/admin/parts/models/partsDTO';
+import {PartsState} from '../../../shared/services/admin/parts/models/part-state-model';
+import {PartArgs} from '../../../shared/services/admin/parts/models/part-filters-model';
+import {AdminCrudActionsBase} from '../models/admin-crud-actions';
 
 @Component({
   selector: 'app-parts',
@@ -27,87 +32,53 @@ import {DATA_PROVIDER_TOKEN} from '../../../shared/services/admin/const/data-pro
   standalone: true,
   styleUrl: './parts.component.scss'
 })
-export class PartsComponent implements OnInit {
-  public formParts!: FormGroup;
+export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, PartsState> implements OnInit {
   public sections: string[] = [];
   public subsections: string[] = [];
   public titles: string[] = [];
-  public selectedTab: number = 2;
   private section: string = '';
   private subsection: string = '';
   private title: string = '';
 
   constructor(
-    private _fb: FormBuilder,
-    private _ps: PartsFacade,
+    fb: FormBuilder,
+    @Inject(DATA_PROVIDER_TOKEN) dataProvider: DataProviderModel<PartsDTO, PartArgs, PartsState>,
     private readonly _ns: NotificationService
-  ) {}
+  ) {
+    super(fb, dataProvider);
+  }
 
   ngOnInit(): void {
-    //todo move in a functions
-    this._ps.sectionFiltersPage$.pipe(
-      //todo
-    ).subscribe((sections: string[] | null) => {
-      this.sections = sections ?? []
-    })
-    this._ps.subsectionFiltersPage$.pipe(
-      //todo
-    ).subscribe((subsection: string[] | null) => {
-      this.subsections = subsection ?? []
-    })
-    this._ps.titleFiltersPage$.pipe(
-      //todo
-    ).subscribe((titles: string[] | null) => {
-      this.titles = titles ?? []
-    })
-
-    this.formParts = this._fb.group({
-      section: ['', [Validators.required]],
-      subsection: ['', [Validators.required]],
-      title: ['', [Validators.required]],
-    });
-
-    this.initPartsSections();
+    this.initBase();
   }
 
-  public saveParts(): void {
-    this._ps.saveData({
-      section: this.formParts.controls['section'].value,
-      subsection: this.formParts.controls['subsection'].value,
-      title: this.formParts.controls['title'].value,
-    }).pipe(
-      catchError((err: HttpErrorResponse) => {
-        this._ns.error(
-          'Nu am putut salva produsul. Eroare de server.',
-          { title: 'Parts', durationMs: 4000 }
-        );
-
-        return throwError(() => err);
-      })).subscribe(() => {
+  public save(): void {
+    this.saveData().pipe(
+      tap(() => {
         this._ns.success('Success', { title: 'Create Part', durationMs: 4000 });
-        this.initPartsSections();
-      }
-    )
-  }
-
-  public selectTab(nr: number): void {
-    this.selectedTab = nr;
+        this.initFilters();
+      }),
+      catchError((err: HttpErrorResponse) => {
+        this._ns.error('Nu am putut salva produsul. Eroare de server.', { title: 'Vehicle', durationMs: 4000 });
+        return throwError(() => err);
+      })
+    ).subscribe();
   }
 
   public sectionSelected(section: string) {
     if(section) {
-      this._ps.fetchDataFilters(section);
+      this.dataProvider.fetchDataFilters(section);
     } else {
-      this.initPartsSections();
+      this.initFilters();
     }
     this.section = section;
   }
 
   public subsectionSelected(subsection: string) {
     if(subsection && this.section) {
-      this._ps.fetchDataFilters(this.section, subsection);
+      this.dataProvider.fetchDataFilters(this.section, subsection);
     } else if(this.section) {
-      this._ps.fetchDataFilters(this.section);
+      this.dataProvider.fetchDataFilters(this.section);
     }
     this.subsection = subsection;
   }
@@ -116,22 +87,34 @@ export class PartsComponent implements OnInit {
     this.title = title;
   }
 
-  //todo muta in service toate astea
-  public deleteParts(): void {
-   this._ps.deleteByFilters({
+  public deleteByFilters(): void {
+   this.dataProvider.deleteByFilters({
      section: this.section,
      subsection: this.subsection,
      title: this.title
-   }).pipe(
-     //todo
-   ).subscribe(
-     res => {
-       console.log(res)
+   }).subscribe(
+     (res: any) => {
+       //todo
+       this._ns.success('Success', { title: 'Delete Part', durationMs: 4000 });
      }
    )
   }
 
-  private initPartsSections(): void {
-    this._ps.fetchDataFilters();
+  protected initFilters(): void {
+    this.dataProvider.fetchDataFilters();
+  }
+
+  protected initSubscription(): void {
+    this.dataProvider.sectionFiltersPage$.pipe(takeUntil(this.destroy$)).subscribe((sections: string[] | null) => this.sections = sections ?? []);
+    this.dataProvider.subsectionFiltersPage$.pipe(takeUntil(this.destroy$)).subscribe((subsections: string[] | null) => this.subsections = subsections ?? []);
+    this.dataProvider.titleFiltersPage$.pipe(takeUntil(this.destroy$)).subscribe((titles: string[] | null) => this.titles = titles ?? []);
+   }
+
+  protected initGroupForm(): void {
+    this.formGroup = this._fb.group({
+      section: ['', [Validators.required]],
+      subsection: ['', [Validators.required]],
+      title: ['', [Validators.required]],
+    });
   }
 }

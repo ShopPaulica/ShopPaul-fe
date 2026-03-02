@@ -22,16 +22,16 @@
   </div>
 
   <div class="input-wrapper">
-    <label> Power</label>
-    <input type="text" formControlName="power" />
-  </div>
-
-  <div class="input-wrapper">
     <label>Engine</label>
     <input type="text" formControlName="engine" />
   </div>
 
-  <button class="save-button" (click)="saveVehicles()">
+  <div class="input-wrapper">
+    <label> Power</label>
+    <input type="text" formControlName="power" />
+  </div>
+
+  <button class="save-button" (click)="save()">
     save
   </button>
 </div>
@@ -89,7 +89,7 @@
         </app-dropdown>
       </div>
 
-      <button class="save-button" (click)="deleteVehicles()">
+      <button class="save-button" (click)="deleteByFilters()">
         Delete
       </button>
     </div>
