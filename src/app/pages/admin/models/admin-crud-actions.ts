@@ -1,13 +1,10 @@
-import {Component, OnDestroy} from '@angular/core';
+import {Directive, OnDestroy} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {DataProviderModel} from '../../../shared/services/admin/model/data-provider-facade.model';
 import {ApiItemResponse} from '../../../shared/interfaces/api/api-respons';
 
-@Component({
-  template: '',
-  standalone: true
-})
+@Directive()
 export abstract class AdminCrudActionsBase<TItem, TArgs extends unknown[], TState extends object>
   implements OnDestroy {
 
