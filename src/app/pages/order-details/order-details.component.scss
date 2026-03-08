@@ -4,9 +4,9 @@
   background-repeat: no-repeat;
   width: 200px;
   height: 200px;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
+  border-radius: 12px;
 }
+
 .truncate-multiline {
   display: -webkit-box;
   -webkit-line-clamp: 2; /* număr de linii */
@@ -25,11 +25,9 @@
 }
 
 .numbers-selectors {
-  display: flex
-;
+  display: flex;
   gap: 10px;
   align-items: flex-end;
-  margin-bottom: 1rem;
   height: 35px;
 }
 
@@ -88,6 +86,8 @@
   background-color: #fff;
   width: 100%;
   position: relative;
+  padding-bottom: 15px;
+  padding-top: 15px;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 13px 10px -7px rgba(0, 0, 0, 0.1);
