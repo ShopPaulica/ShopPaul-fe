@@ -19,13 +19,11 @@ export abstract class AdminCrudActionsBase<TItem, TArgs extends unknown[], TStat
 
   protected abstract initSubscription(): void;
   protected abstract initGroupForm(): void;
-  protected abstract initFilters(): void;
   public abstract deleteByFilters(): void;
 
   protected initBase(): void {
     this.initSubscription();
     this.initGroupForm();
-    this.initFilters();
   }
 
   public saveData(): Observable<ApiItemResponse<TItem>> {

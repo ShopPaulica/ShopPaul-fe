@@ -67,7 +67,7 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
 
   public sectionSelected(section: string) {
     if(section) {
-      this.dataProvider.fetchDataFilters(section);
+      this.dataProvider.fetchData(section);
     } else {
       this.initFilters();
     }
@@ -76,9 +76,9 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
 
   public subsectionSelected(subsection: string) {
     if(subsection && this.section) {
-      this.dataProvider.fetchDataFilters(this.section, subsection);
+      this.dataProvider.fetchData(this.section, subsection);
     } else if(this.section) {
-      this.dataProvider.fetchDataFilters(this.section);
+      this.dataProvider.fetchData(this.section);
     }
     this.subsection = subsection;
   }
@@ -88,7 +88,7 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
   }
 
   public deleteByFilters(): void {
-   this.dataProvider.deleteByFilters({
+   this.dataProvider.deleteData({
      section: this.section,
      subsection: this.subsection,
      title: this.title
@@ -101,7 +101,7 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
   }
 
   protected initFilters(): void {
-    this.dataProvider.fetchDataFilters();
+    this.dataProvider.fetchData();
   }
 
   protected initSubscription(): void {

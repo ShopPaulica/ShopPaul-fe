@@ -7,6 +7,7 @@ import {catchError, throwError} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {VehiclesComponent} from './vehicles/vehicles.component';
 import {PartsComponent} from './parts/parts.component';
+import {OrdersComponent} from './orders/orders.component';
 
 @Component({
   selector: 'app-admin',
@@ -15,6 +16,7 @@ import {PartsComponent} from './parts/parts.component';
     ordersListComponent,
     VehiclesComponent,
     PartsComponent,
+    OrdersComponent,
   ],
   templateUrl: './admin.component.html',
   standalone: true,

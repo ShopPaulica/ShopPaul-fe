@@ -30,7 +30,11 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 1rem;
-  margin: 2rem 0;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
 }
 
 .input-wrapper {
@@ -127,4 +131,21 @@
   img {
     object-fit: cover;
   }
+}
+
+.orders-page__header {
+  margin-bottom: 20px;
+}
+
+.orders-page__title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.orders-page__subtitle {
+  margin: 6px 0 0;
+  color: #6b7280;
+  font-size: 14px;
 }

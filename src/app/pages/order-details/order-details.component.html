@@ -13,7 +13,7 @@
                 <span class="card-product__by truncate-multiline">{{ item.name }}</span>
                 <span class="card-product__by truncate-multiline"> {{item.description }}</span>
                 <span class="card-product__by truncate-multiline">Price: {{item.price }}</span>
-                <span class="card-product__by truncate-multiline">Total Price of this Item: {{item.price * (isInCart(item.id) ?? 0) }}</span>
+                <span class="card-product__by truncate-multiline">Total Price of this Item: {{item.price * (isInCart(item.id)) }}</span>
               </div>
               <div class="numbers-selectors">
                 <button class="shop-now add-remove-buttons" (click)="removeOne(item)">

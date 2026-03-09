@@ -33,13 +33,13 @@ export class VehiclesFacade implements DataProviderModel<VehiclesDTO, VehicleArg
 
   constructor(private readonly _api: VehiclesApiService) {}
 
-  public fetchDataFilters(brand?: string, model?: string, fuel?: string, engine?: string, power?: string): void {
+  public fetchData(brand?: string, model?: string, fuel?: string, engine?: string, power?: string): void {
     const { field, params } = this.resolveFilterRequest(brand, model, fuel, engine, power);
 
     this._loading$.next(true);
     this._error$.next(null);
 
-    this._api.fetchDataFilters(field, params).pipe(
+    this._api.fetchData(field, params).pipe(
       tap((res) => this.applyResult(field, res)),
       catchError((err) => {
         this._error$.next(err?.error?.message ?? 'Eroare la încărcarea filtrelor');
@@ -53,8 +53,8 @@ export class VehiclesFacade implements DataProviderModel<VehiclesDTO, VehicleArg
     return this._api.saveData(data);
   }
 
-  public deleteByFilters(params: Record<string, string>): Observable<ApiMessageResponse> {
-    return this._api.deleteByFilters(params);
+  public deleteData(params: Record<string, string>): Observable<ApiMessageResponse> {
+    return this._api.deleteData(params);
   }
 
   private resolveFilterRequest(

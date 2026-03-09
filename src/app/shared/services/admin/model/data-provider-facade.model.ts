@@ -6,7 +6,7 @@ export type DataProviderModel<
   TArgs extends unknown[] = [],
   TState extends object = {}
 > = {
-  fetchDataFilters: (...args: TArgs) => void;
+  fetchData: (...args: TArgs) => void;
   saveData: (data: TItem) => Observable<ApiItemResponse<TItem>>;
-  deleteByFilters: (params: Record<string, string>) => Observable<ApiMessageResponse>;
+  deleteData: (params: Record<string, string>) => Observable<ApiMessageResponse>;
 } & TState;

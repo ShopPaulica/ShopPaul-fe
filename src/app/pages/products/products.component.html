@@ -47,7 +47,7 @@
               <button class="shop-now add-remove-buttons" (click)="removeFromCart(product); $event.stopPropagation()">
                 -
               </button>
-              <input type="number" [disabled]="true" [value]="isInCart(product.id) ?? 0"/>
+              <input type="number" [disabled]="true" [value]="isInCart(product.id)"/>
               <button class="shop-now add-remove-buttons" (click)="addToCart(product); $event.stopPropagation()">
                 +
               </button>

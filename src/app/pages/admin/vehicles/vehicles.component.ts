@@ -58,7 +58,7 @@ export class VehiclesComponent extends AdminCrudActionsBase<VehiclesDTO, Vehicle
 
   public brandSelected(brand: string) {
     if(brand) {
-      this.dataProvider.fetchDataFilters(brand);
+      this.dataProvider.fetchData(brand);
     } else {
       this.initFilters();
     }
@@ -67,18 +67,18 @@ export class VehiclesComponent extends AdminCrudActionsBase<VehiclesDTO, Vehicle
 
   public modelSelected(model: string) {
     if(model && this.brand) {
-      this.dataProvider.fetchDataFilters(this.brand, model);
+      this.dataProvider.fetchData(this.brand, model);
     } else if(this.brand) {
-      this.dataProvider.fetchDataFilters(this.brand);
+      this.dataProvider.fetchData(this.brand);
     }
     this.model = model;
   }
 
   public enginesSelected(engine: string) {
     if(engine) {
-      this.dataProvider.fetchDataFilters(this.brand, this.model,this.fuel, engine);
+      this.dataProvider.fetchData(this.brand, this.model,this.fuel, engine);
     } else if(this.brand) {
-      this.dataProvider.fetchDataFilters(this.brand, this.model,this.fuel);
+      this.dataProvider.fetchData(this.brand, this.model,this.fuel);
     }
     this.engine = engine;
   }
@@ -86,24 +86,24 @@ export class VehiclesComponent extends AdminCrudActionsBase<VehiclesDTO, Vehicle
 
   public powersSelected(power: string) {
     if(power) {
-      this.dataProvider.fetchDataFilters(this.brand, this.model,this.fuel, this.engine, power);
+      this.dataProvider.fetchData(this.brand, this.model,this.fuel, this.engine, power);
     } else if(this.brand) {
-      this.dataProvider.fetchDataFilters(this.brand, this.model,this.fuel, this.engine);
+      this.dataProvider.fetchData(this.brand, this.model,this.fuel, this.engine);
     }
     this.power = power;
   }
 
   public fuelSelected(fuel: string) {
     if(fuel) {
-      this.dataProvider.fetchDataFilters(this.brand, this.model, fuel);
+      this.dataProvider.fetchData(this.brand, this.model, fuel);
     } else if(this.brand) {
-      this.dataProvider.fetchDataFilters(this.brand, this.model);
+      this.dataProvider.fetchData(this.brand, this.model);
     }
     this.fuel = fuel;
   }
 
   public deleteByFilters(): void {
-   this.dataProvider.deleteByFilters({
+   this.dataProvider.deleteData({
      brand: this.brand,
      model: this.model,
      fuel: this.fuel,
@@ -131,7 +131,7 @@ export class VehiclesComponent extends AdminCrudActionsBase<VehiclesDTO, Vehicle
   }
 
   protected initFilters(): void {
-    this.dataProvider.fetchDataFilters();
+    this.dataProvider.fetchData();
   }
 
   protected initSubscription(): void {

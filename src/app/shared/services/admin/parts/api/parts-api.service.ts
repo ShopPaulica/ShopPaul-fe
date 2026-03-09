@@ -10,7 +10,7 @@ import {DataProviderApiModel} from '../../model/data-provider-api.model';
 export class PartsApiService implements DataProviderApiModel<PartsDTO> {
   constructor(private readonly _http: HttpClient) {}
 
-  fetchDataFilters(field: string, params: Record<string, string> = {}): Observable<string[]> {
+  fetchData(field: string, params: Record<string, string> = {}): Observable<string[]> {
     return this._http.get<string[]>(`${environment.apiUrl}/parts/filters`, {
       params: { field, ...params },
     });
@@ -26,7 +26,7 @@ export class PartsApiService implements DataProviderApiModel<PartsDTO> {
     return this._http.post<ApiItemResponse<PartsDTO>>(`${environment.apiUrl}/parts`, payload);
   }
 
-  deleteByFilters(params: Record<string, string> = {}): Observable<ApiMessageResponse> {
+  deleteData(params: Record<string, string> = {}): Observable<ApiMessageResponse> {
     return this._http.delete<ApiMessageResponse>(`${environment.apiUrl}/parts`, { params });
   }
 }

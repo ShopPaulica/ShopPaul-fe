@@ -1,0 +1,164 @@
+<div class="orders-page">
+  <div class="orders-page__header">
+    <div>
+      <h2 class="orders-page__title">Comenzi</h2>
+      <p class="orders-page__subtitle">Listă comenzi și filtre de căutare</p>
+    </div>
+  </div>
+
+  <div class="orders-filters">
+    <div class="orders-filters__grid">
+      <div class="orders-field">
+        <label class="orders-field__label" for="name">Nume</label>
+        <input
+          id="name"
+          type="text"
+          [(ngModel)]="filters.name"
+          class="orders-field__input"
+          placeholder="Ex: Andrei"
+        />
+      </div>
+
+      <div class="orders-field">
+        <label class="orders-field__label" for="email">Email</label>
+        <input
+          id="email"
+          type="text"
+          [(ngModel)]="filters.email"
+          class="orders-field__input"
+          placeholder="Ex: gmail.com"
+        />
+      </div>
+
+      <div class="orders-field">
+        <label class="orders-field__label" for="phone">Telefon</label>
+        <input
+          id="phone"
+          type="text"
+          [(ngModel)]="filters.phone"
+          class="orders-field__input"
+          placeholder="Ex: 072"
+        />
+      </div>
+
+      <div class="orders-field">
+        <label class="orders-field__label" for="vin">VIN</label>
+        <input
+          id="vin"
+          type="text"
+          [(ngModel)]="filters.vin"
+          class="orders-field__input"
+          placeholder="Ex: WBA"
+        />
+      </div>
+    </div>
+
+    <div class="orders-filters__actions">
+      <button type="button" class="btn btn--primary" (click)="onSearch()" [disabled]="isLoading">
+        Caută
+      </button>
+
+      <button type="button" class="btn btn--secondary" (click)="onReset()" [disabled]="isLoading">
+        Resetează
+      </button>
+    </div>
+  </div>
+
+  <div class="orders-summary">
+    <div class="orders-summary__item">
+      <span class="orders-summary__label">Total comenzi</span>
+      <strong class="orders-summary__value">{{ totalItems }}</strong>
+    </div>
+
+    <div class="orders-summary__item">
+      <span class="orders-summary__label">Pagină</span>
+      <strong class="orders-summary__value">{{ currentPage }} / {{ totalPages }}</strong>
+    </div>
+
+    <div class="orders-summary__item">
+      <span class="orders-summary__label">Pe pagină</span>
+      <strong class="orders-summary__value">{{ pageSize }}</strong>
+    </div>
+  </div>
+
+  <div class="orders-table-wrapper">
+    @if (isLoading) {
+      <div class="orders-state">
+      Se încarcă comenzile...
+      </div>
+    }
+
+    @if (!isLoading && !orders.length) {
+    <div class="orders-state orders-state--empty">
+      Nu există comenzi pentru filtrele selectate.
+    </div>
+    }
+
+    @if (!isLoading && orders.length) {
+    <table class="orders-table">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nume</th>
+        <th>Total</th>
+        <th>Email</th>
+        <th>Telefon</th>
+        <th>VIN</th>
+        <th>Descriere</th>
+        <th>Creată la</th>
+        <th>Comenzi</th>
+      </tr>
+      </thead>
+
+      <tbody>
+        @for (order of orders; track  trackByOrderId) {
+      <tr >
+        <td class="orders-table__id">{{ order.id }}</td>
+        <td>{{ order.name }}</td>
+        <td>{{ order.total }}</td>
+        <td>{{ order.email }}</td>
+        <td>{{ order.phone }}</td>
+        <td>{{ order.vin }}</td>
+        <td class="orders-table__description">
+          {{ order.description || '-' }}
+        </td>
+        <td>{{ order.createdAt | date: 'dd.MM.yyyy HH:mm' }}</td>
+        <td style="width: auto;
+display: table-cell;">
+          <div style="    display: flex;
+    gap: 15px;">
+          <button  class="btn btn--primary">Factureazǎ</button>
+          <button (click)="deleteData(order.id)" class="btn btn--danger">Delete</button>
+          </div>
+        </td>
+      </tr>
+        }
+      </tbody>
+    </table>
+    }
+  </div>
+
+  <div class="orders-pagination">
+    <button
+      type="button"
+      class="btn btn--secondary"
+      (click)="prevPage()"
+      [disabled]="currentPage <= 1 || isLoading"
+    >
+      Pagina anterioară
+    </button>
+
+    <span class="orders-pagination__info">
+      Pagina {{ currentPage }} din {{ totalPages }}
+    </span>
+
+    <button
+      type="button"
+      class="btn btn--secondary"
+      (click)="nextPage()"
+      [disabled]="currentPage >= totalPages || isLoading"
+    >
+      Pagina următoare
+    </button>
+  </div>
+</div>
