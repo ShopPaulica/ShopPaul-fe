@@ -1,20 +1,32 @@
-<section class="body-home">
-    <img
-      [ngSrc]="'/background-home.jpg'"
-      priority
-      fill
-      alt="Cart Part, Turbo"
-      class="hero__img"
-    />
+<section class="hero">
+  <img
+    [ngSrc]="'/background-home.jpg'"
+    priority
+    fill
+    alt="Piese auto turbo"
+    class="hero__img"
+  />
 
-  <section class="body-home-card">
-    <h1>Quality Car Parts for Every Drive</h1>
-    <h3>
-      Discover reliable, high-performance auto parts designed to keep your vehicle running at its best.
-      From everyday replacements to premium components, we’ve got you covered.
-    </h3>
-  <button class="shop-now" (click)="router.goToProducts()">
-    Shop Now
-  </button>
-  </section>
+  <div class="hero__overlay"></div>
+
+  <div class="hero__content">
+    <div class="hero__eyebrow">Performanță • Fiabilitate • Calitate</div>
+
+    <h1 class="hero__title">
+      Piese auto de calitate
+      <span>pentru fiecare drum</span>
+    </h1>
+
+    <p class="hero__description">
+      Descoperă piese auto fiabile și performante care îți mențin mașina în cea
+      mai bună stare. De la piese uzuale până la componente premium,
+      avem tot ce ai nevoie.
+    </p>
+
+    <div class="hero__actions">
+      <button class="hero__button" type="button" (click)="router.goToProducts()">
+        Vezi produsele
+      </button>
+    </div>
+  </div>
 </section>
