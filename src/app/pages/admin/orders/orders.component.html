@@ -123,11 +123,10 @@
           {{ order.description || '-' }}
         </td>
         <td>{{ order.createdAt | date: 'dd.MM.yyyy HH:mm' }}</td>
-        <td style="width: auto;
-display: table-cell;">
-          <div style="    display: flex;
-    gap: 15px;">
-          <button  class="btn btn--primary">Factureazǎ</button>
+        <td >
+          <div class="order-commands">
+          <button  class="btn btn--green">Factureazǎ</button>
+            <button  class="btn btn--primary">Modificǎ</button>
           <button (click)="deleteData(order.id)" class="btn btn--danger">Delete</button>
           </div>
         </td>

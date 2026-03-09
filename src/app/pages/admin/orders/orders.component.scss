@@ -101,6 +101,15 @@
   background: #ff0000;
 }
 
+.btn--green {
+  background: rgb(0, 147, 19);
+  color: #fff;
+}
+
+.btn--green:hover:not(:disabled) {
+  background: rgb(0, 147, 19);
+}
+
 .btn--secondary {
   background: #eef2f7;
   color: #1f2937;
@@ -137,10 +146,11 @@
 }
 
 .orders-table-wrapper {
+  width: 90vw;
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 16px;
-  overflow: hidden;
+  overflow: scroll;
 }
 
 .orders-table {
@@ -220,4 +230,9 @@
     flex-direction: column;
     align-items: stretch;
   }
+}
+
+.order-commands {
+  display: flex;
+  gap: 15px;
 }

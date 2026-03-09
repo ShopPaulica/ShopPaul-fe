@@ -1,68 +1,123 @@
-<header class="header-admin">
-  <h2 [class.header-admin-active]="selectedTab ===2"  (click)="selectTab(2)">Products</h2>
-  <h2>|</h2>
-  <h2 [class.header-admin-active]="selectedTab ===1"  (click)="selectTab(1)">Orders</h2>
-  <h2>|</h2>
-  <h2 [class.header-admin-active]="selectedTab ===3"  (click)="selectTab(3)">Vehicles</h2>
-  <h2>|</h2>
-  <h2 [class.header-admin-active]="selectedTab ===4"  (click)="selectTab(4)">Sections</h2>
+<header class="admin-header">
+  <div class="admin-header__inner">
+    <button
+      type="button"
+      class="admin-header__tab"
+      [class.admin-header__tab--active]="selectedTab === 2"
+      (click)="selectTab(2)"
+    >
+      Products
+    </button>
+
+    <button
+      type="button"
+      class="admin-header__tab"
+      [class.admin-header__tab--active]="selectedTab === 1"
+      (click)="selectTab(1)"
+    >
+      Orders
+    </button>
+
+    <button
+      type="button"
+      class="admin-header__tab"
+      [class.admin-header__tab--active]="selectedTab === 3"
+      (click)="selectTab(3)"
+    >
+      Vehicles
+    </button>
+
+    <button
+      type="button"
+      class="admin-header__tab"
+      [class.admin-header__tab--active]="selectedTab === 4"
+      (click)="selectTab(4)"
+    >
+      Sections
+    </button>
+  </div>
 </header>
+
 <section class="admin-body">
   @switch (selectedTab) {
     @case (4) {
-      <app-parts  class="admin">
-      </app-parts>
+      <app-parts class="admin"></app-parts>
     }
+
     @case (3) {
-      <app-vehicles class="admin" >
-      </app-vehicles>
+      <app-vehicles class="admin"></app-vehicles>
     }
+
     @case (2) {
-      <div class="admin" [formGroup]="formProduct">
+      <div class="admin">
+        <div class="product-card" [formGroup]="formProduct">
+          <div class="product-card__header">
+            <h2 class="product-card__title">Adaugă produs</h2>
+            <p class="product-card__subtitle">
+              Completează informațiile produsului și încarcă o imagine.
+            </p>
+          </div>
 
+          <div class="product-card__preview file-preview">
+            @if (previewUrl) {
+              <img [src]="previewUrl" alt="Preview" />
+            } @else {
+              <div class="file-preview__empty">
+                <span class="file-preview__icon">🖼️</span>
+                <span>Preview imagine</span>
+              </div>
+            }
+          </div>
 
-        <div class="file-preview">
-          @if(previewUrl){
-            <img [src]="previewUrl" alt="Preview">
-          }
-        </div>
+          <div class="file-field">
+            <input
+              #fileInput
+              class="file-input"
+              type="file"
+              accept="image/*"
+              (change)="onImageSelected($event)"
+            />
 
+            <button
+              type="button"
+              class="file-btn"
+              (click)="fileInput.click()"
+            >
+              Alege imagine
+            </button>
 
+            <span class="file-name">
+              {{ selectedFileName || 'Niciun fișier selectat' }}
+            </span>
+          </div>
 
+          <div class="input-wrapper">
+            <label>Titlu</label>
+            <input type="text" formControlName="title" />
+          </div>
 
-        <div class="file-field">
-          <input
-            #fileInput
-            class="file-input"
-            type="file"
-            (change)="onImageSelected($event)"
-          />
+          <div class="input-wrapper">
+            <label>Descriere</label>
+            <input type="text" formControlName="description" />
+          </div>
 
-          <button type="button" class="file-btn" (click)="fileInput.click()">
-            {{ selectedFileName || 'Chose an image' }}
+          <div class="input-wrapper">
+            <label>Preț</label>
+            <input type="number" formControlName="price" />
+          </div>
+
+          <button
+            type="button"
+            class="save-button"
+            [disabled]="formProduct.invalid"
+            (click)="saveProduct()"
+          >
+            Salvează produsul
           </button>
         </div>
-
-        <div class="input-wrapper">
-          <label>Title</label>
-          <input type="text" formControlName="title" />
-        </div>
-
-        <div class="input-wrapper">
-          <label> Description</label>
-          <input type="text" formControlName="description" />
-        </div>
-
-        <div class="input-wrapper">
-          <label>Price</label>
-          <input type="number" formControlName="price" />
-        </div>
-
-        <button class="save-button" (click)="saveProduct()">
-          save
-        </button>
       </div>
     }
+
     @case (1) {
       <app-orders></app-orders>
     }

@@ -43,7 +43,7 @@ export class AdminComponent  implements OnInit {
     });
   }
 
-  public onImageSelected(event: Event) {
+  public onImageSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] ?? null;
 
@@ -52,16 +52,17 @@ export class AdminComponent  implements OnInit {
 
     if (!file) {
       this.previewUrl = null;
+      this.selectedFileName = '';
       return;
     }
+
+    this.selectedFileName = file.name;
 
     const reader = new FileReader();
     reader.onload = () => {
       this.previewUrl = reader.result as string;
     };
     reader.readAsDataURL(file);
-
-    this.selectedFileName = file.name;
   }
 
   public selectTab(nr: number): void {
@@ -69,11 +70,16 @@ export class AdminComponent  implements OnInit {
   }
 
   public saveProduct(): void {
+    if (this.formProduct.invalid) {
+      this.formProduct.markAllAsTouched();
+      return;
+    }
+
     this._ps.saveProduct({
       title: this.formProduct.controls['title'].value,
-      description:  this.formProduct.controls['description'].value,
-      image:  this.formProduct.controls['image'].value,
-      price:  this.formProduct.controls['price'].value,
+      description: this.formProduct.controls['description'].value,
+      image: this.formProduct.controls['image'].value,
+      price: this.formProduct.controls['price'].value,
     }).pipe(
       catchError((err: HttpErrorResponse) => {
         if (err.error?.code === 400) {
@@ -93,11 +99,13 @@ export class AdminComponent  implements OnInit {
           );
         }
 
-
         return throwError(() => err);
-    })).subscribe(() => {
-        this._ns.success('Success', { title: 'Create', durationMs: 4000 })
-      }
-    )
+      })
+    ).subscribe(() => {
+      this._ns.success('Produsul a fost salvat cu succes.', {
+        title: 'Creare produs',
+        durationMs: 4000
+      });
+    });
   }
 }
