@@ -1,25 +1,55 @@
-<header class="header-log-in">
-  <h2>Log In</h2>
-</header>
-<section class="log-in-body">
-  <div class="log-in" [formGroup]="formLogIn">
-    <div class="input-wrapper">
-    <label>Email</label>
-    <input formControlName="email" />
+<section class="login-page">
+  <div class="login-card" [formGroup]="formLogIn">
+    <div class="login-card__header">
+      <div class="login-card__badge">🔐</div>
+      <h1 class="login-card__title">Autentificare</h1>
+      <p class="login-card__subtitle">
+        Intră în panoul de administrare folosind datele tale de acces.
+      </p>
     </div>
 
-    <div class="input-wrapper">
-      <label> Password</label>
-      <input type="password"  formControlName="password" />
-    </div>
+    <div class="login-form">
+      <div class="form-field">
+        <label for="email">Email</label>
+        <div class="form-field__input-wrapper">
+          <span class="form-field__icon">👤</span>
+          <input
+            id="email"
+            type="text"
+            formControlName="email"
+            placeholder="Introdu email-ul"
+            autocomplete="username"
+          />
+        </div>
+      </div>
 
-    <div class="popBot">
-      <label>PopBot</label>
-      <input formControlName="popBot" />
-    </div>
+      <div class="form-field">
+        <label for="password">Parolă</label>
+        <div class="form-field__input-wrapper">
+          <span class="form-field__icon">🔑</span>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="Introdu parola"
+            autocomplete="current-password"
+          />
+        </div>
+      </div>
 
-    <button class="log-in-button" [disabled]="formLogIn.invalid" (click)="logIn()">
-      Login
-    </button>
+      <div class="popBot">
+        <label for="popBot">PopBot</label>
+        <input id="popBot" formControlName="popBot" />
+      </div>
+
+      <button
+        type="button"
+        class="login-button"
+        [disabled]="formLogIn.invalid"
+        (click)="logIn()"
+      >
+        Conectare
+      </button>
+    </div>
   </div>
 </section>

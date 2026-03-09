@@ -1,149 +1,204 @@
 @import "app/style/breakpoints";
 
-.header-log-in {
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.login-page {
+  min-height: 100vh;
   display: flex;
   align-items: center;
-  background: #000053bd;
   justify-content: center;
-  padding: 10px;
-
-  h2 {
-    color: white;
-  }
+  padding: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(72, 61, 139, 0.18), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(29, 78, 216, 0.14), transparent 35%),
+    linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
 }
 
-.log-in-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  margin: 2rem 0;
-}
-
-.log-in {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1rem;
-}
-
-.input-wrapper {
-  display: flex;
-  gap: 5px;
-  flex-direction: column;
-  width: 300px;
-
-  input {
-    height: 40px;
-    padding: 5px;
-    line-height: 23px;
-    font-size: 18px;
-    border-radius: 4px;
-    border: 2px solid rgb(0 0 0 / 18%);
-  }
-
-  input:active {
-    border: 2px solid  #000053bd;
-  }
-  input:focus {
-    border: 2px solid  #000053bd;
-    outline: none;
-    box-shadow: none;
-  }
+.login-card {
+  width: 100%;
+  max-width: 460px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow:
+    0 20px 60px rgba(15, 23, 42, 0.14),
+    0 8px 24px rgba(15, 23, 42, 0.08);
 
   @include respond(sm) {
-    width: 100%;
-    margin: auto;
+    padding: 24px 18px;
+    border-radius: 20px;
   }
 }
 
-
-.log-in-button {
-  background: #000053bd;
-  color: white;
-  font-size: 1.5rem;
-  font-weight: 600;
-  line-height: 2rem;
-  border-radius: 4px;
-  width: 100%;
-  height: 50px;
-  border: 0;
-
-  cursor: pointer;
-  text-decoration: none;
-
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
-  transform: translate3d(0, 0, 0);
-
-  transition:
-    transform 180ms ease,
-    background-color 180ms ease,
-    box-shadow 180ms ease,
-    filter 180ms ease;
+.login-card__header {
+  text-align: center;
+  margin-bottom: 28px;
 }
 
-.log-in-button:hover {
-  background: rgba(0, 0, 83, 0.6);
-  transform: translate3d(4px, -4px, 0);
-  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.28);
+.login-card__badge {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  background: linear-gradient(135deg, #312e81 0%, #4338ca 100%);
+  color: #fff;
+  box-shadow: 0 12px 30px rgba(67, 56, 202, 0.28);
+}
+
+.login-card__title {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.2;
+  font-weight: 800;
+  color: #111827;
+}
+
+.login-card__subtitle {
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #6b7280;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-field label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.form-field__input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.form-field__icon {
+  position: absolute;
+  left: 14px;
+  font-size: 16px;
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.form-field input {
+  width: 100%;
+  height: 52px;
+  padding: 0 16px 0 46px;
+  font-size: 16px;
+  line-height: 1;
+  border-radius: 14px;
+  border: 1.5px solid #dbe2ea;
+  background: #f8fafc;
+  color: #111827;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+.form-field input::placeholder {
+  color: #9ca3af;
+}
+
+.form-field input:hover {
+  border-color: #c7d2fe;
+  background: #ffffff;
+}
+
+.form-field input:focus {
+  outline: none;
+  border-color: #4338ca;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(67, 56, 202, 0.12);
+}
+
+.login-button {
+  margin-top: 8px;
+  width: 100%;
+  height: 54px;
+  border: 0;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #312e81 0%, #4338ca 100%);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  box-shadow:
+    0 14px 28px rgba(49, 46, 129, 0.22),
+    0 6px 14px rgba(67, 56, 202, 0.16);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease,
+    opacity 180ms ease;
+}
+
+.login-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow:
+    0 18px 34px rgba(49, 46, 129, 0.26),
+    0 8px 18px rgba(67, 56, 202, 0.18);
   filter: brightness(1.03);
 }
 
-.log-in-button:active {
-  transform: translate3d(2px, -2px, 0) scale(0.99);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.22);
+.login-button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
-.log-in-button:focus-visible {
+.login-button:focus-visible {
   outline: none;
   box-shadow:
-    0 16px 30px rgba(0, 0, 0, 0.28),
-    0 0 0 3px rgba(240, 127, 47, 0.45);
+    0 18px 34px rgba(49, 46, 129, 0.26),
+    0 0 0 4px rgba(67, 56, 202, 0.18);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .log-in-button {
-    transition: none;
-  }
-  .log-in-button:hover,
-  .log-in-button:active {
-    transform: none;
-  }
+.login-button:disabled,
+.login-button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.65;
+  transform: none;
+  box-shadow: none;
+  filter: grayscale(0.2);
+  background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
 }
 
 .popBot {
   position: absolute;
-  left: -1000px;
+  left: -10000px;
+  opacity: 0;
+  pointer-events: none;
 }
 
-.log-in-button {
-  // ... stilurile tale existente
-
-  &:disabled,
-  &[disabled] {
-    opacity: 0.55;            // vizibil “disabled”
-    cursor: not-allowed;
-    filter: grayscale(0.25) saturate(0.75);
-    box-shadow: none;         // scoate glow-ul / elevatia
-    transform: none;          // fără “lift”
-    pointer-events: none;     // blochează hover/click chiar dacă mai ai listeners
-
-    // păstrează fundalul în aceeași familie, dar mai “flat”
-    background: rgba(0, 0, 83, 0.35);
-    color: rgba(255, 255, 255, 0.8);
+@media (prefers-reduced-motion: reduce) {
+  .form-field input,
+  .login-button {
+    transition: none;
   }
 
-  // ca să nu mai facă hover effect când e enabled doar
-  &:not(:disabled):hover {
-    // aici pui hover-ul tău normal (dacă ai)
-  }
-
-  &:not(:disabled):active {
-    // active normal (dacă ai)
-  }
-
-  &:focus-visible {
-    outline: 2px solid rgba(0, 0, 83, 0.35);
-    outline-offset: 3px;
+  .login-button:hover:not(:disabled),
+  .login-button:active:not(:disabled) {
+    transform: none;
   }
 }
