@@ -2,7 +2,6 @@ import {Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ShoppingCartProduct} from '../../shared/interfaces/shopping-cart-product.model';
 import {CartService} from '../../shared/services/cart.service';
-import {NavigationService} from '../../shared/services/router-service';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {DecimalPipe} from '@angular/common';
 import {ProductModel} from '../../shared/interfaces/product.model';

@@ -1,70 +1,105 @@
-<div class="order-wrapper">
-  <aside class="shopping-cart-upper">
-    <section class="shopping-cart-wrapper">
+<div class="order-page">
+  <section class="order-page__items">
+    <div class="order-page__section-header">
+      <h1 class="order-page__title">Detalii comandă</h1>
+      <p class="order-page__subtitle">
+        Verifică produsele selectate și completează datele pentru comandă.
+      </p>
+    </div>
+
+    <div class="order-list">
       @for (item of shoppingCart; track item.id) {
-        <div class="shopping-cart-item-wrapper">
-          <div class="background-image-wrapper">
-            <div
-              class="card-product__img"
-              [style.background-image]="getBgImage(item)"
-            ></div>
-            <div class="shopping-item-selected">
-              <div class="shopping-items">
-                <span class="card-product__by truncate-multiline">{{ item.name }}</span>
-                <span class="card-product__by truncate-multiline"> {{item.description }}</span>
-                <span class="card-product__by truncate-multiline">Price: {{item.price }}</span>
-                <span class="card-product__by truncate-multiline">Total Price of this Item: {{item.price * (isInCart(item.id)) }}</span>
+        <article class="order-item-card">
+          <div
+            class="order-item-card__image"
+            [style.background-image]="getBgImage(item)"
+          ></div>
+
+          <div class="order-item-card__content">
+            <div class="order-item-card__info">
+              <h3 class="order-item-card__title truncate-multiline">{{ item.name }}</h3>
+              <p class="order-item-card__description truncate-multiline">
+                {{ item.description }}
+              </p>
+            </div>
+
+            <div class="order-item-card__meta">
+              <div class="order-item-card__price-row">
+                <span>Preț / bucată</span>
+                <strong>{{ item.price | number:'1.2-2' }} RON</strong>
               </div>
-              <div class="numbers-selectors">
-                <button class="shop-now add-remove-buttons" (click)="removeOne(item)">
-                  -
+
+              <div class="order-item-card__price-row">
+                <span>Total produs</span>
+                <strong>{{ (item.price * isInCart(item.id)) | number:'1.2-2' }} RON</strong>
+              </div>
+            </div>
+
+            <div class="order-item-card__actions">
+              <div class="qty-control">
+                <button class="qty-control__btn" type="button" (click)="removeOne(item)">
+                  −
                 </button>
-                <input type="number" [disabled]="true" [value]="isInCart(item.id) ?? 0"/>
-                <button class="shop-now add-remove-buttons" (click)="addOne(item)">
+
+                <input
+                  class="qty-control__input"
+                  type="number"
+                  [disabled]="true"
+                  [value]="isInCart(item.id) ?? 0"
+                />
+
+                <button class="qty-control__btn" type="button" (click)="addOne(item)">
                   +
                 </button>
               </div>
             </div>
           </div>
-        </div>
+        </article>
       }
-    </section>
-  </aside>
+    </div>
+  </section>
 
-  <aside class="side-info-details">
-    <div class="log-in info-order-form" [formGroup]="formDetails">
+  <aside class="order-page__summary">
+    <div class="order-summary-card" [formGroup]="formDetails">
+      <div class="order-summary-card__header">
+        <h2 class="order-summary-card__title">Date comandă</h2>
+        <p class="order-summary-card__subtitle">
+          Completează datele tale pentru trimiterea cererii.
+        </p>
+      </div>
+
       <div class="input-wrapper">
-        <label>Name</label>
-        <input type="text" formControlName="name"/>
+        <label>Nume</label>
+        <input type="text" formControlName="name" />
       </div>
 
       <div class="input-wrapper">
         <label>Email</label>
-        <input type="text" formControlName="email"/>
+        <input type="text" formControlName="email" />
       </div>
 
       <div class="input-wrapper">
-        <label>Phone</label>
-        <input type="text" formControlName="phone"/>
+        <label>Telefon</label>
+        <input type="text" formControlName="phone" />
       </div>
 
       <div class="input-wrapper">
-        <label>Vin</label>
-        <input type="text" formControlName="vin"/>
+        <label>VIN</label>
+        <input type="text" formControlName="vin" />
       </div>
 
       <div class="input-wrapper">
-        <label>Details</label>
-        <input type="text" formControlName="details"/>
+        <label>Detalii</label>
+        <textarea formControlName="details"></textarea>
       </div>
 
-      <span class="shopping-cart-calculation">
-            <h2>Total:</h2>
-      <h2> {{ getTotal | number:'1.2-2'}} RON</h2>
-      </span>
+      <div class="order-summary-card__total">
+        <span>Total</span>
+        <strong>{{ getTotal | number:'1.2-2' }} RON</strong>
+      </div>
 
-      <button class="save-button">
-        Send
+      <button class="save-button" type="button">
+        Trimite comanda
       </button>
     </div>
   </aside>

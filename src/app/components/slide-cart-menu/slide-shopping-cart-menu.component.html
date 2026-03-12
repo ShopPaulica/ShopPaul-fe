@@ -1,55 +1,94 @@
-<div class="overlay" *ngIf="isOpen" (click)="closeMenu()"></div>
+<div class="cart-overlay" *ngIf="isOpen" (click)="closeMenu()"></div>
 
-<div class="side-menu" [class.open]="isOpen" [class.right]="position() === 'right'">
-  <section class="side-menu-option">
-    <button class="close-btn" (click)="closeMenu()">✖</button>
-    <button class="clean-btn" (click)="cleanCart()">🗑️</button>
-  </section>
-  <div class="shopping-cart-upper">
-    <section class="shopping-cart-wrapper">
-      @for (item of shoppingCart; track item.id) {
-        <div class="separator"></div>
-        <div class="shopping-cart-item-wrapper">
-          <div class="background-image-wrapper">
-          <div class="shopping-item-selected">
-            <div class="shopping-items">
-              <h4 class="shopping-cart-title">{{ item.name }}</h4>
-              <span class="card-product__by"> {{item.description }}</span>
-            </div>
-            <div class="numbers-selectors">
-              <button class="shop-now add-remove-buttons" (click)="removeOne(item)">
-                -
-              </button>
-              <input type="number" [disabled]="true" [value]="isInCart(item.id) ?? 0"/>
-              <button class="shop-now add-remove-buttons" (click)="addOne(item)">
-                +
-              </button>
-            </div>
-          </div>
-        </div>
-        </div>
-       }
-    </section>
-  </div>
-  <div class="separator2"></div>
-  <div class="shopping-cart-bottom">
-    <section class="shopping-cart-calculation-wrapper">
-      <span
-        class="shopping-cart-calculation"><span>Subtotal:</span> <span>{{ getTotal | number:'1.2-2'}} RON</span></span>
-      <div class="separator"></div>
-    </section>
+<div class="cart-drawer" [class.cart-drawer--open]="isOpen" [class.cart-drawer--right]="position() === 'right'">
+  <div class="cart-drawer__container">
+    <header class="cart-drawer__header">
+      <button class="cart-icon-btn" type="button" (click)="closeMenu()" aria-label="Închide coșul">
+        ✕
+      </button>
 
-    <section class="shopping-cart-total">
-      <span class="shopping-cart-calculation">
-            <h2>Total:</h2>
-      <h2> {{ getTotal | number:'1.2-2'}} RON</h2>
-      </span>
-      <span class="transport-free">
-            Transport Gratuit - mai adauga produse de
-        <br/>
-        <span> 154 RON</span>
-      </span>
-    </section>
-    <button class="shop-now" (click)="router.goToDetailsOrder(); closeMenu();">Toward Order</button>
+      <div class="cart-drawer__title-wrap">
+        <h2 class="cart-drawer__title">Coșul tău</h2>
+        <span class="cart-drawer__count">
+          {{ shoppingCart.length }} produs{{ shoppingCart.length === 1 ? '' : 'e' }}
+        </span>
+      </div>
+
+      <button class="cart-icon-btn cart-icon-btn--danger" type="button" (click)="cleanCart()" aria-label="Golește coșul">
+        🗑️
+      </button>
+    </header>
+
+    <div class="cart-drawer__body">
+      @if (shoppingCart.length) {
+        <section class="cart-list">
+          @for (item of shoppingCart; track item.id) {
+            <article class="cart-item">
+              <div class="cart-item__content">
+                <div class="cart-item__top">
+                  <div class="cart-item__info">
+                    <h4 class="cart-item__title">{{ item.name }}</h4>
+                    <p class="cart-item__desc">{{ item.description }}</p>
+                  </div>
+                </div>
+
+                <div class="cart-item__bottom">
+                  <div class="cart-qty">
+                    <button
+                      class="cart-qty__btn"
+                      type="button"
+                      (click)="removeOne(item)"
+                      aria-label="Scade cantitatea"
+                    >
+                      −
+                    </button>
+
+                    <input
+                      class="cart-qty__input"
+                      type="number"
+                      [disabled]="true"
+                      [value]="isInCart(item.id) ?? 0"
+                    />
+
+                    <button
+                      class="cart-qty__btn"
+                      type="button"
+                      (click)="addOne(item)"
+                      aria-label="Crește cantitatea"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </article>
+          }
+        </section>
+      } @else {
+        <div class="cart-empty">
+          <div class="cart-empty__icon">🛒</div>
+          <h3 class="cart-empty__title">Coșul este gol</h3>
+          <p class="cart-empty__text">
+            Adaugă produse în coș pentru a continua comanda.
+          </p>
+        </div>
+      }
+    </div>
+
+    <footer class="cart-drawer__footer">
+<!--      <div class="cart-summary__shipping">-->
+<!--        Transport gratuit — mai adaugă produse de-->
+<!--        <span>154 RON</span>-->
+<!--      </div>-->
+
+      <button
+        class="cart-checkout-btn"
+        type="button"
+        (click)="router.goToDetailsOrder(); closeMenu();"
+        [disabled]="!shoppingCart.length"
+      >
+        Continuă comanda
+      </button>
+    </footer>
   </div>
 </div>
