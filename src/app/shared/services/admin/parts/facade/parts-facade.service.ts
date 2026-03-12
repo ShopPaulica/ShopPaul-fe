@@ -8,7 +8,7 @@ import {PartsState} from '../models/part-state-model';
 import {PartArgs} from '../models/part-filters-model';
 
 @Injectable({ providedIn: 'root' })
-export class PartsFacade implements DataProviderModel<PartsDTO,PartArgs ,PartsState> {
+export class PartsFacade  {
   private readonly _section$ = new BehaviorSubject<string[] | null>(null);
   readonly sectionFiltersPage$ = this._section$.asObservable();
 

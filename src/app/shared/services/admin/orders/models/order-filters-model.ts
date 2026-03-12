@@ -1,15 +1,10 @@
-export type OrderArgs = [
-page?: number,
-name?: string,
-email?: string,
-phone?: string,
-vin?: string,
-]
-
 export interface IOrdersFilters {
-  page?: number;
+  page?: string;
   name?: string;
   email?: string;
   phone?: string;
   vin?: string;
+  productId?: string;
 }
+
+export type OrderArgs = [params?: IOrdersFilters];

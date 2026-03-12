@@ -3,12 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../../../environments/environment';
 import {ApiItemResponse, ApiMessageResponse} from '../../../../interfaces/api/api-respons';
-import {DataProviderApiModel} from '../../model/data-provider-api.model';
 import {OrderDTO} from '../models/orderDTO';
 import {OrderFetchDataModel} from '../models/order-fetch-data.model';
+import {DataProviderApiModel} from '../../model/data-provider-api.model';
 
 @Injectable({ providedIn: 'root' })
-export class OrdersApiService {
+export class OrdersApiService implements
+DataProviderApiModel<
+OrderDTO,
+OrderFetchDataModel
+> {
   constructor(private readonly _http: HttpClient) {}
 
   fetchData(params: Record<string, string> = {}): Observable<OrderFetchDataModel> {
@@ -18,8 +22,7 @@ export class OrdersApiService {
   }
 
   saveData(data: OrderDTO): Observable<ApiItemResponse<OrderDTO>> {
-    const payload: Partial<OrderDTO> = {};
-    return this._http.post<ApiItemResponse<OrderDTO>>(`${environment.apiUrl}/orders`, payload);
+    return this._http.post<ApiItemResponse<OrderDTO>>(`${environment.apiUrl}/orders`, data);
   }
 
   deleteData(id: string): Observable<ApiMessageResponse> {

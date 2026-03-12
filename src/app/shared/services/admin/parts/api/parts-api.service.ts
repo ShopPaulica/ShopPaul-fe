@@ -7,7 +7,7 @@ import {ApiItemResponse, ApiMessageResponse} from '../../../../interfaces/api/ap
 import {DataProviderApiModel} from '../../model/data-provider-api.model';
 
 @Injectable({ providedIn: 'root' })
-export class PartsApiService implements DataProviderApiModel<PartsDTO> {
+export class PartsApiService {
   constructor(private readonly _http: HttpClient) {}
 
   fetchData(field: string, params: Record<string, string> = {}): Observable<string[]> {

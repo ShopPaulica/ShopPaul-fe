@@ -7,7 +7,7 @@ import {ApiItemResponse, ApiMessageResponse} from '../../../../interfaces/api/ap
 import {DataProviderApiModel} from '../../model/data-provider-api.model';
 
 @Injectable({ providedIn: 'root' })
-export class VehiclesApiService implements DataProviderApiModel<VehiclesDTO>{
+export class VehiclesApiService{
   constructor(private readonly _http: HttpClient) {}
 
   fetchData(field: string, params: Record<string, string> = {}): Observable<string[]> {

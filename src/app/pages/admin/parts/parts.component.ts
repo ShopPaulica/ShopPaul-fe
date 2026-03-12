@@ -88,16 +88,16 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
   }
 
   public deleteByFilters(): void {
-   this.dataProvider.deleteData({
-     section: this.section,
-     subsection: this.subsection,
-     title: this.title
-   }).subscribe(
-     (res: any) => {
-       //todo
-       this._ns.success('Success', { title: 'Delete Part', durationMs: 4000 });
-     }
-   )
+   // this.dataProvider.deleteData({
+   //   section: this.section,
+   //   subsection: this.subsection,
+   //   title: this.title
+   // }).subscribe(
+   //   (res: any) => {
+   //     //todo
+   //     this._ns.success('Success', { title: 'Delete Part', durationMs: 4000 });
+   //   }
+   // )
   }
 
   protected initFilters(): void {
@@ -116,5 +116,8 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
       subsection: ['', [Validators.required]],
       title: ['', [Validators.required]],
     });
+  }
+
+  protected fetchData(): void {
   }
 }

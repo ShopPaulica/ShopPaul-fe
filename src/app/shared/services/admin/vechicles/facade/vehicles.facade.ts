@@ -8,7 +8,7 @@ import {VehicleArgs} from '../models/vehicle-filters-model';
 import {VehicleState} from '../models/vehicle-state-model';
 
 @Injectable({ providedIn: 'root' })
-export class VehiclesFacade implements DataProviderModel<VehiclesDTO, VehicleArgs, VehicleState> {
+export class VehiclesFacade {
   //todo move it in a store so that it will be providedIn a module when is needed
   private readonly _brand$ = new BehaviorSubject<string[] | null>(null);
   readonly brandFiltersPage$ = this._brand$.asObservable();

@@ -1,8 +1,15 @@
 import { Observable } from 'rxjs';
 import { ApiItemResponse, ApiMessageResponse } from '../../../interfaces/api/api-respons';
 
-export type DataProviderApiModel<TItem> = {
-  fetchData: (field: string, params: Record<string, string>) => Observable<string[]>;
-  saveData:(product: TItem) => Observable<ApiItemResponse<TItem>>;
-  deleteData: (params: Record<string, string>) => Observable<ApiMessageResponse>;
+export type DataProviderApiModel<
+  TItem,
+  TFetchResponse,
+  TFetchParams = Record<string, string>,
+  TDeleteArg = string,
+  TSaveResponse = ApiItemResponse<TItem>,
+  TDeleteResponse = ApiMessageResponse
+> = {
+  fetchData: (params: TFetchParams) => Observable<TFetchResponse>;
+  saveData: (data: TItem) => Observable<TSaveResponse>;
+  deleteData: (arg: TDeleteArg) => Observable<TDeleteResponse>;
 };

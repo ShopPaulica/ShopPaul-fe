@@ -9,11 +9,11 @@ export interface OrderDTO {
   id: string;
   name: string;
   email: string;
-  total: string;
+  total: number;
   phone: string;
   vin: string;
   description: string;
   items: IOrderItem[];
-  createdAt?: any;
-  updatedAt?: any;
+  createdAt?: string;
+  updatedAt?: string;
 }

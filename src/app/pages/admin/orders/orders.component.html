@@ -111,7 +111,7 @@
       </thead>
 
       <tbody>
-        @for (order of orders; track  trackByOrderId) {
+        @for (order of orders; track order.id) {
       <tr >
         <td class="orders-table__id">{{ order.id }}</td>
         <td>{{ order.name }}</td>

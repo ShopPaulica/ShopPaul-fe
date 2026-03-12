@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, model, OnInit} from '@angular/core';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ordersListComponent} from '../../../components/commands-list/orders-list.component';
 import {NotificationService} from '../../../shared/services/notification.service';
@@ -103,18 +103,18 @@ export class VehiclesComponent extends AdminCrudActionsBase<VehiclesDTO, Vehicle
   }
 
   public deleteByFilters(): void {
-   this.dataProvider.deleteData({
-     brand: this.brand,
-     model: this.model,
-     fuel: this.fuel,
-     engine: this.engine,
-     power: this.power,
-   }).subscribe(
-       (res: any) => {
-         //todo
-         this._ns.success('Success', { title: 'Delete Vehicle', durationMs: 4000 });
-     }
-   )
+   // this.dataProvider.deleteData({
+   //   brand: this.brand,
+   //   model: this.model,
+   //   fuel: this.fuel,
+   //   engine: this.engine,
+   //   power: this.power,
+   // }).subscribe(
+   //     (res: any) => {
+   //       //todo
+   //       this._ns.success('Success', { title: 'Delete Vehicle', durationMs: 4000 });
+   //   }
+   // )
   }
 
   public save() {
@@ -150,5 +150,8 @@ export class VehiclesComponent extends AdminCrudActionsBase<VehiclesDTO, Vehicle
       power: ['', [Validators.required]],
       engine: ['', [Validators.required]],
     });
+  }
+
+  protected fetchData(): void {
   }
 }

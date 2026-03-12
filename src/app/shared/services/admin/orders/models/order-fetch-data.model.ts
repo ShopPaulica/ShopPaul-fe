@@ -1,4 +1,4 @@
-import {OrderDTO} from './orderDTO';
+import { OrderDTO } from './orderDTO';
 
 export interface OrderFetchDataModel {
   code: number;
@@ -6,6 +6,6 @@ export interface OrderFetchDataModel {
   pageSize: number;
   totalItems: number;
   totalPages: number;
-  filtersUsed: any[];
-  items: OrderDTO[]
+  filtersUsed: string[];
+  items: OrderDTO[];
 }

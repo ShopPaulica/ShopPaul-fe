@@ -1,15 +1,21 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, EMPTY, finalize, Observable, tap, catchError } from 'rxjs';
-import {ApiItemResponse, ApiMessageResponse} from '../../../../interfaces/api/api-respons';
+import { ApiItemResponse, ApiMessageResponse } from '../../../../interfaces/api/api-respons';
 import { DataProviderModel } from '../../model/data-provider-facade.model';
-import {OrdersApiService} from '../api/orders-api.service';
-import {OrderArgs} from '../models/order-filters-model';
-import {OrderDTO} from '../models/orderDTO';
-import {OrdersState} from '../models/order-state-model';
-import {OrderFetchDataModel} from '../models/order-fetch-data.model';
+import { OrdersApiService } from '../api/orders-api.service';
+import { IOrdersFilters, OrderArgs } from '../models/order-filters-model';
+import { OrderDTO } from '../models/orderDTO';
+import { OrdersState } from '../models/order-state-model';
+import { OrderFetchDataModel } from '../models/order-fetch-data.model';
 
 @Injectable({ providedIn: 'root' })
-export class OrdersFacade {
+export class OrdersFacade implements
+  DataProviderModel<
+    OrderDTO,
+    OrderArgs,
+    OrdersState
+  >
+{
   private readonly _orders$ = new BehaviorSubject<OrderFetchDataModel | null>(null);
   readonly orders$ = this._orders$.asObservable();
 
@@ -21,18 +27,30 @@ export class OrdersFacade {
 
   constructor(private readonly _api: OrdersApiService) {}
 
-  public fetchData(params: Record<string, string>): void {
+  public fetchData(params: IOrdersFilters = {}): void {
     this._loading$.next(true);
     this._error$.next(null);
 
-    this._api.fetchData(params).pipe(
-      tap((res: OrderFetchDataModel) => this._orders$.next(res)),
-      catchError((err) => {
-        this._error$.next(err?.error?.message ?? 'Eroare la încărcarea filtrelor');
-        return EMPTY;
-      }),
-      finalize(() => this._loading$.next(false))
-    ).subscribe();
+    const normalizedParams: Record<string, string> = Object.entries(params).reduce(
+      (acc, [key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          acc[key] = String(value);
+        }
+        return acc;
+      },
+      {} as Record<string, string>
+    );
+
+    this._api.fetchData(normalizedParams)
+      .pipe(
+        tap((res: OrderFetchDataModel) => this._orders$.next(res)),
+        catchError((err) => {
+          this._error$.next(err?.error?.message ?? 'Eroare la încărcarea comenzilor');
+          return EMPTY;
+        }),
+        finalize(() => this._loading$.next(false))
+      )
+      .subscribe();
   }
 
   public saveData(data: OrderDTO): Observable<ApiItemResponse<OrderDTO>> {

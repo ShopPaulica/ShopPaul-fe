@@ -3,10 +3,13 @@ import { ApiItemResponse, ApiMessageResponse } from '../../../interfaces/api/api
 
 export type DataProviderModel<
   TItem,
-  TArgs extends unknown[] = [],
-  TState extends object = {}
+  TFetchArgs extends unknown[] = [],
+  TState extends object = {},
+  TDeleteArg = string,
+  TSaveResponse = ApiItemResponse<TItem>,
+  TDeleteResponse = ApiMessageResponse
 > = {
-  fetchData: (...args: TArgs) => void;
-  saveData: (data: TItem) => Observable<ApiItemResponse<TItem>>;
-  deleteData: (params: Record<string, string>) => Observable<ApiMessageResponse>;
+  fetchData: (...args: TFetchArgs) => void;
+  saveData: (data: TItem) => Observable<TSaveResponse>;
+  deleteData: (arg: TDeleteArg) => Observable<TDeleteResponse>;
 } & TState;

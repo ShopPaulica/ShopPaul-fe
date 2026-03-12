@@ -3,7 +3,6 @@ import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ordersListComponent} from '../../../components/commands-list/orders-list.component';
 import {DropdownComponent} from '../../../components/dropdown/dropdown.component';
 import {AsyncPipe, DatePipe, NgForOf, NgIf} from '@angular/common';
-import {PartsFacade} from '../../../shared/services/admin/parts/facade/parts-facade.service';
 import {DATA_PROVIDER_TOKEN} from '../../../shared/services/admin/const/data-provider-token';
 import {OrderDTO} from '../../../shared/services/admin/orders/models/orderDTO';
 import {IOrdersFilters, OrderArgs} from '../../../shared/services/admin/orders/models/order-filters-model';
@@ -12,6 +11,7 @@ import {NotificationService} from '../../../shared/services/notification.service
 import {AdminCrudActionsBase} from '../models/admin-crud-actions';
 import {OrdersState} from '../../../shared/services/admin/orders/models/order-state-model';
 import {DataProviderModel} from '../../../shared/services/admin/model/data-provider-facade.model';
+import {takeUntil} from 'rxjs';
 import {OrdersFacade} from '../../../shared/services/admin/orders/facade/orders-facade.service';
 
 
@@ -30,62 +30,50 @@ import {OrdersFacade} from '../../../shared/services/admin/orders/facade/orders-
   providers: [
     {
       provide: DATA_PROVIDER_TOKEN,
-      useExisting: PartsFacade,
+      useExisting: OrdersFacade,
     }
   ],
   templateUrl: './orders.component.html',
   standalone: true,
   styleUrl: './orders.component.scss'
 })
-export class OrdersComponent implements OnInit{
-
+export class OrdersComponent extends AdminCrudActionsBase<OrderDTO, OrderArgs, OrdersState> implements OnInit{
   public orders: OrderDTO[] = [];
-
   public filters: IOrdersFilters = {
-    page: 1,
+    page: '1',
     name: '',
     email: '',
     phone: '',
     vin: '',
   };
 
-  public isLoading = false;
-  public currentPage = 1;
-  public totalPages = 1;
-  public totalItems = 0;
-  public pageSize = 30;
-
   constructor(
-   private dataProvider: OrdersFacade,
+   fb: FormBuilder,
+   @Inject(DATA_PROVIDER_TOKEN) dataProvider: DataProviderModel<OrderDTO, OrderArgs, OrdersState>,
    private readonly _ns: NotificationService
   ) {
+    super(fb, dataProvider);
   }
 
   public ngOnInit(): void {
-    this.loadOrders();
-    this.initSubscription();
-  }
-
-  public loadOrders(): void {
-    this.fetchData();
-    this.isLoading = true;
+    this.initBase();
   }
 
   public onSearch(): void {
     this.currentPage = 1;
-    this.loadOrders();
+    this.refreshData();
   }
 
   public onReset(): void {
     this.filters = {
-      page: 1,
+      page: '1',
       name: '',
       email: '',
       phone: '',
       vin: '',
     };
     this.currentPage = 1;
-    this.loadOrders();
+    this.refreshData();
   }
 
   public prevPage(): void {
@@ -94,7 +82,7 @@ export class OrdersComponent implements OnInit{
     }
 
     this.currentPage--;
-    this.loadOrders();
+    this.refreshData();
   }
 
   public nextPage(): void {
@@ -103,7 +91,7 @@ export class OrdersComponent implements OnInit{
     }
 
     this.currentPage++;
-    this.loadOrders();
+    this.refreshData();
   }
 
   public trackByOrderId(index: number, item: OrderDTO): string {
@@ -127,14 +115,14 @@ export class OrdersComponent implements OnInit{
     });
   }
 
-  private fetchData(): void {
+  public fetchData(): void {
     this.isLoading = true;
     this.dataProvider.fetchData({...this.filters, page: String(this.currentPage)});
   }
 
-  private initSubscription(): void {
+  public initSubscription(): void {
     this.dataProvider.orders$.pipe(
-      //todo pipe destroy
+      takeUntil(this.destroy$)
     ).subscribe((res: OrderFetchDataModel | null)=> {
       if(res) {
       this.orders = res.items ?? [];
