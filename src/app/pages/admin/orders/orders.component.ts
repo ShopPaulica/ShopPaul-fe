@@ -94,11 +94,9 @@ export class OrdersComponent extends AdminCrudActionsBase<OrderDTO, OrderArgs, O
     this.refreshData();
   }
 
-  public trackByOrderId(index: number, item: OrderDTO): string {
-    return item.id;
-  }
+  public deleteData(id?: string) {
+    if(!id) return
 
-  public deleteData(id: string) {
     this.dataProvider.deleteData(id).subscribe({
       next: () => {
         this._ns.success('Comanda a fost ștearsă cu succes.', {

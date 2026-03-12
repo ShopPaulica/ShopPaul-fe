@@ -6,10 +6,10 @@ export interface IOrderItem {
 }
 
 export interface OrderDTO {
-  id: string;
+  id?: string;
   name: string;
   email: string;
-  total: number;
+  total?: number;
   phone: string;
   vin: string;
   description: string;

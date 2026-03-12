@@ -98,7 +98,9 @@
         <strong>{{ getTotal | number:'1.2-2' }} RON</strong>
       </div>
 
-      <button class="save-button" type="button">
+      <button class="save-button" type="button"
+      (click)="sendOrder()"
+      >
         Trimite comanda
       </button>
     </div>
