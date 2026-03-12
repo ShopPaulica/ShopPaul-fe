@@ -107,7 +107,22 @@
 
       <div class="order-summary-card__total">
         <span>Total</span>
-        <strong>{{ getTotal | number:'1.2-2' }} RON</strong>
+
+        @if (canEditPrices) {
+          <div class="order-summary-card__total-edit">
+            <input
+              class="order-summary-card__total-input"
+              type="number"
+              min="0"
+              step="0.01"
+              [value]="getTotal"
+              (change)="updateCartTotal($event)"
+            />
+            <strong>RON</strong>
+          </div>
+        } @else {
+          <strong>{{ getTotal | number:'1.2-2' }} RON</strong>
+        }
       </div>
 
       <button class="save-button" type="button" (click)="sendOrder()">

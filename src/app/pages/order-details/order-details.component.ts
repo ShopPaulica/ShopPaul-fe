@@ -161,4 +161,83 @@ export class OrderDetailsComponent implements OnInit {
       }
     });
   }
+
+  public updateCartTotal(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const newTotal = Number(input.value);
+
+    if (!Number.isFinite(newTotal) || newTotal < 0) {
+      this._ns.error('Introdu un total valid.', {
+        title: 'Total invalid',
+        durationMs: 3000
+      });
+      return;
+    }
+
+    if (!this.shoppingCart.length) {
+      this._ns.error('Nu poți modifica totalul când coșul este gol.', {
+        title: 'Coș gol',
+        durationMs: 3000
+      });
+      return;
+    }
+
+    const currentTotal = this.getTotal;
+
+    if (currentTotal <= 0) {
+      const totalQty = this.shoppingCart.reduce((sum, item) => sum + (item.howMany ?? 0), 0);
+
+      if (totalQty <= 0) {
+        this._ns.error('Nu s-a putut recalcula totalul.', {
+          title: 'Eroare total',
+          durationMs: 3000
+        });
+        return;
+      }
+
+      const evenUnitPrice = newTotal / totalQty;
+
+      this.shoppingCart.forEach((item) => {
+        if (item.id) {
+          this.cartService.updatePrice(item.id, Number(evenUnitPrice.toFixed(2)));
+        }
+      });
+
+      return;
+    }
+
+    const ratio = newTotal / currentTotal;
+
+    this.shoppingCart.forEach((item, index) => {
+      if (!item.id) {
+        return;
+      }
+
+      const oldPrice = Number(item.price) || 0;
+      let newPrice = Number((oldPrice * ratio).toFixed(2));
+
+      if (index === this.shoppingCart.length - 1) {
+        const partialTotal = this.shoppingCart
+          .slice(0, -1)
+          .reduce((sum, cartItem) => {
+            const price =
+              cartItem.id === item.id
+                ? newPrice
+                : Number(
+                  (
+                    ((Number(cartItem.price) || 0) * ratio)
+                  ).toFixed(2)
+                );
+
+            return sum + price * (cartItem.howMany ?? 0);
+          }, 0);
+
+        const qty = item.howMany ?? 1;
+        const remaining = newTotal - partialTotal;
+        newPrice = Number((remaining / qty).toFixed(2));
+      }
+
+      this.cartService.updatePrice(item.id, newPrice);
+    });
+  }
 }

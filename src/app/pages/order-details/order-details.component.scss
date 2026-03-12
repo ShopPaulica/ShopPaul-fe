@@ -422,3 +422,45 @@
     font-size: 14px;
   }
 }
+
+@media (max-width: 480px) {
+  .order-summary-card__total-edit {
+    gap: 8px;
+  }
+
+  .order-summary-card__total-input {
+    width: 130px;
+    height: 42px;
+    font-size: 16px;
+    border-radius: 12px;
+  }
+}
+
+.order-summary-card__total-edit {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.order-summary-card__total-input {
+  width: 180px;
+  height: 46px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(15, 23, 42, 0.12);
+  background: #ffffff;
+  color: #111827;
+  font-size: 20px;
+  font-weight: 900;
+  text-align: right;
+  padding: 0 14px;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.order-summary-card__total-input:focus {
+  outline: none;
+  border-color: #3532a5;
+  box-shadow: 0 0 0 4px rgba(53, 50, 165, 0.08);
+}
