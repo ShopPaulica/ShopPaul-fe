@@ -1,10 +1,10 @@
-import {DecimalPipe, NgForOf, NgIf, NgOptimizedImage} from '@angular/common';
-import {Component, DestroyRef, inject, input, Input, OnInit, output } from '@angular/core';
-import {CartService} from '../../shared/services/cart.service';
-import {ShoppingCartProduct} from '../../shared/interfaces/shopping-cart-product.model';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {routes} from '../../app.routes';
-import {NavigationService} from '../../shared/services/router-service';
+import { DecimalPipe, NgForOf, NgIf, NgOptimizedImage } from '@angular/common';
+import { Component, DestroyRef, inject, input, Input, OnInit, output } from '@angular/core';
+import { CartService } from '../../shared/services/cart.service';
+import { ShoppingCartProduct } from '../../shared/interfaces/shopping-cart-product.model';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { routes } from '../../app.routes';
+import { NavigationService } from '../../shared/services/router-service';
 
 @Component({
   selector: 'app-slide-shopping-cart-menu',
@@ -14,7 +14,7 @@ import {NavigationService} from '../../shared/services/router-service';
   styleUrl: './slide-shopping-cart-menu.component.scss'
 })
 export class SlideShoppingCartMenuComponent implements OnInit {
-  public position = input<string>('right') ;
+  public position = input<string>('right');
   public isOpenChange = output<boolean>();
   private readonly destroyRef = inject(DestroyRef);
   protected router: NavigationService = inject(NavigationService);
@@ -23,32 +23,40 @@ export class SlideShoppingCartMenuComponent implements OnInit {
     this.isOpen = bool;
   }
 
-  public shoppingCart: ShoppingCartProduct[] = []
+  public shoppingCart: ShoppingCartProduct[] = [];
   public isOpen = false;
 
   constructor(private cartService: CartService) {}
 
-  public ngOnInit() {
-    this.cartService.cart$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((products: ShoppingCartProduct[]) => {
-      this.shoppingCart = products;
-    })
+  public ngOnInit(): void {
+    this.cartService.cart$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((products: ShoppingCartProduct[]) => {
+        this.shoppingCart = products;
+      });
   }
 
   public get getTotal(): number {
     return this.cartService.getTotal;
   }
 
+  public get getTotalQty(): number {
+    return this.shoppingCart.reduce((sum: number, item: ShoppingCartProduct) => {
+      return sum + (item.howMany ?? 0);
+    }, 0);
+  }
+
   public closeMenu(): void {
     this.isOpen = false;
-    this.isOpenChange.emit(false)
+    this.isOpenChange.emit(false);
   }
 
   public removeOne(item: ShoppingCartProduct): void {
-    this.cartService.removeOne(item)
+    this.cartService.removeOne(item);
   }
 
   public addOne(item: ShoppingCartProduct): void {
-    this.cartService.addOne(item)
+    this.cartService.addOne(item);
   }
 
   public isInCart(id: string | undefined): number {

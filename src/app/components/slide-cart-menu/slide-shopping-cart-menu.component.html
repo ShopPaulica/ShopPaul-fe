@@ -32,6 +32,23 @@
                   </div>
                 </div>
 
+                <div class="cart-item__pricing">
+                  <div class="cart-item__pricing-row">
+                    <span>Preț / bucată</span>
+                    <strong>{{ item.price | number:'1.2-2' }} RON</strong>
+                  </div>
+
+                  <div class="cart-item__pricing-row">
+                    <span>Cantitate</span>
+                    <strong>{{ isInCart(item.id) ?? 0 }}</strong>
+                  </div>
+
+                  <div class="cart-item__pricing-row cart-item__pricing-row--total">
+                    <span>Total produs</span>
+                    <strong>{{ ((item.price ?? 0) * (isInCart(item.id) ?? 0)) | number:'1.2-2' }} RON</strong>
+                  </div>
+                </div>
+
                 <div class="cart-item__bottom">
                   <div class="cart-qty">
                     <button
@@ -76,10 +93,26 @@
     </div>
 
     <footer class="cart-drawer__footer">
-<!--      <div class="cart-summary__shipping">-->
-<!--        Transport gratuit — mai adaugă produse de-->
-<!--        <span>154 RON</span>-->
-<!--      </div>-->
+      @if (shoppingCart.length) {
+        <div class="cart-summary">
+          <div class="cart-summary__row">
+            <span>Produse în coș</span>
+            <strong>{{ shoppingCart.length }}</strong>
+          </div>
+
+          <div class="cart-summary__row">
+            <span>Bucăți totale</span>
+            <strong>{{ getTotalQty }}</strong>
+          </div>
+
+          <div class="cart-summary__divider"></div>
+
+          <div class="cart-summary__total">
+            <span>Total</span>
+            <strong>{{ getTotal | number:'1.2-2' }} RON</strong>
+          </div>
+        </div>
+      }
 
       <button
         class="cart-checkout-btn"
