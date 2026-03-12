@@ -1,18 +1,19 @@
-import {Component, DestroyRef, Inject, inject, OnInit} from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {ShoppingCartProduct} from '../../shared/interfaces/shopping-cart-product.model';
-import {CartService} from '../../shared/services/cart.service';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {DecimalPipe} from '@angular/common';
-import {ProductModel} from '../../shared/interfaces/product.model';
-import {DATA_PROVIDER_TOKEN} from '../../shared/services/admin/const/data-provider-token';
-import {OrdersFacade} from '../../shared/services/admin/orders/facade/orders-facade.service';
-import {DataProviderModel} from '../../shared/services/admin/model/data-provider-facade.model';
-import {OrderDTO} from '../../shared/services/admin/orders/models/orderDTO';
-import {OrderArgs} from '../../shared/services/admin/orders/models/order-filters-model';
-import {OrdersState} from '../../shared/services/admin/orders/models/order-state-model';
-import {NotificationService} from '../../shared/services/notification.service';
-import {NavigationService} from '../../shared/services/router-service';
+import { Component, DestroyRef, Inject, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ShoppingCartProduct } from '../../shared/interfaces/shopping-cart-product.model';
+import { CartService } from '../../shared/services/cart.service';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { DecimalPipe } from '@angular/common';
+import { ProductModel } from '../../shared/interfaces/product.model';
+import { DATA_PROVIDER_TOKEN } from '../../shared/services/admin/const/data-provider-token';
+import { OrdersFacade } from '../../shared/services/admin/orders/facade/orders-facade.service';
+import { DataProviderModel } from '../../shared/services/admin/model/data-provider-facade.model';
+import { OrderDTO } from '../../shared/services/admin/orders/models/orderDTO';
+import { OrderArgs } from '../../shared/services/admin/orders/models/order-filters-model';
+import { OrdersState } from '../../shared/services/admin/orders/models/order-state-model';
+import { NotificationService } from '../../shared/services/notification.service';
+import { NavigationService } from '../../shared/services/router-service';
+import { AuthService } from '../../shared/services/auth.service';
 
 @Component({
   selector: 'app-order-details',
@@ -30,8 +31,8 @@ import {NavigationService} from '../../shared/services/router-service';
   standalone: true,
   styleUrl: './order-details.component.scss'
 })
-export class OrderDetailsComponent implements OnInit{
-  public shoppingCart: ShoppingCartProduct[] = []
+export class OrderDetailsComponent implements OnInit {
+  public shoppingCart: ShoppingCartProduct[] = [];
   private readonly destroyRef = inject(DestroyRef);
   public formDetails!: FormGroup;
 
@@ -39,34 +40,41 @@ export class OrderDetailsComponent implements OnInit{
     return this.cartService.getTotal;
   }
 
+  public get canEditPrices(): boolean {
+    return this.authService.isLoggedIn;
+  }
+
   constructor(
-    private cartService: CartService,
-    private _fb: FormBuilder,
+    private readonly cartService: CartService,
+    private readonly _fb: FormBuilder,
     private readonly _ns: NotificationService,
-    private router: NavigationService,
-    @Inject(DATA_PROVIDER_TOKEN) private dataProvider: DataProviderModel<OrderDTO, OrderArgs, OrdersState>,
+    private readonly router: NavigationService,
+    private readonly authService: AuthService,
+    @Inject(DATA_PROVIDER_TOKEN) private readonly dataProvider: DataProviderModel<OrderDTO, OrderArgs, OrdersState>,
   ) {}
 
-  ngOnInit() {
-    this.cartService.cart$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((products: ShoppingCartProduct[]) => {
-      this.shoppingCart = products;
-    })
+  public ngOnInit(): void {
+    this.cartService.cart$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((products: ShoppingCartProduct[]) => {
+        this.shoppingCart = products;
+      });
 
     this.formDetails = this._fb.group({
-      name: [null as File | null, [Validators.required]],
-      email: ['', [Validators.required]],
+      name: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required]],
       vin: ['', [Validators.required]],
       details: ['', [Validators.required]],
-    })
+    });
   }
 
   public removeOne(item: ShoppingCartProduct): void {
-    this.cartService.removeOne(item)
+    this.cartService.removeOne(item);
   }
 
   public addOne(item: ShoppingCartProduct): void {
-    this.cartService.addOne(item)
+    this.cartService.addOne(item);
   }
 
   public isInCart(id: string | undefined): number {
@@ -77,6 +85,29 @@ export class OrderDetailsComponent implements OnInit{
     const img = product?.image;
     if (!img?.base64 || !img?.contentType) return 'none';
     return `url("data:${img.contentType};base64,${img.base64}")`;
+  }
+
+  public updateItemPrice(item: ShoppingCartProduct, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const value = Number(input.value);
+
+    if (!item.id) {
+      this._ns.error('Produsul nu are id valid.', {
+        title: 'Eroare preț',
+        durationMs: 3000
+      });
+      return;
+    }
+
+    if (!Number.isFinite(value) || value < 0) {
+      this._ns.error('Introdu un preț valid.', {
+        title: 'Preț invalid',
+        durationMs: 3000
+      });
+      return;
+    }
+
+    this.cartService.updatePrice(item.id, value);
   }
 
   public sendOrder(): void {

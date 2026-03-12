@@ -1,9 +1,9 @@
-import {Injectable} from "@angular/core";
-import {BehaviorSubject, Observable} from "rxjs";
-import {CartServiceModel} from '../interfaces/cart.service.model';
-import {ProductModel} from '../interfaces/product.model';
-import {ShoppingCartProduct} from '../interfaces/shopping-cart-product.model';
-import {LocalStorageService} from './local-server.service';
+import { Injectable } from "@angular/core";
+import { BehaviorSubject, Observable } from "rxjs";
+import { CartServiceModel } from '../interfaces/cart.service.model';
+import { ProductModel } from '../interfaces/product.model';
+import { ShoppingCartProduct } from '../interfaces/shopping-cart-product.model';
+import { LocalStorageService } from './local-server.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,42 +11,48 @@ import {LocalStorageService} from './local-server.service';
 export class CartService implements CartServiceModel<ProductModel> {
   private cart: ShoppingCartProduct[] = [];
 
-
-  //Securities measure and updatable for every client
   private readonly cartSubject: BehaviorSubject<ShoppingCartProduct[]>;
   readonly cart$: Observable<ShoppingCartProduct[]>;
 
   constructor(private localStorage: LocalStorageService) {
-    this.cartSubject = new BehaviorSubject<ShoppingCartProduct[]>([]);
+    const savedCart = this.localStorage.get<ShoppingCartProduct[]>('cart', []);
+    this.cart = savedCart ?? [];
+
+    this.cartSubject = new BehaviorSubject<ShoppingCartProduct[]>(this.cart);
     this.cart$ = this.cartSubject.asObservable();
   }
 
   public get getTotal(): number {
-    let total: number = 0
-    this.cart.forEach(res => {
-      total = total + (res.price * (res?.howMany ?? 0));
-    })
+    let total = 0;
 
-    return total
+    this.cart.forEach((res: ShoppingCartProduct) => {
+      total += (Number(res.price) || 0) * (res?.howMany ?? 0);
+    });
+
+    return total;
   }
 
   public addMore(item: ProductModel, times: number): void {
-    const itemFromTheCart: ShoppingCartProduct | undefined = this.cart.find((res: ShoppingCartProduct) => res.id === item.id)
-    if(itemFromTheCart) {
+    const itemFromTheCart = this.cart.find((res: ShoppingCartProduct) => res.id === item.id);
+
+    if (itemFromTheCart) {
       itemFromTheCart.howMany = times;
     } else {
-      this.cart.push({...item, howMany: times});
+      this.cart.push({ ...item, howMany: times });
     }
+
     this.fetchData();
   }
 
   public addOne(item: ProductModel): void {
-    const itemFromTheCart: ShoppingCartProduct | undefined = this.cart.find((res: ShoppingCartProduct) => res.id === item.id)
-    if(itemFromTheCart) {
-      itemFromTheCart.howMany++
+    const itemFromTheCart = this.cart.find((res: ShoppingCartProduct) => res.id === item.id);
+
+    if (itemFromTheCart) {
+      itemFromTheCart.howMany++;
     } else {
-      this.cart.push({...item, howMany: 1});
+      this.cart.push({ ...item, howMany: 1 });
     }
+
     this.fetchData();
   }
 
@@ -56,36 +62,49 @@ export class CartService implements CartServiceModel<ProductModel> {
   }
 
   public removeMore(item: ShoppingCartProduct, times: number): void {
-    if(item && item.howMany > 1) {
-      item.howMany = times ;
+    if (item && item.howMany > 1) {
+      item.howMany = times;
     } else {
-      this.cart = this.cart.filter((res) => res.id !== item.id)
+      this.cart = this.cart.filter((res) => res.id !== item.id);
     }
+
     this.fetchData();
   }
 
   public removeOne(item: ProductModel): void {
-    const itemFromTheCart: ShoppingCartProduct | undefined = this.cart.find((res: ShoppingCartProduct) => res.id === item.id)
+    const itemFromTheCart = this.cart.find((res: ShoppingCartProduct) => res.id === item.id);
 
-    if(itemFromTheCart && itemFromTheCart.howMany > 1) {
-      itemFromTheCart.howMany = itemFromTheCart.howMany -1 ;
+    if (itemFromTheCart && itemFromTheCart.howMany > 1) {
+      itemFromTheCart.howMany = itemFromTheCart.howMany - 1;
     } else {
-      this.cart = this.cart.filter((res) => res.id !== item?.id)
+      this.cart = this.cart.filter((res) => res.id !== item?.id);
     }
+
+    this.fetchData();
+  }
+
+  public updatePrice(id: string, price: number): void {
+    const itemFromTheCart = this.cart.find((res: ShoppingCartProduct) => res.id === id);
+
+    if (!itemFromTheCart) {
+      return;
+    }
+
+    itemFromTheCart.price = price;
     this.fetchData();
   }
 
   public fetchData(): void {
-    this.cartSubject.next(this.cart);
+    this.cartSubject.next([...this.cart]);
     this.localStorage.set('cart', this.cart);
   }
 
   public howManyAreOfOne(id: string | undefined): number {
-    return this.cart.find(product => product.id === id)?.howMany ?? 0
+    return this.cart.find(product => product.id === id)?.howMany ?? 0;
   }
 
   public howManyAreThere(): number {
-    return this.cart.length ?? 0
+    return this.cart.length ?? 0;
   }
 
   public setCart(list: ShoppingCartProduct[]): void {

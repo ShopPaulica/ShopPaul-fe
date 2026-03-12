@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import {environment} from '../../../../../../environments/environment';
 import {VehiclesDTO} from '../models/vehiclesDTO';
 import {ApiItemResponse, ApiMessageResponse} from '../../../../interfaces/api/api-respons';
-import {DataProviderApiModel} from '../../model/data-provider-api.model';
 
 @Injectable({ providedIn: 'root' })
 export class VehiclesApiService{
