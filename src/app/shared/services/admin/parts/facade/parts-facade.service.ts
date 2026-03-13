@@ -1,14 +1,20 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, EMPTY, finalize, Observable, tap, catchError } from 'rxjs';
-import {ApiItemResponse, ApiMessageResponse} from '../../../../interfaces/api/api-respons';
+import { ApiItemResponse, ApiMessageResponse } from '../../../../interfaces/api/api-respons';
 import { PartsDTO } from '../models/partsDTO';
 import { DataProviderModel } from '../../model/data-provider-facade.model';
-import {PartsApiService} from '../api/parts-api.service';
-import {PartsState} from '../models/part-state-model';
-import {PartArgs} from '../models/part-filters-model';
+import { PartsApiService } from '../api/parts-api.service';
+import { PartsState } from '../models/part-state-model';
 
 @Injectable({ providedIn: 'root' })
-export class PartsFacade  {
+export class PartsFacade implements
+  DataProviderModel<
+    PartsDTO,
+    [section?: string, subsection?: string, title?: string],
+    PartsState
+  >
+{
+
   private readonly _section$ = new BehaviorSubject<string[] | null>(null);
   readonly sectionFiltersPage$ = this._section$.asObservable();
 
@@ -26,13 +32,24 @@ export class PartsFacade  {
 
   constructor(private readonly _api: PartsApiService) {}
 
+  /**
+   * Cerut de DataProviderModel
+   * doar redirecționează către fetchFiltersData
+   */
   public fetchData(section?: string, subsection?: string, title?: string): void {
+    this.fetchFiltersData(section, subsection, title);
+  }
+
+  /**
+   * Folosit pentru endpointul /parts/filters
+   */
+  public fetchFiltersData(section?: string, subsection?: string, title?: string): void {
     const { field, params } = this.resolveFilterRequest(section, subsection, title);
 
     this._loading$.next(true);
     this._error$.next(null);
 
-    this._api.fetchData(field, params).pipe(
+    this._api.fetchFilter(field, params).pipe(
       tap((res) => this.applyResult(field, res)),
       catchError((err) => {
         this._error$.next(err?.error?.message ?? 'Eroare la încărcarea filtrelor');
@@ -46,8 +63,8 @@ export class PartsFacade  {
     return this._api.saveData(data);
   }
 
-  public deleteData(params: Record<string, string>): Observable<ApiMessageResponse> {
-    return this._api.deleteData(params);
+  public deleteData(id: string): Observable<ApiMessageResponse> {
+    return this._api.deleteData(id);
   }
 
   private resolveFilterRequest(
@@ -55,8 +72,9 @@ export class PartsFacade  {
     subsection?: string,
     title?: string
   ): { field: string; params: Record<string, string> } {
+
     const params: Record<string, string> = {};
-    let field: string = 'section';
+    let field = 'section';
 
     if (section?.trim()) {
       params['section'] = section.trim();
@@ -76,7 +94,9 @@ export class PartsFacade  {
   }
 
   private applyResult(field: string, res: string[]): void {
+
     switch (field) {
+
       case 'section':
         this._section$.next(res);
         this._subsection$.next(null);

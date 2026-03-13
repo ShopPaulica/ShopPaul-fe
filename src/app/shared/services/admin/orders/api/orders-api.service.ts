@@ -15,17 +15,17 @@ OrderFetchDataModel
 > {
   constructor(private readonly _http: HttpClient) {}
 
-  fetchData(params: Record<string, string> = {}): Observable<OrderFetchDataModel> {
+  public fetchData(params: Record<string, string> = {}): Observable<OrderFetchDataModel> {
     return this._http.get<OrderFetchDataModel>(`${environment.apiUrl}/orders`, {
       params: {...params },
     });
   }
 
-  saveData(data: OrderDTO): Observable<ApiItemResponse<OrderDTO>> {
+  public saveData(data: OrderDTO): Observable<ApiItemResponse<OrderDTO>> {
     return this._http.post<ApiItemResponse<OrderDTO>>(`${environment.apiUrl}/orders`, data);
   }
 
-  deleteData(id: string): Observable<ApiMessageResponse> {
+  public deleteData(id: string): Observable<ApiMessageResponse> {
     return this._http.delete<ApiMessageResponse>(`${environment.apiUrl}/orders/${id}`);
   }
 }

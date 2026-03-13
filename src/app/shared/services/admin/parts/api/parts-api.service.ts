@@ -5,18 +5,29 @@ import { environment } from '../../../../../../environments/environment';
 import { PartsDTO } from '../models/partsDTO';
 import {ApiItemResponse, ApiMessageResponse} from '../../../../interfaces/api/api-respons';
 import {DataProviderApiModel} from '../../model/data-provider-api.model';
+import {PartFetchDataModel} from '../models/parts-fetch-data.model';
 
 @Injectable({ providedIn: 'root' })
-export class PartsApiService {
+export class PartsApiService implements
+  DataProviderApiModel<
+    PartsDTO,
+    PartFetchDataModel
+  >  {
   constructor(private readonly _http: HttpClient) {}
 
-  fetchData(field: string, params: Record<string, string> = {}): Observable<string[]> {
+  public fetchFilter(field: string, params: Record<string, string> = {}): Observable<string[]> {
     return this._http.get<string[]>(`${environment.apiUrl}/parts/filters`, {
       params: { field, ...params },
     });
   }
 
-  saveData(dto: PartsDTO): Observable<ApiItemResponse<PartsDTO>> {
+  public fetchData(params: Record<string, string> = {}): Observable<PartFetchDataModel> {
+    return this._http.get<PartFetchDataModel>(`${environment.apiUrl}/parts`, {
+      params: { ...params },
+    });
+  }
+
+  public saveData(dto: PartsDTO): Observable<ApiItemResponse<PartsDTO>> {
     const payload: Partial<PartsDTO> = {};
 
     if (dto.section?.trim()) payload.section = dto.section.trim();
@@ -26,7 +37,7 @@ export class PartsApiService {
     return this._http.post<ApiItemResponse<PartsDTO>>(`${environment.apiUrl}/parts`, payload);
   }
 
-  deleteData(params: Record<string, string> = {}): Observable<ApiMessageResponse> {
-    return this._http.delete<ApiMessageResponse>(`${environment.apiUrl}/parts`, { params });
+  public deleteData(id: string): Observable<ApiMessageResponse> {
+    return this._http.delete<ApiMessageResponse>(`${environment.apiUrl}/parts/${id}`);
   }
 }
