@@ -39,7 +39,7 @@ export class PartsFacade implements
   /**
    * Pentru tabel: GET /parts
    */
-  public fetchData(section?: string, subsection?: string, title?: string): void {
+  public fetchData(section?: string, subsection?: string, title?: string, currentPage?: number): void {
     this._loading$.next(true);
     this._error$.next(null);
 

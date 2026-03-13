@@ -95,6 +95,11 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
     this.filters.title = this.filters.title.trimStart();
   }
 
+  public onSearch(): void {
+    this.currentPage = 1;
+    this.fetchData();
+  }
+
   public onResetDeleteFilters(): void {
     this.filters = {
       section: '',
@@ -102,10 +107,29 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
       title: '',
     };
 
+    this.currentPage = 1;
     this.fetchData();
   }
 
-  public deletePartById(id?: string): void {
+  public prevPage(): void {
+    if (this.currentPage <= 1 || this.isLoading) {
+      return;
+    }
+
+    this.currentPage--;
+    this.fetchData();
+  }
+
+  public nextPage(): void {
+    if (this.currentPage >= this.totalPages || this.isLoading) {
+      return;
+    }
+
+    this.currentPage++;
+    this.fetchData();
+  }
+
+  public deletePartById(id: string): void {
     if (!id?.trim()) {
       this._ns.error('ID-ul part-ului lipsește.', {
         title: 'Delete Part',
@@ -136,11 +160,7 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
   }
 
   protected initFilters(): void {
-    this.dataProvider.fetchData(
-      this.filters.section,
-      this.filters.subsection,
-      this.filters.title
-    );
+    this.fetchData();
   }
 
   protected initSubscription(): void {
@@ -149,11 +169,15 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
       .subscribe((res: PartFetchDataModel | null) => {
         if (res) {
           this.parts = res.items ?? [];
-          this.totalItems = res.totalItems;
-          this.totalPages = res.totalPages;
-          this.pageSize = res.pageSize;
+          this.totalItems = res.totalItems ?? 0;
+          this.totalPages = res.totalPages ?? 0;
+          this.pageSize = res.pageSize ?? 0;
+          this.currentPage = res.page ?? this.currentPage;
         } else {
           this.parts = [];
+          this.totalItems = 0;
+          this.totalPages = 0;
+          this.pageSize = 0;
         }
 
         this.isLoading = false;
@@ -178,7 +202,8 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
     this.dataProvider.fetchData(
       this.filters.section,
       this.filters.subsection,
-      this.filters.title
+      this.filters.title,
+      this.currentPage
     );
   }
 }

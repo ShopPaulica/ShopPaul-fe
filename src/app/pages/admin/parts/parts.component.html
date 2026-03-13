@@ -47,7 +47,7 @@
       <button
         type="button"
         class="btn btn--primary"
-        (click)="fetchData()"
+        (click)="onSearch()"
         [disabled]="isLoading"
       >
         Caută
@@ -66,18 +66,18 @@
 
   <div class="parts-summary">
     <div class="parts-summary__item">
-      <span class="parts-summary__label">Loaded on page</span>
-      <strong class="parts-summary__value">{{ parts.length }}</strong>
-    </div>
-
-    <div class="parts-summary__item">
-      <span class="parts-summary__label">Total items</span>
+      <span class="parts-summary__label">Total parts</span>
       <strong class="parts-summary__value">{{ totalItems }}</strong>
     </div>
 
     <div class="parts-summary__item">
-      <span class="parts-summary__label">Total pages</span>
-      <strong class="parts-summary__value">{{ totalPages }}</strong>
+      <span class="parts-summary__label">Pagină</span>
+      <strong class="parts-summary__value">{{ currentPage }} / {{ totalPages }}</strong>
+    </div>
+
+    <div class="parts-summary__item">
+      <span class="parts-summary__label">Pe pagină</span>
+      <strong class="parts-summary__value">{{ pageSize }}</strong>
     </div>
   </div>
 
@@ -98,33 +98,61 @@
       <table class="parts-table">
         <thead>
         <tr>
+          <th>ID</th>
           <th>Section</th>
           <th>Subsection</th>
           <th>Title</th>
-          <th>Actions</th>
+          <th>Comenzi</th>
         </tr>
         </thead>
 
         <tbody>
           @for (part of parts; track part.id || $index) {
             <tr>
+              <td class="parts-table__id">{{ part.id }}</td>
               <td>{{ part.section || '-' }}</td>
               <td>{{ part.subsection || '-' }}</td>
               <td class="parts-table__description">{{ part.title || '-' }}</td>
               <td>
-                <button
-                  type="button"
-                  class="btn btn--danger btn--sm"
-                  (click)="deletePartById(part.id)"
-                  [disabled]="isLoading"
-                >
-                  Delete
-                </button>
+                <div class="parts-commands">
+                  <button
+                    type="button"
+                    class="btn btn--danger"
+                    (click)="deletePartById(part.id)"
+                    [disabled]="isLoading"
+                  >
+                    Delete
+                  </button>
+                </div>
               </td>
             </tr>
           }
         </tbody>
       </table>
     }
+  </div>
+
+  <div class="parts-pagination">
+    <button
+      type="button"
+      class="btn btn--secondary"
+      (click)="prevPage()"
+      [disabled]="currentPage <= 1 || isLoading"
+    >
+      Pagina anterioară
+    </button>
+
+    <span class="parts-pagination__info">
+      Pagina {{ currentPage }} din {{ totalPages }}
+    </span>
+
+    <button
+      type="button"
+      class="btn btn--secondary"
+      (click)="nextPage()"
+      [disabled]="currentPage >= totalPages || isLoading"
+    >
+      Pagina următoare
+    </button>
   </div>
 </div>
