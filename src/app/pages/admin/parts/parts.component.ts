@@ -9,7 +9,7 @@ import { PartsFacade } from '../../../shared/services/admin/parts/facade/parts-f
 import { DATA_PROVIDER_TOKEN } from '../../../shared/services/admin/const/data-provider-token';
 import { PartsDTO } from '../../../shared/services/admin/parts/models/partsDTO';
 import { PartsState } from '../../../shared/services/admin/parts/models/part-state-model';
-import { PartArgs } from '../../../shared/services/admin/parts/models/part-filters-model';
+import { IPartsFilters, PartArgs } from '../../../shared/services/admin/parts/models/part-filters-model';
 import { AdminCrudActionsBase } from '../models/admin-crud-actions';
 import { PartFetchDataModel } from '../../../shared/services/admin/parts/models/parts-fetch-data.model';
 
@@ -33,11 +33,8 @@ import { PartFetchDataModel } from '../../../shared/services/admin/parts/models/
 export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, PartsState> implements OnInit {
   public parts: PartsDTO[] = [];
 
-  public filters: {
-    section: string;
-    subsection: string;
-    title: string;
-  } = {
+  public filters: IPartsFilters = {
+    page: '1',
     section: '',
     subsection: '',
     title: '',
@@ -92,7 +89,7 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
   }
 
   public onTitleChange(): void {
-    this.filters.title = this.filters.title.trimStart();
+    this.filters.title = this.filters.title?.trimStart() ?? '';
   }
 
   public onSearch(): void {
@@ -102,6 +99,7 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
 
   public onResetDeleteFilters(): void {
     this.filters = {
+      page: '1',
       section: '',
       subsection: '',
       title: '',
@@ -199,11 +197,9 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
   }
 
   protected fetchData(): void {
-    this.dataProvider.fetchData(
-      this.filters.section,
-      this.filters.subsection,
-      this.filters.title,
-      this.currentPage
-    );
+    this.dataProvider.fetchData({
+      ...this.filters,
+      page: String(this.currentPage),
+    });
   }
 }

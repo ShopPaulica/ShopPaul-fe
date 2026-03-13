@@ -6,7 +6,7 @@ import { DataProviderModel } from '../../model/data-provider-facade.model';
 import { PartsApiService } from '../api/parts-api.service';
 import { PartsState } from '../models/part-state-model';
 import { PartFetchDataModel } from '../models/parts-fetch-data.model';
-import { PartArgs } from '../models/part-filters-model';
+import { IPartsFilters, PartArgs } from '../models/part-filters-model';
 
 @Injectable({ providedIn: 'root' })
 export class PartsFacade implements
@@ -39,25 +39,21 @@ export class PartsFacade implements
   /**
    * Pentru tabel: GET /parts
    */
-  public fetchData(section?: string, subsection?: string, title?: string, currentPage?: number): void {
+  public fetchData(params: IPartsFilters = {}): void {
     this._loading$.next(true);
     this._error$.next(null);
 
-    const params: Record<string, string> = {};
+    const normalizedParams: Record<string, string> = Object.entries(params).reduce(
+      (acc, [key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          acc[key] = String(value);
+        }
+        return acc;
+      },
+      {} as Record<string, string>
+    );
 
-    if (section?.trim()) {
-      params['section'] = section.trim();
-    }
-
-    if (subsection?.trim()) {
-      params['subsection'] = subsection.trim();
-    }
-
-    if (title?.trim()) {
-      params['title'] = title.trim();
-    }
-
-    this._api.fetchData(params)
+    this._api.fetchData(normalizedParams)
       .pipe(
         tap((res: PartFetchDataModel) => this._parts$.next(res)),
         catchError((err) => {
