@@ -11,7 +11,7 @@ import { PartsDTO } from '../../../shared/services/admin/parts/models/partsDTO';
 import { PartsState } from '../../../shared/services/admin/parts/models/part-state-model';
 import { PartArgs } from '../../../shared/services/admin/parts/models/part-filters-model';
 import { AdminCrudActionsBase } from '../models/admin-crud-actions';
-import {PartFetchDataModel} from '../../../shared/services/admin/parts/models/parts-fetch-data.model';
+import { PartFetchDataModel } from '../../../shared/services/admin/parts/models/parts-fetch-data.model';
 
 @Component({
   selector: 'app-parts',
@@ -76,7 +76,7 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
 
         this.formGroup.reset();
         this.onResetDeleteFilters();
-        this.initFilters();
+        this.fetchData();
       }),
       catchError((err: HttpErrorResponse) => {
         this._ns.error(
@@ -91,8 +91,6 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
     ).subscribe();
   }
 
-
-
   public onTitleChange(): void {
     this.filters.title = this.filters.title.trimStart();
   }
@@ -103,36 +101,31 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
       subsection: '',
       title: '',
     };
+
+    this.fetchData();
   }
 
-  public deleteByFilters(): void {
-    const payload: Record<string, string> = {};
-
-    if (this.filters.section.trim()) payload['section'] = this.filters.section.trim();
-    if (this.filters.subsection.trim()) payload['subsection'] = this.filters.subsection.trim();
-    if (this.filters.title.trim()) payload['title'] = this.filters.title.trim();
-
-    if (!Object.keys(payload).length) {
-      this._ns.error('Selectează cel puțin un filtru pentru ștergere.', {
+  public deletePartById(id?: string): void {
+    if (!id?.trim()) {
+      this._ns.error('ID-ul part-ului lipsește.', {
         title: 'Delete Part',
         durationMs: 4000
       });
       return;
     }
 
-    this.dataProvider.deleteData(payload as unknown as string).subscribe({
+    this.dataProvider.deleteData(id).subscribe({
       next: () => {
-        this._ns.success('Part-urile au fost șterse cu succes.', {
+        this._ns.success('Part-ul a fost șters cu succes.', {
           title: 'Delete Part',
           durationMs: 4000
         });
 
-        this.onResetDeleteFilters();
-        this.initFilters();
+        this.fetchData();
       },
       error: (err: HttpErrorResponse) => {
         this._ns.error(
-          err?.error?.message ?? 'Nu am putut șterge part-urile.',
+          err?.error?.message ?? 'Nu am putut șterge part-ul.',
           {
             title: 'Delete Part',
             durationMs: 4000
@@ -143,7 +136,11 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
   }
 
   protected initFilters(): void {
-    this.dataProvider.fetchData();
+    this.dataProvider.fetchData(
+      this.filters.section,
+      this.filters.subsection,
+      this.filters.title
+    );
   }
 
   protected initSubscription(): void {
@@ -155,6 +152,8 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
           this.totalItems = res.totalItems;
           this.totalPages = res.totalPages;
           this.pageSize = res.pageSize;
+        } else {
+          this.parts = [];
         }
 
         this.isLoading = false;
@@ -176,6 +175,10 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
   }
 
   protected fetchData(): void {
-    this.initFilters();
+    this.dataProvider.fetchData(
+      this.filters.section,
+      this.filters.subsection,
+      this.filters.title
+    );
   }
 }

@@ -2,7 +2,7 @@
   <div class="parts-page__header">
     <div>
       <h2 class="parts-page__title">Parts</h2>
-      <p class="parts-page__subtitle">Listă parts și filtre de ștergere</p>
+      <p class="parts-page__subtitle">Listă parts și filtre de căutare</p>
     </div>
   </div>
 
@@ -47,19 +47,10 @@
       <button
         type="button"
         class="btn btn--primary"
-        (click)="save()"
+        (click)="fetchData()"
         [disabled]="isLoading"
       >
-        Salvează
-      </button>
-
-      <button
-        type="button"
-        class="btn btn--danger"
-        (click)="deleteByFilters()"
-        [disabled]="isLoading"
-      >
-        Delete
+        Caută
       </button>
 
       <button
@@ -110,6 +101,7 @@
           <th>Section</th>
           <th>Subsection</th>
           <th>Title</th>
+          <th>Actions</th>
         </tr>
         </thead>
 
@@ -119,6 +111,16 @@
               <td>{{ part.section || '-' }}</td>
               <td>{{ part.subsection || '-' }}</td>
               <td class="parts-table__description">{{ part.title || '-' }}</td>
+              <td>
+                <button
+                  type="button"
+                  class="btn btn--danger btn--sm"
+                  (click)="deletePartById(part.id)"
+                  [disabled]="isLoading"
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           }
         </tbody>
