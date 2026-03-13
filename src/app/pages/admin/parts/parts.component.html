@@ -1,80 +1,128 @@
-<header class="header-admin">
-  <h2 [class.header-admin-active]="selectedTab ===2" (click)="selectTab(2)">Add</h2>
-  <h2>|</h2>
-  <h2 [class.header-admin-active]="selectedTab ===1"  (click)="selectTab(1)">Delete</h2>
-</header>
-@switch (selectedTab) {
-  @case (2) {
-    <div class="orders-page__header">
-      <div>
-        <h2 class="orders-page__title">Comenzi</h2>
-        <p class="orders-page__subtitle">Listă comenzi și filtre de căutare</p>
+<div class="parts-page">
+  <div class="parts-page__header">
+    <div>
+      <h2 class="parts-page__title">Parts</h2>
+      <p class="parts-page__subtitle">Listă parts și filtre de ștergere</p>
+    </div>
+  </div>
+
+  <div class="parts-filters">
+    <div class="parts-filters__grid">
+      <div class="parts-field">
+        <label class="parts-field__label" for="section">Section</label>
+        <input
+          id="section"
+          type="text"
+          [(ngModel)]="filters.section"
+          class="parts-field__input"
+          placeholder="Ex: MOTOR"
+        />
+      </div>
+
+      <div class="parts-field">
+        <label class="parts-field__label" for="subsection">Subsection</label>
+        <input
+          id="subsection"
+          type="text"
+          [(ngModel)]="filters.subsection"
+          class="parts-field__input"
+          placeholder="Ex: Ungere"
+        />
+      </div>
+
+      <div class="parts-field">
+        <label class="parts-field__label" for="title">Title</label>
+        <input
+          id="title"
+          type="text"
+          [(ngModel)]="filters.title"
+          class="parts-field__input"
+          placeholder="Ex: Filtru ulei"
+          (change)="onTitleChange()"
+        />
       </div>
     </div>
-    <div class="admin" [formGroup]="formGroup">
 
-      <div class="input-wrapper">
-        <label>Section</label>
-        <input type="text" formControlName="section" />
-      </div>
-
-      <div class="input-wrapper">
-        <label> Subsection</label>
-        <input type="text" formControlName="subsection" />
-      </div>
-
-      <div class="input-wrapper">
-        <label>Title</label>
-        <input type="text" formControlName="title" />
-      </div>
-
-      <button class="save-button" (click)="save()">
-        save
+    <div class="parts-filters__actions">
+      <button
+        type="button"
+        class="btn btn--primary"
+        (click)="save()"
+        [disabled]="isLoading"
+      >
+        Salvează
       </button>
-    </div>
-  }
-  @case (1) {
-    <div class="orders-page__header">
-      <div>
-        <h2 class="orders-page__title">Comenzi</h2>
-        <p class="orders-page__subtitle">Listă comenzi și filtre de căutare</p>
-      </div>
-    </div>
-    <div class="admin">
 
-      <div class="input-wrapper">
-        <label>Section</label>
-        <app-dropdown   [items]="sections"
-                        placeholder="Select Section"
-                        (selectedItemChange)="sectionSelected($event)"
-                        [allowClear]="true">
-
-        </app-dropdown>
-      </div>
-
-      <div class="input-wrapper">
-        <label>Subsection</label>
-        <app-dropdown   [items]="subsections"
-                        placeholder="Select Subsection"
-                        (selectedItemChange)="subsectionSelected($event)"
-                        [allowClear]="true">
-
-        </app-dropdown>
-      </div>
-
-      <div class="input-wrapper">
-        <label>Title</label>
-        <app-dropdown   [items]="titles"
-                        placeholder="Select Title"
-                        (selectedItemChange)="titleSelected($event)"
-                        [allowClear]="true">
-
-        </app-dropdown>
-      </div>
-
-      <button class="save-button" (click)="deleteByFilters()">
+      <button
+        type="button"
+        class="btn btn--danger"
+        (click)="deleteByFilters()"
+        [disabled]="isLoading"
+      >
         Delete
       </button>
+
+      <button
+        type="button"
+        class="btn btn--secondary"
+        (click)="onResetDeleteFilters()"
+        [disabled]="isLoading"
+      >
+        Resetează
+      </button>
     </div>
-  }
-}
+  </div>
+
+  <div class="parts-summary">
+    <div class="parts-summary__item">
+      <span class="parts-summary__label">Loaded on page</span>
+      <strong class="parts-summary__value">{{ parts.length }}</strong>
+    </div>
+
+    <div class="parts-summary__item">
+      <span class="parts-summary__label">Total items</span>
+      <strong class="parts-summary__value">{{ totalItems }}</strong>
+    </div>
+
+    <div class="parts-summary__item">
+      <span class="parts-summary__label">Total pages</span>
+      <strong class="parts-summary__value">{{ totalPages }}</strong>
+    </div>
+  </div>
+
+  <div class="parts-table-wrapper">
+    @if (isLoading) {
+      <div class="parts-state">
+        Se încarcă parts...
+      </div>
+    }
+
+    @if (!isLoading && !parts.length) {
+      <div class="parts-state parts-state--empty">
+        Nu există rezultate pentru filtrele selectate.
+      </div>
+    }
+
+    @if (!isLoading && parts.length) {
+      <table class="parts-table">
+        <thead>
+        <tr>
+          <th>Section</th>
+          <th>Subsection</th>
+          <th>Title</th>
+        </tr>
+        </thead>
+
+        <tbody>
+          @for (part of parts; track part.id || $index) {
+            <tr>
+              <td>{{ part.section || '-' }}</td>
+              <td>{{ part.subsection || '-' }}</td>
+              <td class="parts-table__description">{{ part.title || '-' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>

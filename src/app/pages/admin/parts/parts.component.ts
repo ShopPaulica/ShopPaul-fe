@@ -1,26 +1,24 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {ordersListComponent} from '../../../components/commands-list/orders-list.component';
-import {NotificationService} from '../../../shared/services/notification.service';
-import {catchError, takeUntil, tap, throwError} from 'rxjs';
-import {HttpErrorResponse} from '@angular/common/http';
-import {DropdownComponent} from '../../../components/dropdown/dropdown.component';
-import {AsyncPipe} from '@angular/common';
-import {PartsFacade} from '../../../shared/services/admin/parts/facade/parts-facade.service';
-import {DATA_PROVIDER_TOKEN} from '../../../shared/services/admin/const/data-provider-token';
-import {DataProviderModel} from '../../../shared/services/admin/model/data-provider-facade.model';
-import {PartsDTO} from '../../../shared/services/admin/parts/models/partsDTO';
-import {PartsState} from '../../../shared/services/admin/parts/models/part-state-model';
-import {PartArgs} from '../../../shared/services/admin/parts/models/part-filters-model';
-import {AdminCrudActionsBase} from '../models/admin-crud-actions';
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { NgIf } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
+import { catchError, takeUntil, tap, throwError } from 'rxjs';
+
+import { NotificationService } from '../../../shared/services/notification.service';
+import { PartsFacade } from '../../../shared/services/admin/parts/facade/parts-facade.service';
+import { DATA_PROVIDER_TOKEN } from '../../../shared/services/admin/const/data-provider-token';
+import { PartsDTO } from '../../../shared/services/admin/parts/models/partsDTO';
+import { PartsState } from '../../../shared/services/admin/parts/models/part-state-model';
+import { PartArgs } from '../../../shared/services/admin/parts/models/part-filters-model';
+import { AdminCrudActionsBase } from '../models/admin-crud-actions';
+import {PartFetchDataModel} from '../../../shared/services/admin/parts/models/parts-fetch-data.model';
 
 @Component({
   selector: 'app-parts',
   imports: [
     ReactiveFormsModule,
-    ordersListComponent,
-    DropdownComponent,
-    AsyncPipe,
+    FormsModule,
+    NgIf,
   ],
   providers: [
     {
@@ -33,71 +31,115 @@ import {AdminCrudActionsBase} from '../models/admin-crud-actions';
   styleUrl: './parts.component.scss'
 })
 export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, PartsState> implements OnInit {
-  public sections: string[] = [];
-  public subsections: string[] = [];
-  public titles: string[] = [];
-  private section: string = '';
-  private subsection: string = '';
-  private title: string = '';
+  public parts: PartsDTO[] = [];
+
+  public filters: {
+    section: string;
+    subsection: string;
+    title: string;
+  } = {
+    section: '',
+    subsection: '',
+    title: '',
+  };
 
   constructor(
     fb: FormBuilder,
-    @Inject(DATA_PROVIDER_TOKEN) dataProvider: DataProviderModel<PartsDTO, PartArgs, PartsState>,
+    @Inject(DATA_PROVIDER_TOKEN) protected override readonly dataProvider: PartsFacade,
     private readonly _ns: NotificationService
   ) {
     super(fb, dataProvider);
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
+    this.initGroupForm();
     this.initBase();
   }
 
   public save(): void {
+    if (this.formGroup.invalid) {
+      this.formGroup.markAllAsTouched();
+
+      this._ns.error('Completează toate câmpurile obligatorii.', {
+        title: 'Formular invalid',
+        durationMs: 4000
+      });
+      return;
+    }
+
     this.saveData().pipe(
       tap(() => {
-        this._ns.success('Success', { title: 'Create Part', durationMs: 4000 });
+        this._ns.success('Part-ul a fost salvat cu succes.', {
+          title: 'Create Part',
+          durationMs: 4000
+        });
+
+        this.formGroup.reset();
+        this.onResetDeleteFilters();
         this.initFilters();
       }),
       catchError((err: HttpErrorResponse) => {
-        this._ns.error('Nu am putut salva produsul. Eroare de server.', { title: 'Vehicle', durationMs: 4000 });
+        this._ns.error(
+          err?.error?.message ?? 'Nu am putut salva part-ul. Eroare de server.',
+          {
+            title: 'Create Part',
+            durationMs: 4000
+          }
+        );
         return throwError(() => err);
       })
     ).subscribe();
   }
 
-  public sectionSelected(section: string) {
-    if(section) {
-      this.dataProvider.fetchData(section);
-    } else {
-      this.initFilters();
-    }
-    this.section = section;
+
+
+  public onTitleChange(): void {
+    this.filters.title = this.filters.title.trimStart();
   }
 
-  public subsectionSelected(subsection: string) {
-    if(subsection && this.section) {
-      this.dataProvider.fetchData(this.section, subsection);
-    } else if(this.section) {
-      this.dataProvider.fetchData(this.section);
-    }
-    this.subsection = subsection;
-  }
-
-  public titleSelected(title: string) {
-    this.title = title;
+  public onResetDeleteFilters(): void {
+    this.filters = {
+      section: '',
+      subsection: '',
+      title: '',
+    };
   }
 
   public deleteByFilters(): void {
-   // this.dataProvider.deleteData({
-   //   section: this.section,
-   //   subsection: this.subsection,
-   //   title: this.title
-   // }).subscribe(
-   //   (res: any) => {
-   //     //todo
-   //     this._ns.success('Success', { title: 'Delete Part', durationMs: 4000 });
-   //   }
-   // )
+    const payload: Record<string, string> = {};
+
+    if (this.filters.section.trim()) payload['section'] = this.filters.section.trim();
+    if (this.filters.subsection.trim()) payload['subsection'] = this.filters.subsection.trim();
+    if (this.filters.title.trim()) payload['title'] = this.filters.title.trim();
+
+    if (!Object.keys(payload).length) {
+      this._ns.error('Selectează cel puțin un filtru pentru ștergere.', {
+        title: 'Delete Part',
+        durationMs: 4000
+      });
+      return;
+    }
+
+    this.dataProvider.deleteData(payload as unknown as string).subscribe({
+      next: () => {
+        this._ns.success('Part-urile au fost șterse cu succes.', {
+          title: 'Delete Part',
+          durationMs: 4000
+        });
+
+        this.onResetDeleteFilters();
+        this.initFilters();
+      },
+      error: (err: HttpErrorResponse) => {
+        this._ns.error(
+          err?.error?.message ?? 'Nu am putut șterge part-urile.',
+          {
+            title: 'Delete Part',
+            durationMs: 4000
+          }
+        );
+      }
+    });
   }
 
   protected initFilters(): void {
@@ -105,10 +147,25 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
   }
 
   protected initSubscription(): void {
-    this.dataProvider.sectionFiltersPage$.pipe(takeUntil(this.destroy$)).subscribe((sections: string[] | null) => this.sections = sections ?? []);
-    this.dataProvider.subsectionFiltersPage$.pipe(takeUntil(this.destroy$)).subscribe((subsections: string[] | null) => this.subsections = subsections ?? []);
-    this.dataProvider.titleFiltersPage$.pipe(takeUntil(this.destroy$)).subscribe((titles: string[] | null) => this.titles = titles ?? []);
-   }
+    this.dataProvider.parts$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res: PartFetchDataModel | null) => {
+        if (res) {
+          this.parts = res.items ?? [];
+          this.totalItems = res.totalItems;
+          this.totalPages = res.totalPages;
+          this.pageSize = res.pageSize;
+        }
+
+        this.isLoading = false;
+      });
+
+    this.dataProvider.loading$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((loading: boolean) => {
+        this.isLoading = loading;
+      });
+  }
 
   protected initGroupForm(): void {
     this.formGroup = this._fb.group({
@@ -119,5 +176,6 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
   }
 
   protected fetchData(): void {
+    this.initFilters();
   }
 }

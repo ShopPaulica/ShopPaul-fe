@@ -5,15 +5,19 @@ import { PartsDTO } from '../models/partsDTO';
 import { DataProviderModel } from '../../model/data-provider-facade.model';
 import { PartsApiService } from '../api/parts-api.service';
 import { PartsState } from '../models/part-state-model';
+import { PartFetchDataModel } from '../models/parts-fetch-data.model';
+import { PartArgs } from '../models/part-filters-model';
 
 @Injectable({ providedIn: 'root' })
 export class PartsFacade implements
   DataProviderModel<
     PartsDTO,
-    [section?: string, subsection?: string, title?: string],
+    PartArgs,
     PartsState
   >
 {
+  private readonly _parts$ = new BehaviorSubject<PartFetchDataModel | null>(null);
+  readonly parts$ = this._parts$.asObservable();
 
   private readonly _section$ = new BehaviorSubject<string[] | null>(null);
   readonly sectionFiltersPage$ = this._section$.asObservable();
@@ -33,15 +37,40 @@ export class PartsFacade implements
   constructor(private readonly _api: PartsApiService) {}
 
   /**
-   * Cerut de DataProviderModel
-   * doar redirecționează către fetchFiltersData
+   * Pentru tabel: GET /parts
    */
   public fetchData(section?: string, subsection?: string, title?: string): void {
-    this.fetchFiltersData(section, subsection, title);
+    this._loading$.next(true);
+    this._error$.next(null);
+
+    const params: Record<string, string> = {};
+
+    if (section?.trim()) {
+      params['section'] = section.trim();
+    }
+
+    if (subsection?.trim()) {
+      params['subsection'] = subsection.trim();
+    }
+
+    if (title?.trim()) {
+      params['title'] = title.trim();
+    }
+
+    this._api.fetchData(params)
+      .pipe(
+        tap((res: PartFetchDataModel) => this._parts$.next(res)),
+        catchError((err) => {
+          this._error$.next(err?.error?.message ?? 'Eroare la încărcarea parts');
+          return EMPTY;
+        }),
+        finalize(() => this._loading$.next(false))
+      )
+      .subscribe();
   }
 
   /**
-   * Folosit pentru endpointul /parts/filters
+   * Pentru dropdown-uri: GET /parts/filters
    */
   public fetchFiltersData(section?: string, subsection?: string, title?: string): void {
     const { field, params } = this.resolveFilterRequest(section, subsection, title);
@@ -49,14 +78,16 @@ export class PartsFacade implements
     this._loading$.next(true);
     this._error$.next(null);
 
-    this._api.fetchFilter(field, params).pipe(
-      tap((res) => this.applyResult(field, res)),
-      catchError((err) => {
-        this._error$.next(err?.error?.message ?? 'Eroare la încărcarea filtrelor');
-        return EMPTY;
-      }),
-      finalize(() => this._loading$.next(false))
-    ).subscribe();
+    this._api.fetchFilter(field, params)
+      .pipe(
+        tap((res: string[]) => this.applyResult(field, res)),
+        catchError((err) => {
+          this._error$.next(err?.error?.message ?? 'Eroare la încărcarea filtrelor');
+          return EMPTY;
+        }),
+        finalize(() => this._loading$.next(false))
+      )
+      .subscribe();
   }
 
   public saveData(data: PartsDTO): Observable<ApiItemResponse<PartsDTO>> {
@@ -72,7 +103,6 @@ export class PartsFacade implements
     subsection?: string,
     title?: string
   ): { field: string; params: Record<string, string> } {
-
     const params: Record<string, string> = {};
     let field = 'section';
 
@@ -94,9 +124,7 @@ export class PartsFacade implements
   }
 
   private applyResult(field: string, res: string[]): void {
-
     switch (field) {
-
       case 'section':
         this._section$.next(res);
         this._subsection$.next(null);

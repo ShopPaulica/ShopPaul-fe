@@ -38,6 +38,8 @@ export class PartsApiService implements
   }
 
   public deleteData(id: string): Observable<ApiMessageResponse> {
-    return this._http.delete<ApiMessageResponse>(`${environment.apiUrl}/parts/${id}`);
+    return this._http.delete<ApiMessageResponse>(
+      `${environment.apiUrl}/parts/${id}`
+    );
   }
 }
