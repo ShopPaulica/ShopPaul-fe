@@ -1,4 +1,4 @@
-import {Component, DestroyRef, inject, OnInit} from '@angular/core';
+import {Component, DestroyRef, Inject, inject, OnInit} from '@angular/core';
 import {ProductsServices} from '../../shared/services/products.services';
 import {ProductModel, ProductsPaginationModel} from '../../shared/interfaces/product.model';
 import {FormsModule} from '@angular/forms';
@@ -7,11 +7,16 @@ import {CartService} from '../../shared/services/cart.service';
 import {NavigationService} from '../../shared/services/router-service';
 import {SlideMenuComponent} from '../../components/slide-menu/slide-menu.component';
 import {detailsModalComponent} from '../../components/details-modal/details-modal.component';
-import {catchError, throwError} from 'rxjs';
+import {catchError, takeUntil, throwError} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {NotificationService} from '../../shared/services/notification.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AuthService} from '../../shared/services/auth.service';
+import {DATA_PROVIDER_TOKEN} from '../../shared/services/admin/const/data-provider-token';
+import {VehiclesDTO} from '../../shared/services/admin/vechicles/models/vehiclesDTO';
+import {VehicleArgs} from '../../shared/services/admin/vechicles/models/vehicle-filters-model';
+import {VehicleState} from '../../shared/services/admin/vechicles/models/vehicle-state-model';
+import {DataProviderModel} from '../../shared/services/admin/model/data-provider-facade.model';
 
 @Component({
   selector: 'app-products',
@@ -37,11 +42,22 @@ export class ProductsComponent implements OnInit {
   public pages: number[] = [];
   public firstPage!: number;
   public lastPage!: number;
+  public brands: string[] = [];
+  public models: string[] = [];
+  public engines: string[] = [];
+  public fuels: string[] = [];
+  public powers: string[] = [];
+  private brand: string = '';
+  private model: string = '';
+  private engine: string = '';
+  private fuel: string = '';
+  private power: string = '';
 
 
   constructor(
     private _products: ProductsServices,
     private _auth: AuthService,
+    @Inject(DATA_PROVIDER_TOKEN) public vehicleService: DataProviderModel<VehiclesDTO, VehicleArgs, VehicleState>,
     private readonly _ns: NotificationService,
     private cartService: CartService,
     protected routersService: NavigationService) {}
@@ -91,6 +107,14 @@ export class ProductsComponent implements OnInit {
     this.cartService.addOne(product);
   }
 
+  protected initSubscription(): void {
+    this.vehicleService.brandFiltersPage$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((brands: string[] | null) => this.brands = brands ?? []);
+    this.vehicleService.modelFiltersPage$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((models: string[] | null) => this.models = models ?? []);
+    this.vehicleService.engineFiltersPage$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((engines: string[] | null) => this.engines = engines ?? []);
+    this.vehicleService.fuelFiltersPage$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((fuels: string[] | null) => this.fuels = fuels ?? []);
+    this.vehicleService.powerFiltersPage$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((powers: string[] | null) => this.powers = powers ?? []);
+  }
+
   public isInCart(id: string | undefined): number {
     return id ? this.cartService.howManyAreOfOne(id) : 0;
   }
@@ -104,6 +128,56 @@ export class ProductsComponent implements OnInit {
     const img = product?.image;
     if (!img?.base64 || !img?.contentType) return 'none';
     return `url("data:${img.contentType};base64,${img.base64}")`;
+  }
+
+  public brandSelected(brand: string) {
+    if(brand) {
+      this.vehicleService.fetchFilter(brand);
+    } else {
+      this.initFilters();
+    }
+    this.brand = brand;
+  }
+
+  protected initFilters(): void {
+    this.vehicleService.fetchData();
+  }
+
+  public modelSelected(model: string) {
+    if(model && this.brand) {
+      this.vehicleService.fetchFilter(this.brand, model);
+    } else if(this.brand) {
+      this.vehicleService.fetchFilter(this.brand);
+    }
+    this.model = model;
+  }
+
+  public enginesSelected(engine: string) {
+    if(engine) {
+      this.vehicleService.fetchFilter(this.brand, this.model,this.fuel, engine);
+    } else if(this.brand) {
+      this.vehicleService.fetchFilter(this.brand, this.model,this.fuel);
+    }
+    this.engine = engine;
+  }
+
+
+  public powersSelected(power: string) {
+    if(power) {
+      this.vehicleService.fetchFilter(this.brand, this.model,this.fuel, this.engine, power);
+    } else if(this.brand) {
+      this.vehicleService.fetchFilter(this.brand, this.model,this.fuel, this.engine);
+    }
+    this.power = power;
+  }
+
+  public fuelSelected(fuel: string) {
+    if(fuel) {
+      this.vehicleService.fetchFilter(this.brand, this.model, fuel);
+    } else if(this.brand) {
+      this.vehicleService.fetchFilter(this.brand, this.model);
+    }
+    this.fuel = fuel;
   }
 
   public deleteProduct(id: string): void {

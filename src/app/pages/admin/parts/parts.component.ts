@@ -127,7 +127,7 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
     this.fetchData();
   }
 
-  public deletePartById(id: string): void {
+  public deletePartById(id?: string): void {
     if (!id?.trim()) {
       this._ns.error('ID-ul part-ului lipsește.', {
         title: 'Delete Part',

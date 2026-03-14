@@ -4,12 +4,21 @@ import {VehiclesApiService} from '../api/vehicles-api.service';
 import {VehiclesDTO} from '../models/vehiclesDTO';
 import {ApiItemResponse, ApiMessageResponse} from '../../../../interfaces/api/api-respons';
 import {DataProviderModel} from '../../model/data-provider-facade.model';
-import {VehicleArgs} from '../models/vehicle-filters-model';
+import {IVehicleFilters, VehicleArgs} from '../models/vehicle-filters-model';
 import {VehicleState} from '../models/vehicle-state-model';
+import {VehiclesFetchDataModel} from '../models/vehicles-fetch-data.model';
 
 @Injectable({ providedIn: 'root' })
-export class VehiclesFacade {
+export class VehiclesFacade implements
+  DataProviderModel<
+    VehiclesDTO,
+    VehicleArgs,
+    VehicleState
+  >{
   //todo move it in a store so that it will be providedIn a module when is needed
+  private readonly _vehicles$ = new BehaviorSubject<VehiclesFetchDataModel | null>(null);
+  readonly vehicles$ = this._vehicles$.asObservable();
+
   private readonly _brand$ = new BehaviorSubject<string[] | null>(null);
   readonly brandFiltersPage$ = this._brand$.asObservable();
 
@@ -33,13 +42,13 @@ export class VehiclesFacade {
 
   constructor(private readonly _api: VehiclesApiService) {}
 
-  public fetchData(brand?: string, model?: string, fuel?: string, engine?: string, power?: string): void {
+  public fetchFilter(brand?: string, model?: string, fuel?: string, engine?: string, power?: string): void {
     const { field, params } = this.resolveFilterRequest(brand, model, fuel, engine, power);
 
     this._loading$.next(true);
     this._error$.next(null);
 
-    this._api.fetchData(field, params).pipe(
+    this._api.fetchFilter(field, params).pipe(
       tap((res) => this.applyResult(field, res)),
       catchError((err) => {
         this._error$.next(err?.error?.message ?? 'Eroare la încărcarea filtrelor');
@@ -49,12 +58,42 @@ export class VehiclesFacade {
     ).subscribe();
   }
 
+  /**
+   * Pentru tabel: GET /vehicles
+   */
+  public fetchData(params: IVehicleFilters = {}): void {
+    this._loading$.next(true);
+    this._error$.next(null);
+
+    const normalizedParams: Record<string, string> = Object.entries(params).reduce(
+      (acc, [key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          acc[key] = String(value);
+        }
+        return acc;
+      },
+      {} as Record<string, string>
+    );
+
+    this._api.fetchData(normalizedParams)
+      .pipe(
+        tap((res: VehiclesFetchDataModel) => this._vehicles$.next(res)),
+        catchError((err) => {
+          this._error$.next(err?.error?.message ?? 'Eroare la încărcarea de maşini');
+          return EMPTY;
+        }),
+        finalize(() => this._loading$.next(false))
+      )
+      .subscribe();
+  }
+
+
   public saveData(data: VehiclesDTO): Observable<ApiItemResponse<VehiclesDTO>> {
     return this._api.saveData(data);
   }
 
-  public deleteData(params: Record<string, string>): Observable<ApiMessageResponse> {
-    return this._api.deleteData(params);
+  public deleteData(id: string): Observable<ApiMessageResponse> {
+    return this._api.deleteData(id);
   }
 
   private resolveFilterRequest(

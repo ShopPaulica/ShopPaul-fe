@@ -1,109 +1,183 @@
-<header class="header-admin">
-  <h2 [class.header-admin-active]="selectedTab ===2" (click)="selectTab(2)">Add</h2>
-  <h2>|</h2>
-  <h2 [class.header-admin-active]="selectedTab ===1"  (click)="selectTab(1)">Delete</h2>
-</header>
-@switch (selectedTab) {
-  @case (2) {
-    <div class="orders-page__header">
-      <div>
-        <h2 class="orders-page__title">Comenzi</h2>
-        <p class="orders-page__subtitle">Listă comenzi și filtre de căutare</p>
+<div class="vehicles-page">
+  <div class="vehicles-page__header">
+    <div>
+      <h2 class="vehicles-page__title">Vehicles</h2>
+      <p class="vehicles-page__subtitle">Listă vehicule și filtre de căutare</p>
+    </div>
+  </div>
+
+  <div class="vehicles-filters">
+    <div class="vehicles-filters__grid">
+      <div class="vehicles-field">
+        <label class="vehicles-field__label" for="brand">Brand</label>
+        <input
+          id="brand"
+          type="text"
+          [(ngModel)]="filters.brand"
+          class="vehicles-field__input"
+          placeholder="Ex: BMW"
+        />
+      </div>
+
+      <div class="vehicles-field">
+        <label class="vehicles-field__label" for="model">Model</label>
+        <input
+          id="model"
+          type="text"
+          [(ngModel)]="filters.model"
+          class="vehicles-field__input"
+          placeholder="Ex: X5"
+        />
+      </div>
+
+      <div class="vehicles-field">
+        <label class="vehicles-field__label" for="fuel">Fuel</label>
+        <input
+          id="fuel"
+          type="text"
+          [(ngModel)]="filters.fuel"
+          class="vehicles-field__input"
+          placeholder="Ex: Diesel"
+        />
+      </div>
+
+      <div class="vehicles-field">
+        <label class="vehicles-field__label" for="engine">Engine</label>
+        <input
+          id="engine"
+          type="text"
+          [(ngModel)]="filters.engine"
+          class="vehicles-field__input"
+          placeholder="Ex: 3.0"
+        />
+      </div>
+
+      <div class="vehicles-field">
+        <label class="vehicles-field__label" for="power">Power</label>
+        <input
+          id="power"
+          type="text"
+          [(ngModel)]="filters.power"
+          class="vehicles-field__input"
+          placeholder="Ex: 286"
+        />
       </div>
     </div>
-<div class="admin" [formGroup]="formGroup">
-  <div class="input-wrapper">
-    <label>Brand</label>
-    <input type="text" formControlName="brand" />
-  </div>
 
-  <div class="input-wrapper">
-    <label> Model</label>
-    <input type="text" formControlName="model" />
-  </div>
+    <div class="vehicles-filters__actions">
+      <button
+        type="button"
+        class="btn btn--primary"
+        (click)="onSearch()"
+        [disabled]="isLoading"
+      >
+        Caută
+      </button>
 
-  <div class="input-wrapper">
-    <label>Fuel</label>
-    <input type="text" formControlName="fuel" />
-  </div>
-
-  <div class="input-wrapper">
-    <label>Engine</label>
-    <input type="text" formControlName="engine" />
-  </div>
-
-  <div class="input-wrapper">
-    <label> Power</label>
-    <input type="text" formControlName="power" />
-  </div>
-
-  <button class="save-button" (click)="save()">
-    save
-  </button>
-</div>
-  }
-  @case (1) {
-    <div class="orders-page__header">
-      <div>
-        <h2 class="orders-page__title">Comenzi</h2>
-        <p class="orders-page__subtitle">Listă comenzi și filtre de căutare</p>
-      </div>
-    </div>
-    <div class="admin">
-
-      <div class="input-wrapper">
-        <label>Brand</label>
-        <app-dropdown   [items]="brands"
-                        placeholder="Select Brand"
-                        (selectedItemChange)="brandSelected($event)"
-                        [allowClear]="true">
-
-        </app-dropdown>
-      </div>
-
-      <div class="input-wrapper">
-        <label>Model</label>
-        <app-dropdown   [items]="models"
-                        placeholder="Select Model"
-                        (selectedItemChange)="modelSelected($event)"
-                        [allowClear]="true">
-
-        </app-dropdown>
-      </div>
-
-      <div class="input-wrapper">
-        <label>Fuel</label>
-        <app-dropdown   [items]="fuels"
-                        placeholder="Select Fuel"
-                        (selectedItemChange)="fuelSelected($event)"
-                        [allowClear]="true">
-
-        </app-dropdown>
-      </div>
-
-      <div class="input-wrapper">
-        <label>Engine</label>
-        <app-dropdown   [items]="engines"
-                        placeholder="Select Engine"
-                        (selectedItemChange)="enginesSelected($event)"
-                        [allowClear]="true">
-
-        </app-dropdown>
-      </div>
-
-      <div class="input-wrapper">
-        <label>Power</label>
-        <app-dropdown   [items]="powers"
-                        placeholder="Select Engine"
-                        (selectedItemChange)="powersSelected($event)"
-                        [allowClear]="true">
-
-        </app-dropdown>
-      </div>
-
-      <button class="save-button" (click)="deleteByFilters()">
-        Delete
+      <button
+        type="button"
+        class="btn btn--secondary"
+        (click)="onReset()"
+        [disabled]="isLoading"
+      >
+        Resetează
       </button>
     </div>
-  }
-}
+  </div>
+
+  <div class="vehicles-summary">
+    <div class="vehicles-summary__item">
+      <span class="vehicles-summary__label">Total vehicule</span>
+      <strong class="vehicles-summary__value">{{ totalItems }}</strong>
+    </div>
+
+    <div class="vehicles-summary__item">
+      <span class="vehicles-summary__label">Pagină</span>
+      <strong class="vehicles-summary__value">{{ currentPage }} / {{ totalPages }}</strong>
+    </div>
+
+    <div class="vehicles-summary__item">
+      <span class="vehicles-summary__label">Pe pagină</span>
+      <strong class="vehicles-summary__value">{{ pageSize }}</strong>
+    </div>
+  </div>
+
+  <div class="vehicles-table-wrapper">
+    @if (isLoading) {
+      <div class="vehicles-state">
+        Se încarcă vehiculele...
+      </div>
+    }
+
+    @if (!isLoading && !vehicles.length) {
+      <div class="vehicles-state vehicles-state--empty">
+        Nu există vehicule pentru filtrele selectate.
+      </div>
+    }
+
+    @if (!isLoading && vehicles.length) {
+      <table class="vehicles-table">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Brand</th>
+          <th>Model</th>
+          <th>Fuel</th>
+          <th>Engine</th>
+          <th>Power</th>
+          <th>Comenzi</th>
+        </tr>
+        </thead>
+
+        <tbody>
+          @for (vehicle of vehicles; track vehicle.id || $index) {
+            <tr>
+              <td class="vehicles-table__id">{{ vehicle.id || '-' }}</td>
+              <td>{{ vehicle.brand || '-' }}</td>
+              <td>{{ vehicle.model || '-' }}</td>
+              <td>{{ vehicle.fuel || '-' }}</td>
+              <td>{{ vehicle.engine || '-' }}</td>
+              <td>{{ vehicle.power || '-' }}</td>
+              <td>
+                <div class="vehicles-commands">
+                  <button
+                    type="button"
+                    class="btn btn--danger"
+                    (click)="deleteVehicleById(vehicle.id)"
+                    [disabled]="isLoading"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+
+  <div class="vehicles-pagination">
+    <button
+      type="button"
+      class="btn btn--secondary"
+      (click)="prevPage()"
+      [disabled]="currentPage <= 1 || isLoading"
+    >
+      Pagina anterioară
+    </button>
+
+    <span class="vehicles-pagination__info">
+      Pagina {{ currentPage }} din {{ totalPages }}
+    </span>
+
+    <button
+      type="button"
+      class="btn btn--secondary"
+      (click)="nextPage()"
+      [disabled]="currentPage >= totalPages || isLoading"
+    >
+      Pagina următoare
+    </button>
+  </div>
+</div>
