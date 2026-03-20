@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, takeUntil, tap, throwError } from 'rxjs';
@@ -9,7 +9,7 @@ import { VehiclesFacade } from '../../../shared/services/admin/vechicles/facade/
 import { DATA_PROVIDER_TOKEN } from '../../../shared/services/admin/const/data-provider-token';
 import { VehiclesDTO } from '../../../shared/services/admin/vechicles/models/vehiclesDTO';
 import { VehicleState } from '../../../shared/services/admin/vechicles/models/vehicle-state-model';
-import { IVehicleFilters, VehicleArgs } from '../../../shared/services/admin/vechicles/models/vehicle-filters-model';
+import { VehicleArgs } from '../../../shared/services/admin/vechicles/models/vehicle-filters-model';
 import { AdminCrudActionsBase } from '../models/admin-crud-actions';
 import { VehiclesFetchDataModel } from '../../../shared/services/admin/vechicles/models/vehicles-fetch-data.model';
 
@@ -32,15 +32,6 @@ import { VehiclesFetchDataModel } from '../../../shared/services/admin/vechicles
 })
 export class VehiclesComponent extends AdminCrudActionsBase<VehiclesDTO, VehicleArgs, VehicleState> implements OnInit {
   public vehicles: VehiclesDTO[] = [];
-
-  public filters: IVehicleFilters = {
-    page: '1',
-    brand: '',
-    model: '',
-    fuel: '',
-    engine: '',
-    power: '',
-  };
 
   constructor(
     fb: FormBuilder,
@@ -73,8 +64,15 @@ export class VehiclesComponent extends AdminCrudActionsBase<VehiclesDTO, Vehicle
           durationMs: 4000
         });
 
-        this.formGroup.reset();
-        this.onReset();
+        this.formGroup.reset({
+          brand: '',
+          model: '',
+          fuel: '',
+          engine: '',
+          power: '',
+        });
+
+        this.currentPage = 1;
         this.fetchData();
       }),
       catchError((err: HttpErrorResponse) => {
@@ -96,14 +94,13 @@ export class VehiclesComponent extends AdminCrudActionsBase<VehiclesDTO, Vehicle
   }
 
   public onReset(): void {
-    this.filters = {
-      page: '1',
+    this.formGroup.reset({
       brand: '',
       model: '',
       fuel: '',
       engine: '',
       power: '',
-    };
+    });
 
     this.currentPage = 1;
     this.fetchData();
@@ -199,8 +196,14 @@ export class VehiclesComponent extends AdminCrudActionsBase<VehiclesDTO, Vehicle
   }
 
   protected fetchData(): void {
+    const raw = this.formGroup.getRawValue();
+
     this.dataProvider.fetchData({
-      ...this.filters,
+      brand: raw.brand?.trim() || '',
+      model: raw.model?.trim() || '',
+      fuel: raw.fuel?.trim() || '',
+      engine: raw.engine?.trim() || '',
+      power: raw.power?.trim() || '',
       page: String(this.currentPage),
     });
   }

@@ -6,14 +6,14 @@
     </div>
   </div>
 
-  <div class="vehicles-filters">
+  <div class="vehicles-filters" [formGroup]="formGroup">
     <div class="vehicles-filters__grid">
       <div class="vehicles-field">
         <label class="vehicles-field__label" for="brand">Brand</label>
         <input
           id="brand"
           type="text"
-          [(ngModel)]="filters.brand"
+          formControlName="brand"
           class="vehicles-field__input"
           placeholder="Ex: BMW"
         />
@@ -24,7 +24,7 @@
         <input
           id="model"
           type="text"
-          [(ngModel)]="filters.model"
+          formControlName="model"
           class="vehicles-field__input"
           placeholder="Ex: X5"
         />
@@ -35,7 +35,7 @@
         <input
           id="fuel"
           type="text"
-          [(ngModel)]="filters.fuel"
+          formControlName="fuel"
           class="vehicles-field__input"
           placeholder="Ex: Diesel"
         />
@@ -46,7 +46,7 @@
         <input
           id="engine"
           type="text"
-          [(ngModel)]="filters.engine"
+          formControlName="engine"
           class="vehicles-field__input"
           placeholder="Ex: 3.0"
         />
@@ -57,7 +57,7 @@
         <input
           id="power"
           type="text"
-          [(ngModel)]="filters.power"
+          formControlName="power"
           class="vehicles-field__input"
           placeholder="Ex: 286"
         />
@@ -72,6 +72,15 @@
         [disabled]="isLoading"
       >
         Caută
+      </button>
+
+      <button
+        type="button"
+        class="btn btn--green"
+        (click)="save()"
+        [disabled]="isLoading"
+      >
+        Adaugă
       </button>
 
       <button

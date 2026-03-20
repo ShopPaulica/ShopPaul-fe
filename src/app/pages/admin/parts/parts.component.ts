@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, takeUntil, tap, throwError } from 'rxjs';
@@ -9,7 +9,7 @@ import { PartsFacade } from '../../../shared/services/admin/parts/facade/parts-f
 import { DATA_PROVIDER_TOKEN } from '../../../shared/services/admin/const/data-provider-token';
 import { PartsDTO } from '../../../shared/services/admin/parts/models/partsDTO';
 import { PartsState } from '../../../shared/services/admin/parts/models/part-state-model';
-import { IPartsFilters, PartArgs } from '../../../shared/services/admin/parts/models/part-filters-model';
+import { PartArgs } from '../../../shared/services/admin/parts/models/part-filters-model';
 import { AdminCrudActionsBase } from '../models/admin-crud-actions';
 import { PartFetchDataModel } from '../../../shared/services/admin/parts/models/parts-fetch-data.model';
 
@@ -32,13 +32,6 @@ import { PartFetchDataModel } from '../../../shared/services/admin/parts/models/
 })
 export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, PartsState> implements OnInit {
   public parts: PartsDTO[] = [];
-
-  public filters: IPartsFilters = {
-    page: '1',
-    section: '',
-    subsection: '',
-    title: '',
-  };
 
   constructor(
     fb: FormBuilder,
@@ -71,8 +64,13 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
           durationMs: 4000
         });
 
-        this.formGroup.reset();
-        this.onResetDeleteFilters();
+        this.formGroup.reset({
+          section: '',
+          subsection: '',
+          title: '',
+        });
+
+        this.currentPage = 1;
         this.fetchData();
       }),
       catchError((err: HttpErrorResponse) => {
@@ -88,22 +86,17 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
     ).subscribe();
   }
 
-  public onTitleChange(): void {
-    this.filters.title = this.filters.title?.trimStart() ?? '';
-  }
-
   public onSearch(): void {
     this.currentPage = 1;
     this.fetchData();
   }
 
   public onResetDeleteFilters(): void {
-    this.filters = {
-      page: '1',
+    this.formGroup.reset({
       section: '',
       subsection: '',
       title: '',
-    };
+    });
 
     this.currentPage = 1;
     this.fetchData();
@@ -197,8 +190,12 @@ export class PartsComponent extends AdminCrudActionsBase<PartsDTO, PartArgs, Par
   }
 
   protected fetchData(): void {
+    const raw = this.formGroup.getRawValue();
+
     this.dataProvider.fetchData({
-      ...this.filters,
+      section: raw.section?.trim() || '',
+      subsection: raw.subsection?.trim() || '',
+      title: raw.title?.trim() || '',
       page: String(this.currentPage),
     });
   }

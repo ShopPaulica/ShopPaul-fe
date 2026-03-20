@@ -6,14 +6,14 @@
     </div>
   </div>
 
-  <div class="parts-filters">
+  <div class="parts-filters" [formGroup]="formGroup">
     <div class="parts-filters__grid">
       <div class="parts-field">
         <label class="parts-field__label" for="section">Section</label>
         <input
           id="section"
           type="text"
-          [(ngModel)]="filters.section"
+          formControlName="section"
           class="parts-field__input"
           placeholder="Ex: MOTOR"
         />
@@ -24,7 +24,7 @@
         <input
           id="subsection"
           type="text"
-          [(ngModel)]="filters.subsection"
+          formControlName="subsection"
           class="parts-field__input"
           placeholder="Ex: Ungere"
         />
@@ -35,10 +35,9 @@
         <input
           id="title"
           type="text"
-          [(ngModel)]="filters.title"
+          formControlName="title"
           class="parts-field__input"
           placeholder="Ex: Filtru ulei"
-          (change)="onTitleChange()"
         />
       </div>
     </div>
@@ -51,6 +50,15 @@
         [disabled]="isLoading"
       >
         Caută
+      </button>
+
+      <button
+        type="button"
+        class="btn btn--green"
+        (click)="save()"
+        [disabled]="isLoading"
+      >
+        Adaugă
       </button>
 
       <button

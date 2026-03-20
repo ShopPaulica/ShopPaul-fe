@@ -222,3 +222,12 @@
     align-items: stretch;
   }
 }
+
+.btn--green {
+  background: rgb(0, 147, 19);
+  color: #fff;
+}
+
+.btn--green:hover:not(:disabled) {
+  background: rgb(0, 125, 16);
+}
