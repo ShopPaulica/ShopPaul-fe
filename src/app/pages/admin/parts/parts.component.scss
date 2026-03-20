@@ -203,3 +203,11 @@
     flex-direction: column;
   }
 }
+
+.parts-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+}
