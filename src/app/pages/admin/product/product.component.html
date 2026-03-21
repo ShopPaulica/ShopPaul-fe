@@ -1,0 +1,139 @@
+<div class="admin">
+  <div class="product-card" [formGroup]="formProduct">
+    <div class="product-card__header">
+      <h2 class="product-card__title">Adaugă produs</h2>
+      <p class="product-card__subtitle">
+        Completează informațiile produsului și încarcă o imagine.
+      </p>
+    </div>
+
+    <div class="product-card__preview file-preview">
+      @if (previewUrl) {
+        <img [src]="previewUrl" alt="Preview" />
+      } @else {
+        <div class="file-preview__empty">
+          <span class="file-preview__icon">🖼️</span>
+          <span>Preview imagine</span>
+        </div>
+      }
+    </div>
+
+    <div class="file-field">
+      <input
+        #fileInput
+        class="file-input"
+        type="file"
+        accept="image/*"
+        (change)="onImageSelected($event)"
+      />
+
+      <button
+        type="button"
+        class="file-btn"
+        (click)="fileInput.click()"
+      >
+        Alege imagine
+      </button>
+
+      <span class="file-name">
+        {{ selectedFileName || 'Niciun fișier selectat' }}
+      </span>
+    </div>
+
+    <div class="input-wrapper">
+      <label>Nume produs</label>
+      <input type="text" formControlName="name" />
+    </div>
+
+    <div class="input-wrapper">
+      <label>Descriere</label>
+      <input type="text" formControlName="description" />
+    </div>
+
+    <div class="input-wrapper">
+      <label>Preț</label>
+      <input type="number" formControlName="price" />
+    </div>
+
+    <div class="filters-grid">
+      <app-dropdown
+        [items]="brands"
+        [selectedItem]="formProduct.get('brand')?.value || null"
+        placeholder="Select Brand"
+        (selectedItemChange)="brandSelected($event)"
+        [allowClear]="true">
+      </app-dropdown>
+
+      <app-dropdown
+        [items]="models"
+        [selectedItem]="formProduct.get('model')?.value || null"
+        placeholder="Select Model"
+        (selectedItemChange)="modelSelected($event)"
+        [allowClear]="true"
+        [disabled]="!formProduct.get('brand')?.value">
+      </app-dropdown>
+
+      <app-dropdown
+        [items]="fuels"
+        [selectedItem]="formProduct.get('fuel')?.value || null"
+        placeholder="Select Fuel"
+        (selectedItemChange)="fuelSelected($event)"
+        [allowClear]="true"
+        [disabled]="!formProduct.get('brand')?.value || !formProduct.get('model')?.value">
+      </app-dropdown>
+
+      <app-dropdown
+        [items]="engines"
+        [selectedItem]="formProduct.get('engine')?.value || null"
+        placeholder="Select Engine"
+        (selectedItemChange)="engineSelected($event)"
+        [allowClear]="true"
+        [disabled]="!formProduct.get('brand')?.value || !formProduct.get('model')?.value || !formProduct.get('fuel')?.value">
+      </app-dropdown>
+
+      <app-dropdown
+        [items]="powers"
+        [selectedItem]="formProduct.get('power')?.value || null"
+        placeholder="Select Power"
+        (selectedItemChange)="powerSelected($event)"
+        [allowClear]="true"
+        [disabled]="!formProduct.get('brand')?.value || !formProduct.get('model')?.value || !formProduct.get('fuel')?.value || !formProduct.get('engine')?.value">
+      </app-dropdown>
+
+      <app-dropdown
+        [items]="sections"
+        [selectedItem]="formProduct.get('section')?.value || null"
+        placeholder="Select Section"
+        (selectedItemChange)="sectionSelected($event)"
+        [allowClear]="true">
+      </app-dropdown>
+
+      <app-dropdown
+        [items]="subsections"
+        [selectedItem]="formProduct.get('subsection')?.value || null"
+        placeholder="Select Subsection"
+        (selectedItemChange)="subsectionSelected($event)"
+        [allowClear]="true"
+        [disabled]="!formProduct.get('section')?.value">
+      </app-dropdown>
+
+      <app-dropdown
+        [items]="titles"
+        [selectedItem]="formProduct.get('title')?.value || null"
+        placeholder="Select Title"
+        (selectedItemChange)="titleSelected($event)"
+        [allowClear]="true"
+        [disabled]="!formProduct.get('section')?.value || !formProduct.get('subsection')?.value">
+      </app-dropdown>
+    </div>
+
+    <button
+      type="button"
+      class="save-button"
+      [disabled]="formProduct.invalid"
+      (click)="saveProduct()"
+    >
+      Salvează produsul
+    </button>
+  </div>
+</div>

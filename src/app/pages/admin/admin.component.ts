@@ -8,6 +8,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {VehiclesComponent} from './vehicles/vehicles.component';
 import {PartsComponent} from './parts/parts.component';
 import {OrdersComponent} from './orders/orders.component';
+import {ProductComponent} from './product/product.component';
 
 @Component({
   selector: 'app-admin',
@@ -17,95 +18,18 @@ import {OrdersComponent} from './orders/orders.component';
     VehiclesComponent,
     PartsComponent,
     OrdersComponent,
+    ProductComponent,
   ],
   templateUrl: './admin.component.html',
   standalone: true,
   styleUrl: './admin.component.scss'
 })
-export class AdminComponent  implements OnInit {
-  public formProduct!: FormGroup;
-  public previewUrl: string | null = null;
-  public selectedFileName!: string;
+export class AdminComponent {
+
   public selectedTab: number = 2;
 
-  constructor(
-    private _fb: FormBuilder,
-    private _ps: ProductsServices,
-    private readonly _ns: NotificationService
-  ) {}
-
-  ngOnInit(): void {
-    this.formProduct = this._fb.group({
-      image: [null as File | null, [Validators.required]],
-      title: ['', [Validators.required]],
-      description: ['', [Validators.required]],
-      price: [0, [Validators.required]],
-    });
-  }
-
-  public onImageSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0] ?? null;
-
-    this.formProduct.get('image')?.setValue(file);
-    this.formProduct.get('image')?.updateValueAndValidity();
-
-    if (!file) {
-      this.previewUrl = null;
-      this.selectedFileName = '';
-      return;
-    }
-
-    this.selectedFileName = file.name;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.previewUrl = reader.result as string;
-    };
-    reader.readAsDataURL(file);
-  }
 
   public selectTab(nr: number): void {
     this.selectedTab = nr;
-  }
-
-  public saveProduct(): void {
-    if (this.formProduct.invalid) {
-      this.formProduct.markAllAsTouched();
-      return;
-    }
-
-    this._ps.saveProduct({
-      title: this.formProduct.controls['title'].value,
-      description: this.formProduct.controls['description'].value,
-      image: this.formProduct.controls['image'].value,
-      price: this.formProduct.controls['price'].value,
-    }).pipe(
-      catchError((err: HttpErrorResponse) => {
-        if (err.error?.code === 400) {
-          this._ns.error(
-            'Numele și prețul produsului sunt obligatorii.',
-            { title: 'Produs', durationMs: 4000 }
-          );
-        } else if (err.error?.code === 401) {
-          this._ns.error(
-            'Trebuie să adaugi o imagine produsului.',
-            { title: 'Produs', durationMs: 4000 }
-          );
-        } else {
-          this._ns.error(
-            'Nu am putut salva produsul. Eroare de server.',
-            { title: 'Produs', durationMs: 4000 }
-          );
-        }
-
-        return throwError(() => err);
-      })
-    ).subscribe(() => {
-      this._ns.success('Produsul a fost salvat cu succes.', {
-        title: 'Creare produs',
-        durationMs: 4000
-      });
-    });
   }
 }

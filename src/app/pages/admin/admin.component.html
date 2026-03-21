@@ -49,73 +49,7 @@
     }
 
     @case (2) {
-      <div class="admin">
-        <div class="product-card" [formGroup]="formProduct">
-          <div class="product-card__header">
-            <h2 class="product-card__title">Adaugă produs</h2>
-            <p class="product-card__subtitle">
-              Completează informațiile produsului și încarcă o imagine.
-            </p>
-          </div>
-
-          <div class="product-card__preview file-preview">
-            @if (previewUrl) {
-              <img [src]="previewUrl" alt="Preview" />
-            } @else {
-              <div class="file-preview__empty">
-                <span class="file-preview__icon">🖼️</span>
-                <span>Preview imagine</span>
-              </div>
-            }
-          </div>
-
-          <div class="file-field">
-            <input
-              #fileInput
-              class="file-input"
-              type="file"
-              accept="image/*"
-              (change)="onImageSelected($event)"
-            />
-
-            <button
-              type="button"
-              class="file-btn"
-              (click)="fileInput.click()"
-            >
-              Alege imagine
-            </button>
-
-            <span class="file-name">
-              {{ selectedFileName || 'Niciun fișier selectat' }}
-            </span>
-          </div>
-
-          <div class="input-wrapper">
-            <label>Titlu</label>
-            <input type="text" formControlName="title" />
-          </div>
-
-          <div class="input-wrapper">
-            <label>Descriere</label>
-            <input type="text" formControlName="description" />
-          </div>
-
-          <div class="input-wrapper">
-            <label>Preț</label>
-            <input type="number" formControlName="price" />
-          </div>
-
-          <button
-            type="button"
-            class="save-button"
-            [disabled]="formProduct.invalid"
-            (click)="saveProduct()"
-          >
-            Salvează produsul
-          </button>
-        </div>
-      </div>
+     <app-product></app-product>
     }
 
     @case (1) {

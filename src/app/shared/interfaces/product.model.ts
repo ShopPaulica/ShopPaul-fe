@@ -7,10 +7,20 @@ export interface ProductModel {
 }
 
 export interface CreateProductModel {
-  title: string;
+  name: string;
   description: string;
   price: number;
-  image: string;
+  image: File;
+
+  brand?: string;
+  model?: string;
+  fuel?: string;
+  engine?: string;
+  power?: string;
+
+  section?: string;
+  subsection?: string;
+  title?: string;
 }
 
 export interface ProductsPaginationModel {
