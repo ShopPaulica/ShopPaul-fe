@@ -42,7 +42,7 @@ export class VehiclesFacade implements
 
   constructor(private readonly _api: VehiclesApiService) {}
 
-  public fetchFilter(brand?: string, model?: string, fuel?: string, engine?: string, power?: string): void {
+  public fetchFilterData(brand?: string, model?: string, fuel?: string, engine?: string, power?: string): void {
     const { field, params } = this.resolveFilterRequest(brand, model, fuel, engine, power);
 
     this._loading$.next(true);

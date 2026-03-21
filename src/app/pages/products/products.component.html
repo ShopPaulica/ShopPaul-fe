@@ -2,53 +2,146 @@
   <section class="filters-section">
     <div class="search-wrapper">
       <span class="search-ico" aria-hidden="true">
-  <svg viewBox="0 0 24 24" width="30" height="30">
-    <path
-      d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16a6.471 6.471 0 0 0 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5Zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14Z"/>
-  </svg>
-    </span>
-      <input type="text" [(ngModel)]="search">
+        <svg viewBox="0 0 24 24" width="30" height="30">
+          <path
+            d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16a6.471 6.471 0 0 0 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5Zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14Z"
+          />
+        </svg>
+      </span>
+      <input type="text" [(ngModel)]="search" placeholder="Caută produs..." />
+    </div>
+
+    <div class="all-filters-grid">
+      <app-dropdown
+        [items]="brands"
+        [selectedItem]="brand || null"
+        placeholder="Select Brand"
+        (selectedItemChange)="brandSelected($event)"
+        [allowClear]="true">
+      </app-dropdown>
+
+      <app-dropdown
+        [items]="models"
+        [selectedItem]="model || null"
+        placeholder="Select Model"
+        (selectedItemChange)="modelSelected($event)"
+        [allowClear]="true"
+        [disabled]="!brand">
+      </app-dropdown>
+
+      <app-dropdown
+        [items]="fuels"
+        [selectedItem]="fuel || null"
+        placeholder="Select Fuel"
+        (selectedItemChange)="fuelSelected($event)"
+        [allowClear]="true"
+        [disabled]="!brand || !model">
+      </app-dropdown>
+
+      <app-dropdown
+        [items]="engines"
+        [selectedItem]="engine || null"
+        placeholder="Select Engine"
+        (selectedItemChange)="enginesSelected($event)"
+        [allowClear]="true"
+        [disabled]="!brand || !model || !fuel">
+      </app-dropdown>
+
+      <app-dropdown
+        [items]="powers"
+        [selectedItem]="power || null"
+        placeholder="Select Power"
+        (selectedItemChange)="powersSelected($event)"
+        [allowClear]="true"
+        [disabled]="!brand || !model || !fuel || !engine">
+      </app-dropdown>
+
+      <app-dropdown
+        [items]="sections"
+        [selectedItem]="section || null"
+        placeholder="Select Section"
+        (selectedItemChange)="sectionSelected($event)"
+        [allowClear]="true">
+      </app-dropdown>
+
+      <app-dropdown
+        [items]="subsections"
+        [selectedItem]="subsection || null"
+        placeholder="Select Subsection"
+        (selectedItemChange)="subsectionSelected($event)"
+        [allowClear]="true"
+        [disabled]="!section">
+      </app-dropdown>
+
+      <app-dropdown
+        [items]="titles"
+        [selectedItem]="title || null"
+        placeholder="Select Title"
+        (selectedItemChange)="titleSelected($event)"
+        [allowClear]="true"
+        [disabled]="!section || !subsection">
+      </app-dropdown>
     </div>
   </section>
+
   <section class="cards">
     @for (product of products; track product.id) {
       <article class="card-product" (click)="goToDetails(product)">
         <div class="card-product__info-hover">
-
           <div class="card-product__price">
             {{ product.price | number:'1.2-2' }} lei
           </div>
+
           @if (isLoggedIn) {
-          <button class="card-product__delete" (click)="$event.stopPropagation(); deleteProduct(product.id)">🗑️</button>
+            <button
+              class="card-product__delete"
+              (click)="$event.stopPropagation(); deleteProduct(product.id)">
+              🗑️
+            </button>
           }
         </div>
 
         <div
           class="card-product__img"
-          [style.background-image]="getBgImage(product)"
-        ></div>
+          [style.background-image]="getBgImage(product)">
+        </div>
 
-        <a class="card-product__link" href="#" (click)="$event.preventDefault();">
+        <a
+          class="card-product__link"
+          href="#"
+          (click)="$event.preventDefault();">
           <div
             class="card-product__img--hover"
-            [style.background-image]="getBgImage(product)"
-          ></div>
+            [style.background-image]="getBgImage(product)">
+          </div>
         </a>
 
         <div class="card-product__info">
           <h3 class="card-product__title">{{ product.name }}</h3>
           <span class="card-product__by">{{ product.description }}</span>
+
           @if (isInCart(product.id) < 1) {
-            <button class="shop-now add-to-card" (click)="addToCart(product); $event.stopPropagation()">
+            <button
+              class="shop-now add-to-card"
+              (click)="addToCart(product); $event.stopPropagation()">
               Add To Cart
             </button>
           } @else {
             <div class="numbers-selectors">
-              <button class="shop-now add-remove-buttons" (click)="removeFromCart(product); $event.stopPropagation()">
+              <button
+                class="shop-now add-remove-buttons"
+                (click)="removeFromCart(product); $event.stopPropagation()">
                 -
               </button>
-              <input type="number" [disabled]="true" [value]="isInCart(product.id)"/>
-              <button class="shop-now add-remove-buttons" (click)="addToCart(product); $event.stopPropagation()">
+
+              <input
+                type="number"
+                [disabled]="true"
+                [value]="isInCart(product.id)" />
+
+              <button
+                class="shop-now add-remove-buttons"
+                (click)="addToCart(product); $event.stopPropagation()">
                 +
               </button>
             </div>
@@ -66,10 +159,14 @@
             <button
               class="shop-now add-remove-buttons"
               (click)="$event.stopPropagation(); goToPage(currentPage - 1, $event)"
-              aria-label="Previous page"
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              aria-label="Previous page">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M15 18L9 12L15 6"
+                  stroke="white"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"/>
               </svg>
             </button>
           }
@@ -78,8 +175,7 @@
             <button
               class="shop-now add-remove-buttons"
               (click)="goToPage(page, $event)"
-              [class.page-active]="page === currentPage"
-            >
+              [class.page-active]="page === currentPage">
               {{ page }}
             </button>
           }
@@ -88,10 +184,14 @@
             <button
               class="shop-now add-remove-buttons"
               (click)="$event.stopPropagation(); goToPage(currentPage + 1, $event)"
-              aria-label="Next page"
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 6L15 12L9 18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              aria-label="Next page">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M9 6L15 12L9 18"
+                  stroke="white"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"/>
               </svg>
             </button>
           }
@@ -100,5 +200,9 @@
     </footer>
   }
 </main>
-<app-details-modal [toggleMenu]="toggleDetails" [selectedItem]="selectedItem" (openChange)="toggleDetails = $event">
+
+<app-details-modal
+  [toggleMenu]="toggleDetails"
+  [selectedItem]="selectedItem"
+  (openChange)="toggleDetails = $event">
 </app-details-modal>

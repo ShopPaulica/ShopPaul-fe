@@ -10,7 +10,7 @@ export type VehicleState = {
   powerFiltersPage$: Observable<string[] | null>;
   loading$: Observable<boolean>;
   error$: Observable<string | null>;
-  fetchFilter: (
+  fetchFilterData: (
     brand?: string,
     model?: string,
     fuel?: string,
