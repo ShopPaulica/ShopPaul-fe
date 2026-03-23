@@ -8,7 +8,11 @@
           />
         </svg>
       </span>
-      <input type="text" [(ngModel)]="search" placeholder="Caută produs..." />
+      <input
+        type="text"
+        [(ngModel)]="search"
+        (ngModelChange)="onSearchChange()"
+        placeholder="Caută produs..." />
     </div>
 
     <div class="all-filters-grid">

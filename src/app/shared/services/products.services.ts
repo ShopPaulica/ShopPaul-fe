@@ -1,9 +1,21 @@
 import { Injectable } from '@angular/core';
-import {CreateProductModel, ProductsPaginationModel} from '../interfaces/product.model';
-import {HttpClient} from '@angular/common/http';
-import {environment} from '../../../environments/environment';
-import {BehaviorSubject, catchError, EMPTY, finalize, from, Observable, tap} from 'rxjs';
-import {NotificationService} from './notification.service';
+import {
+  CreateProductModel,
+  ProductsListPayload,
+  ProductsPaginationModel
+} from '../interfaces/product.model';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import {
+  BehaviorSubject,
+  catchError,
+  EMPTY,
+  finalize,
+  from,
+  Observable,
+  tap
+} from 'rxjs';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,11 +36,11 @@ export class ProductsServices {
     private readonly _notificationService: NotificationService
   ) {}
 
-  public loadProducts(page: number): void {
+  public loadProducts(payload: ProductsListPayload): void {
     this._loadingSubject.next(true);
     this._errorSubject.next(null);
 
-    this.getProducts(page).pipe(
+    this.getProducts(payload).pipe(
       tap((res: ProductsPaginationModel) => this._productsPageSubject.next(res)),
       catchError((err) => {
         this._errorSubject.next(err?.error?.message ?? 'Eroare la încărcarea produselor');
@@ -87,18 +99,21 @@ export class ProductsServices {
       fd.append('title', product.title.trim());
     }
 
-    return this._http.post(`${environment.apiUrl}/products`, fd);
-  }
-  public getProducts(page: number): Observable<ProductsPaginationModel> {
-    return this._http.post<ProductsPaginationModel>(`${environment.apiUrl}/products/list`,{ page: page });
+    return this._http.post<object>(`${environment.apiUrl}/products`, fd);
   }
 
-  public deleteProduct(id: string): Observable<Object> {
-    return this._http.delete<Object>(`${environment.apiUrl}/products/${id}`);
+  public getProducts(payload: ProductsListPayload): Observable<ProductsPaginationModel> {
+    return this._http.post<ProductsPaginationModel>(
+      `${environment.apiUrl}/products/list`,
+      payload
+    );
+  }
+
+  public deleteProduct(id: string): Observable<object> {
+    return this._http.delete<object>(`${environment.apiUrl}/products/${id}`);
   }
 
   public getPages(): number {
-    return 5
+    return 5;
   }
-
 }

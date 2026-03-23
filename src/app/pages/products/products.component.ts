@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Inject, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -6,7 +6,11 @@ import { catchError, throwError } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { ProductsServices } from '../../shared/services/products.services';
-import { ProductModel, ProductsPaginationModel } from '../../shared/interfaces/product.model';
+import {
+  ProductModel,
+  ProductsListPayload,
+  ProductsPaginationModel
+} from '../../shared/interfaces/product.model';
 import { CartService } from '../../shared/services/cart.service';
 import { NavigationService } from '../../shared/services/router-service';
 import { SlideMenuComponent } from '../../components/slide-menu/slide-menu.component';
@@ -80,7 +84,6 @@ export class ProductsComponent implements OnInit {
   ) {}
 
   public ngOnInit(): void {
-    this._products.loadProducts(this.currentPage);
     this._isLoggedIn = this._auth.isLoggedIn ?? false;
 
     this.initVehicleSubscription();
@@ -92,15 +95,19 @@ export class ProductsComponent implements OnInit {
     this._products.productsPage$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((res: ProductsPaginationModel | null) => {
-        if (res) {
-          this.products = res.items;
-          this.pages = res.pages;
-          this.firstPage = res.pages[0] ?? 1;
-          this.lastPage = res.totalPages;
-          this.currentPage = res.page;
-          this.totalPages = res.totalPages;
+        if (!res) {
+          return;
         }
+
+        this.products = res.items ?? [];
+        this.pages = res.pages ?? [];
+        this.firstPage = res.pages?.[0] ?? 1;
+        this.lastPage = res.totalPages ?? 1;
+        this.currentPage = res.page ?? 1;
+        this.totalPages = res.totalPages ?? 1;
       });
+
+    this.loadProducts(1);
   }
 
   public get isLoggedIn(): boolean {
@@ -118,10 +125,33 @@ export class ProductsComponent implements OnInit {
     return [p - 1, p, p + 1];
   }
 
+  private buildProductsPayload(page: number): ProductsListPayload {
+    return {
+      page,
+      ...(this.search.trim() ? { search: this.search.trim() } : {}),
+      ...(this.brand ? { brand: this.brand } : {}),
+      ...(this.model ? { model: this.model } : {}),
+      ...(this.fuel ? { fuel: this.fuel } : {}),
+      ...(this.engine ? { engine: this.engine } : {}),
+      ...(this.power ? { power: this.power } : {}),
+      ...(this.section ? { section: this.section } : {}),
+      ...(this.subsection ? { subsection: this.subsection } : {}),
+      ...(this.title ? { title: this.title } : {}),
+    };
+  }
+
+  private loadProducts(page: number): void {
+    this.currentPage = page;
+    this._products.loadProducts(this.buildProductsPayload(page));
+  }
+
+  public onSearchChange(): void {
+    this.loadProducts(1);
+  }
+
   public goToPage(page: number, ev?: Event): void {
     ev?.stopPropagation();
-    this.currentPage = page;
-    this._products.loadProducts(page);
+    this.loadProducts(page);
   }
 
   public removeFromCart(product: ProductModel): void {
@@ -169,7 +199,7 @@ export class ProductsComponent implements OnInit {
   }
 
   public brandSelected(brand: string): void {
-    this.brand = brand;
+    this.brand = brand || '';
     this.model = '';
     this.fuel = '';
     this.engine = '';
@@ -180,12 +210,17 @@ export class ProductsComponent implements OnInit {
     this.engines = [];
     this.powers = [];
 
-    if (brand) this.vehicleService.fetchFilterData(brand);
-    else this.vehicleService.fetchFilterData();
+    if (this.brand) {
+      this.vehicleService.fetchFilterData(this.brand);
+    } else {
+      this.vehicleService.fetchFilterData();
+    }
+
+    this.loadProducts(1);
   }
 
   public modelSelected(model: string): void {
-    this.model = model;
+    this.model = model || '';
     this.fuel = '';
     this.engine = '';
     this.power = '';
@@ -194,75 +229,117 @@ export class ProductsComponent implements OnInit {
     this.engines = [];
     this.powers = [];
 
-    if (model && this.brand) this.vehicleService.fetchFilterData(this.brand, model);
-    else if (this.brand) this.vehicleService.fetchFilterData(this.brand);
+    if (this.model && this.brand) {
+      this.vehicleService.fetchFilterData(this.brand, this.model);
+    } else if (this.brand) {
+      this.vehicleService.fetchFilterData(this.brand);
+    } else {
+      this.vehicleService.fetchFilterData();
+    }
+
+    this.loadProducts(1);
   }
 
   public fuelSelected(fuel: string): void {
-    this.fuel = fuel;
+    this.fuel = fuel || '';
     this.engine = '';
     this.power = '';
 
     this.engines = [];
     this.powers = [];
 
-    if (fuel && this.brand && this.model) this.vehicleService.fetchFilterData(this.brand, this.model, fuel);
-    else if (this.brand && this.model) this.vehicleService.fetchFilterData(this.brand, this.model);
+    if (this.fuel && this.brand && this.model) {
+      this.vehicleService.fetchFilterData(this.brand, this.model, this.fuel);
+    } else if (this.brand && this.model) {
+      this.vehicleService.fetchFilterData(this.brand, this.model);
+    } else if (this.brand) {
+      this.vehicleService.fetchFilterData(this.brand);
+    } else {
+      this.vehicleService.fetchFilterData();
+    }
+
+    this.loadProducts(1);
   }
 
   public enginesSelected(engine: string): void {
-    this.engine = engine;
+    this.engine = engine || '';
     this.power = '';
 
     this.powers = [];
 
-    if (engine && this.brand && this.model && this.fuel) {
-      this.vehicleService.fetchFilterData(this.brand, this.model, this.fuel, engine);
+    if (this.engine && this.brand && this.model && this.fuel) {
+      this.vehicleService.fetchFilterData(this.brand, this.model, this.fuel, this.engine);
     } else if (this.brand && this.model && this.fuel) {
       this.vehicleService.fetchFilterData(this.brand, this.model, this.fuel);
+    } else {
+      this.vehicleService.fetchFilterData();
     }
+
+    this.loadProducts(1);
   }
 
   public powersSelected(power: string): void {
-    this.power = power;
+    this.power = power || '';
 
-    if (power && this.brand && this.model && this.fuel && this.engine) {
-      this.vehicleService.fetchFilterData(this.brand, this.model, this.fuel, this.engine, power);
+    if (this.power && this.brand && this.model && this.fuel && this.engine) {
+      this.vehicleService.fetchFilterData(this.brand, this.model, this.fuel, this.engine, this.power);
     } else if (this.brand && this.model && this.fuel && this.engine) {
       this.vehicleService.fetchFilterData(this.brand, this.model, this.fuel, this.engine);
+    } else {
+      this.vehicleService.fetchFilterData();
     }
+
+    this.loadProducts(1);
   }
 
   public sectionSelected(section: string): void {
-    this.section = section;
+    this.section = section || '';
     this.subsection = '';
     this.title = '';
 
     this.subsections = [];
     this.titles = [];
 
-    if (section) this.partsService.fetchFiltersData(section);
-    else this.partsService.fetchFiltersData();
+    if (this.section) {
+      this.partsService.fetchFiltersData(this.section);
+    } else {
+      this.partsService.fetchFiltersData();
+    }
+
+    this.loadProducts(1);
   }
 
   public subsectionSelected(subsection: string): void {
-    this.subsection = subsection;
+    this.subsection = subsection || '';
     this.title = '';
 
     this.titles = [];
 
-    if (subsection && this.section) this.partsService.fetchFiltersData(this.section, subsection);
-    else if (this.section) this.partsService.fetchFiltersData(this.section);
+    if (this.subsection && this.section) {
+      this.partsService.fetchFiltersData(this.section, this.subsection);
+    } else if (this.section) {
+      this.partsService.fetchFiltersData(this.section);
+    } else {
+      this.partsService.fetchFiltersData();
+    }
+
+    this.loadProducts(1);
   }
 
   public titleSelected(title: string): void {
-    this.title = title;
+    this.title = title || '';
 
-    if (title && this.section && this.subsection) {
-      this.partsService.fetchFiltersData(this.section, this.subsection, title);
+    if (this.title && this.section && this.subsection) {
+      this.partsService.fetchFiltersData(this.section, this.subsection, this.title);
     } else if (this.section && this.subsection) {
       this.partsService.fetchFiltersData(this.section, this.subsection);
+    } else if (this.section) {
+      this.partsService.fetchFiltersData(this.section);
+    } else {
+      this.partsService.fetchFiltersData();
     }
+
+    this.loadProducts(1);
   }
 
   public isInCart(id: string | undefined): number {
@@ -298,7 +375,8 @@ export class ProductsComponent implements OnInit {
           title: 'Delete Product',
           durationMs: 4000
         });
-        this._products.loadProducts(this.currentPage);
+
+        this.loadProducts(this.currentPage);
       });
   }
 }
