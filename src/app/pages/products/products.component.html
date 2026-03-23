@@ -4,10 +4,11 @@
       <span class="search-ico" aria-hidden="true">
         <svg viewBox="0 0 24 24" width="30" height="30">
           <path
-            d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16a6.471 6.471 0 0 0 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5Zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14Z"
+            d="M15.5 14h-.79l-.28-.27A6.471 6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16a6.471 6.471 0 0 0 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5Zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14Z"
           />
         </svg>
       </span>
+
       <input
         type="text"
         [(ngModel)]="search"
@@ -122,6 +123,36 @@
 
         <div class="card-product__info">
           <h3 class="card-product__title">{{ product.name }}</h3>
+
+          @if (product.brand || product.model || product.engine || product.fuel || product.power || product.section || product.subsection) {
+            <div class="card-product__tags">
+              @if (product.brand || product.model || product.engine) {
+                <span class="card-product__tag">
+                  {{ product.brand || '' }} {{ product.model || '' }}
+                  @if (product.engine) {
+                    • {{ product.engine }}
+                  }
+                </span>
+              }
+
+              @if (product.fuel) {
+                <span class="card-product__tag">{{ product.fuel }}</span>
+              }
+
+              @if (product.power) {
+                <span class="card-product__tag">{{ product.power }} CP</span>
+              }
+
+              @if (product.section) {
+                <span class="card-product__tag card-product__tag--soft">{{ product.section }}</span>
+              }
+
+              @if (product.subsection) {
+                <span class="card-product__tag card-product__tag--soft">{{ product.subsection }}</span>
+              }
+            </div>
+          }
+
           <span class="card-product__by">{{ product.description }}</span>
 
           @if (isInCart(product.id) < 1) {

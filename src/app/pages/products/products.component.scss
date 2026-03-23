@@ -27,7 +27,6 @@
   color: #ffffff;
 }
 
-/* FILTERS */
 .filters-section {
   position: sticky;
   top: 12px;
@@ -106,12 +105,10 @@
   min-width: 0;
 }
 
-/* dacă dropdown-ul e custom și nu ocupă tot */
 ::ng-deep .all-filters-grid app-dropdown > * {
   width: 100%;
 }
 
-/* optional, dacă vrei să forțezi stilul intern al dropdownului */
 ::ng-deep app-dropdown {
   .dropdown-trigger,
   .dropdown-select,
@@ -121,14 +118,12 @@
   }
 }
 
-/* PRODUCTS GRID */
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(285px, 1fr));
   gap: 22px;
 }
 
-/* CARD */
 .card-product {
   position: relative;
   overflow: hidden;
@@ -275,6 +270,35 @@
   word-break: break-word;
 }
 
+.card-product__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: -2px;
+}
+
+.card-product__tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 122, 0, 0.12);
+  border: 1px solid rgba(255, 147, 31, 0.18);
+  color: #ffb15c;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.card-product__tag--soft {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.75);
+}
+
 .card-product__by {
   display: -webkit-box;
   overflow: hidden;
@@ -365,7 +389,6 @@
   }
 }
 
-/* PAGINATION */
 footer {
   margin-top: 30px;
 }
@@ -384,7 +407,6 @@ footer {
   filter: brightness(1.06);
 }
 
-/* OPTIONAL EMPTY STATE */
 .no-products {
   padding: 36px 18px;
   border-radius: 20px;
@@ -394,7 +416,6 @@ footer {
   color: rgba(255, 255, 255, 0.68);
 }
 
-/* SCROLLBAR */
 .cart-drawer__body,
 .filters-section,
 .products-wrapper {
@@ -416,7 +437,6 @@ footer {
   border-radius: 999px;
 }
 
-/* RESPONSIVE */
 @media (max-width: 1400px) {
   .all-filters-grid {
     grid-template-columns: repeat(3, minmax(220px, 1fr));
@@ -431,9 +451,6 @@ footer {
   .filters-section {
     position: relative;
     z-index: 500;
-  }
-
-  .filters-section {
     padding: 16px;
     border-radius: 18px;
   }
