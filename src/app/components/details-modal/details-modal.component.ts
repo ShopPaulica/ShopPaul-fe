@@ -1,6 +1,8 @@
 import { DecimalPipe, NgIf } from '@angular/common';
 import { Component, effect, inject, input, Input, output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { catchError, EMPTY, forkJoin, of } from 'rxjs';
+
 import { ProductModel } from '../../shared/interfaces/product.model';
 import { CartService } from '../../shared/services/cart.service';
 import { ProductsServices } from '../../shared/services/products.services';
@@ -9,7 +11,6 @@ import { AuthService } from '../../shared/services/auth.service';
 import { DropdownComponent } from '../dropdown/dropdown.component';
 import { VehiclesFacade } from '../../shared/services/admin/vechicles/facade/vehicles.facade';
 import { PartsFacade } from '../../shared/services/admin/parts/facade/parts-facade.service';
-import { catchError, forkJoin, of } from 'rxjs';
 
 @Component({
   selector: 'app-details-modal',
@@ -32,12 +33,13 @@ export class detailsModalComponent {
 
   @Input() public set toggleMenu(bool: boolean) {
     this.isOpen = bool;
+
     if (bool) {
-      this.resetFormFromProduct();
       this.isEditing = false;
       this.previewUrl = null;
       this.selectedFile = null;
       this.selectedFileName = '';
+      this.resetFormFromProduct();
     }
   }
 
@@ -116,6 +118,9 @@ export class detailsModalComponent {
 
   public enableEdit(): void {
     this.isEditing = true;
+    this.previewUrl = null;
+    this.selectedFile = null;
+    this.selectedFileName = '';
     this.resetFormFromProduct();
   }
 
@@ -218,6 +223,7 @@ export class detailsModalComponent {
 
     if (brand && model && fuel) this.vehicleService.fetchFilterData(brand, model, fuel);
     else if (brand && model) this.vehicleService.fetchFilterData(brand, model);
+    else if (brand) this.vehicleService.fetchFilterData(brand);
     else this.vehicleService.fetchFilterData();
   }
 
@@ -233,9 +239,13 @@ export class detailsModalComponent {
 
     this.powers = [];
 
-    if (brand && model && fuel && engine) this.vehicleService.fetchFilterData(brand, model, fuel, engine);
-    else if (brand && model && fuel) this.vehicleService.fetchFilterData(brand, model, fuel);
-    else this.vehicleService.fetchFilterData();
+    if (brand && model && fuel && engine) {
+      this.vehicleService.fetchFilterData(brand, model, fuel, engine);
+    } else if (brand && model && fuel) {
+      this.vehicleService.fetchFilterData(brand, model, fuel);
+    } else {
+      this.vehicleService.fetchFilterData();
+    }
   }
 
   public powerSelected(power: string | null): void {
@@ -277,6 +287,7 @@ export class detailsModalComponent {
 
   public saveChanges(): void {
     const product = this.selectedItem();
+
     if (!product?.id || this.formEdit.invalid) {
       this.formEdit.markAllAsTouched();
       return;
@@ -305,39 +316,53 @@ export class detailsModalComponent {
       ? this.productsService.updateProductImage(product.id, this.selectedFile)
       : of(null);
 
-    forkJoin([updateText$, updateImage$]).pipe(
-      catchError((err) => {
-        this.notificationService.error('Nu am putut salva modificările.', {
+    forkJoin([updateText$, updateImage$])
+      .pipe(
+        catchError(() => {
+          this.notificationService.error('Nu am putut salva modificările.', {
+            title: 'Edit product',
+            durationMs: 4000
+          });
+          this.isSaving = false;
+          return EMPTY;
+        })
+      )
+      .subscribe(([updatedText, updatedImage]) => {
+        const freshProduct: ProductModel = {
+          ...product,
+          ...updatedText,
+          name: payload.name,
+          description: payload.description,
+          price: payload.price,
+          brand: payload.brand || '',
+          model: payload.model || '',
+          fuel: payload.fuel || '',
+          engine: payload.engine || '',
+          power: payload.power || '',
+          section: payload.section || '',
+          subsection: payload.subsection || '',
+          title: payload.title || '',
+          image: updatedImage?.image || updatedText?.image || product.image,
+        };
+
+        this.notificationService.success('Produs actualizat cu succes.', {
           title: 'Edit product',
           durationMs: 4000
         });
+
+        this.productUpdated.emit(freshProduct);
         this.isSaving = false;
-        return of(null);
-      })
-    ).subscribe((result) => {
-      if (!result) {
-        return;
-      }
-
-      const [updatedText, updatedImage] = result;
-      const finalProduct = (updatedImage || updatedText) as ProductModel;
-
-      this.notificationService.success('Produs actualizat cu succes.', {
-        title: 'Edit product',
-        durationMs: 4000
+        this.isEditing = false;
+        this.previewUrl = null;
+        this.selectedFile = null;
+        this.selectedFileName = '';
+        this.closeMenu();
       });
-
-      this.productUpdated.emit(finalProduct);
-      this.isSaving = false;
-      this.isEditing = false;
-      this.previewUrl = null;
-      this.selectedFile = null;
-      this.selectedFileName = '';
-    });
   }
 
   private resetFormFromProduct(): void {
     const product = this.selectedItem();
+
     if (!product) {
       return;
     }
@@ -359,13 +384,23 @@ export class detailsModalComponent {
     });
 
     if (product.brand) {
-      this.vehicleService.fetchFilterData(product.brand, product.model || '', product.fuel || '', product.engine || '', product.power || '');
+      this.vehicleService.fetchFilterData(
+        product.brand,
+        product.model || '',
+        product.fuel || '',
+        product.engine || '',
+        product.power || ''
+      );
     } else {
       this.vehicleService.fetchFilterData();
     }
 
     if (product.section) {
-      this.partsService.fetchFiltersData(product.section, product.subsection || '', product.title || '');
+      this.partsService.fetchFiltersData(
+        product.section,
+        product.subsection || '',
+        product.title || ''
+      );
     } else {
       this.partsService.fetchFiltersData();
     }

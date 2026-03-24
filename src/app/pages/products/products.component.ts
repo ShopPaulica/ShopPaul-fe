@@ -140,13 +140,41 @@ export class ProductsComponent implements OnInit {
     };
   }
 
-  private loadProducts(page: number): void {
+  public loadProducts(page: number): void {
     this.currentPage = page;
     this._products.loadProducts(this.buildProductsPayload(page));
   }
 
   public onSearchChange(): void {
     this.loadProducts(1);
+  }
+
+  public onProductUpdated(product: ProductModel): void {
+    this.selectedItem = product;
+
+    if (this.brand || this.model || this.fuel || this.engine || this.power) {
+      this.vehicleService.fetchFilterData(
+        this.brand || '',
+        this.model || '',
+        this.fuel || '',
+        this.engine || '',
+        this.power || ''
+      );
+    } else {
+      this.vehicleService.fetchFilterData();
+    }
+
+    if (this.section || this.subsection || this.title) {
+      this.partsService.fetchFiltersData(
+        this.section || '',
+        this.subsection || '',
+        this.title || ''
+      );
+    } else {
+      this.partsService.fetchFiltersData();
+    }
+
+    this.loadProducts(this.currentPage);
   }
 
   public goToPage(page: number, ev?: Event): void {
