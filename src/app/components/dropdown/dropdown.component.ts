@@ -65,7 +65,7 @@ import { CommonModule } from '@angular/common';
 
     .filters-section {
       position: relative;
-      z-index: 500;
+      z-index: 100;
     }
 
     * {

@@ -1,43 +1,244 @@
 <div class="overlay" *ngIf="isOpen" (click)="closeMenu()"></div>
 
 <div class="side-menu" [class.open]="isOpen" [class.right]="true">
-  <div class="shopping-cart-upper">
-    <button class="close-btn" (click)="closeMenu()">✖</button>
-
-  <section class="details-modal-wrapper">
-    <div
-      class="card-product__img"
-      [style.background-image]="getBgImage(selectedItem())"
-    ></div>
-    <section class="info-wrapper">
-      <h3 class="card-product__title">{{ selectedItem()?.name }}</h3>
-      <div class="card-product__price">
-      Price:  {{ selectedItem()?.price | number:'1.2-2' }} RON
+  <div class="details-modal">
+    <div class="details-modal__header">
+      <div class="details-modal__title-wrap">
+        <h2 class="details-modal__title">
+          @if (!isEditing) {
+            Detalii produs
+          } @else {
+            Editare produs
+          }
+        </h2>
+        <span class="details-modal__subtitle">
+          @if (!isEditing) {
+            Vizualizare rapidă și adăugare în coș
+          } @else {
+            Modifică informațiile produsului
+          }
+        </span>
       </div>
-      @if (isInCart < 1) {
-        <button class="shop-now" (click)="addToCart(); $event.stopPropagation()">
-          Add To Cart
-        </button>
-      } @else {
-        <div class="numbers-selectors">
-          <button class="shop-now add-remove-buttons" (click)="removeFromCart(); $event.stopPropagation()">
-            -
+
+      <div class="details-modal__header-actions">
+        @if (isAdmin && !isEditing) {
+          <button type="button" class="icon-btn icon-btn--edit" (click)="enableEdit()">
+            Edit
           </button>
-          <input type="number" [disabled]="true" [value]="isInCart ?? 0"/>
-          <button class="shop-now add-remove-buttons" (click)="addToCart(); $event.stopPropagation()">
-            +
+        }
+
+        @if (isAdmin && isEditing) {
+          <button type="button" class="icon-btn icon-btn--ghost" (click)="cancelEdit()">
+            Cancel
+          </button>
+        }
+
+        <button class="close-btn" (click)="closeMenu()">✖</button>
+      </div>
+    </div>
+
+    @if (!isEditing) {
+      <section class="details-modal__body">
+        <section class="details-modal__hero">
+          <div
+            class="card-product__img"
+            [style.background-image]="getBgImage(selectedItem())">
+          </div>
+
+          <section class="info-wrapper">
+            <h3 class="card-product__title">{{ selectedItem()?.name }}</h3>
+
+            @if (
+              selectedItem()?.brand ||
+              selectedItem()?.model ||
+              selectedItem()?.engine ||
+              selectedItem()?.fuel ||
+              selectedItem()?.power ||
+              selectedItem()?.section ||
+              selectedItem()?.subsection
+              ) {
+              <div class="card-product__tags">
+                @if (selectedItem()?.brand || selectedItem()?.model || selectedItem()?.engine) {
+                  <span class="card-product__tag">
+                    {{ selectedItem()?.brand || '' }} {{ selectedItem()?.model || '' }}
+                    @if (selectedItem()?.engine) {
+                      • {{ selectedItem()?.engine }}
+                    }
+                  </span>
+                }
+
+                @if (selectedItem()?.fuel) {
+                  <span class="card-product__tag">{{ selectedItem()?.fuel }}</span>
+                }
+
+                @if (selectedItem()?.power) {
+                  <span class="card-product__tag">{{ selectedItem()?.power }} CP</span>
+                }
+
+                @if (selectedItem()?.section) {
+                  <span class="card-product__tag card-product__tag--soft">{{ selectedItem()?.section }}</span>
+                }
+
+                @if (selectedItem()?.subsection) {
+                  <span class="card-product__tag card-product__tag--soft">{{ selectedItem()?.subsection }}</span>
+                }
+              </div>
+            }
+
+            <div class="card-product__price">
+              Price: {{ selectedItem()?.price | number:'1.2-2' }} RON
+            </div>
+
+            @if (isInCart < 1) {
+              <button class="shop-now" (click)="addToCart(); $event.stopPropagation()">
+                Add To Cart
+              </button>
+            } @else {
+              <div class="numbers-selectors">
+                <button class="shop-now add-remove-buttons" (click)="removeFromCart(); $event.stopPropagation()">
+                  -
+                </button>
+                <input type="number" [disabled]="true" [value]="isInCart ?? 0"/>
+                <button class="shop-now add-remove-buttons" (click)="addToCart(); $event.stopPropagation()">
+                  +
+                </button>
+              </div>
+            }
+          </section>
+        </section>
+
+        <section class="description-wrapper">
+          <h4>Description</h4>
+          <span>{{ selectedItem()?.description }}</span>
+        </section>
+      </section>
+    } @else {
+      <form class="details-modal__body details-form" [formGroup]="formEdit">
+        <section class="details-modal__hero details-modal__hero--edit">
+          <div class="image-editor">
+            <div
+              class="card-product__img"
+              [style.background-image]="currentImage">
+            </div>
+
+            <div class="image-editor__actions">
+              <input
+                #fileInput
+                class="file-input"
+                type="file"
+                accept="image/*"
+                (change)="onImageSelected($event)"
+              />
+
+              <button
+                type="button"
+                class="file-btn"
+                (click)="fileInput.click()">
+                Schimbă imaginea
+              </button>
+
+              <span class="file-name">
+                {{ selectedFileName || 'Imagine curentă' }}
+              </span>
+            </div>
+          </div>
+
+          <section class="info-wrapper info-wrapper--edit">
+            <div class="input-wrapper">
+              <label>Nume produs</label>
+              <input type="text" formControlName="name" />
+            </div>
+
+            <div class="input-wrapper">
+              <label>Preț</label>
+              <input type="number" formControlName="price" />
+            </div>
+
+            <div class="input-wrapper">
+              <label>Descriere</label>
+              <textarea formControlName="description"></textarea>
+            </div>
+          </section>
+        </section>
+
+        <div class="filters-grid">
+          <app-dropdown
+            [items]="brands"
+            [selectedItem]="formEdit.get('brand')?.value || null"
+            placeholder="Select Brand"
+            (selectedItemChange)="brandSelected($event)"
+            [allowClear]="true">
+          </app-dropdown>
+
+          <app-dropdown
+            [items]="models"
+            [selectedItem]="formEdit.get('model')?.value || null"
+            placeholder="Select Model"
+            (selectedItemChange)="modelSelected($event)"
+            [allowClear]="true"
+            [disabled]="!formEdit.get('brand')?.value">
+          </app-dropdown>
+
+          <app-dropdown
+            [items]="fuels"
+            [selectedItem]="formEdit.get('fuel')?.value || null"
+            placeholder="Select Fuel"
+            (selectedItemChange)="fuelSelected($event)"
+            [allowClear]="true"
+            [disabled]="!formEdit.get('brand')?.value || !formEdit.get('model')?.value">
+          </app-dropdown>
+
+          <app-dropdown
+            [items]="engines"
+            [selectedItem]="formEdit.get('engine')?.value || null"
+            placeholder="Select Engine"
+            (selectedItemChange)="engineSelected($event)"
+            [allowClear]="true"
+            [disabled]="!formEdit.get('brand')?.value || !formEdit.get('model')?.value || !formEdit.get('fuel')?.value">
+          </app-dropdown>
+
+          <app-dropdown
+            [items]="powers"
+            [selectedItem]="formEdit.get('power')?.value || null"
+            placeholder="Select Power"
+            (selectedItemChange)="powerSelected($event)"
+            [allowClear]="true"
+            [disabled]="!formEdit.get('brand')?.value || !formEdit.get('model')?.value || !formEdit.get('fuel')?.value || !formEdit.get('engine')?.value">
+          </app-dropdown>
+
+          <app-dropdown
+            [items]="sections"
+            [selectedItem]="formEdit.get('section')?.value || null"
+            placeholder="Select Section"
+            (selectedItemChange)="sectionSelected($event)"
+            [allowClear]="true">
+          </app-dropdown>
+
+          <app-dropdown
+            [items]="subsections"
+            [selectedItem]="formEdit.get('subsection')?.value || null"
+            placeholder="Select Subsection"
+            (selectedItemChange)="subsectionSelected($event)"
+            [allowClear]="true"
+            [disabled]="!formEdit.get('section')?.value">
+          </app-dropdown>
+
+          <app-dropdown
+            [items]="titles"
+            [selectedItem]="formEdit.get('title')?.value || null"
+            placeholder="Select Title"
+            (selectedItemChange)="titleSelected($event)"
+            [allowClear]="true"
+            [disabled]="!formEdit.get('section')?.value || !formEdit.get('subsection')?.value">
+          </app-dropdown>
+        </div>
+
+        <div class="details-form__actions">
+          <button type="button" class="save-btn" [disabled]="isSaving || formEdit.invalid" (click)="saveChanges()">
+            {{ isSaving ? 'Saving...' : 'Save changes' }}
           </button>
         </div>
-      }
-    </section>
-  </section>
-
-  <section class="description-wrapper">
-    <h4>Description:</h4>
-    <span>
-    {{ selectedItem()?.description }}
-      </span>
-  </section>
+      </form>
+    }
   </div>
-
 </div>

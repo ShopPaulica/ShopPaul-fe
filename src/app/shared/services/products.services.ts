@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   CreateProductModel,
+  ProductModel,
   ProductsListPayload,
   ProductsPaginationModel
 } from '../interfaces/product.model';
@@ -67,39 +68,29 @@ export class ProductsServices {
 
     fd.append('image', product.image);
 
-    if (product.brand?.trim()) {
-      fd.append('brand', product.brand.trim());
-    }
-
-    if (product.model?.trim()) {
-      fd.append('model', product.model.trim());
-    }
-
-    if (product.fuel?.trim()) {
-      fd.append('fuel', product.fuel.trim());
-    }
-
-    if (product.engine?.trim()) {
-      fd.append('engine', product.engine.trim());
-    }
-
-    if (product.power?.trim()) {
-      fd.append('power', product.power.trim());
-    }
-
-    if (product.section?.trim()) {
-      fd.append('section', product.section.trim());
-    }
-
-    if (product.subsection?.trim()) {
-      fd.append('subsection', product.subsection.trim());
-    }
-
-    if (product.title?.trim()) {
-      fd.append('title', product.title.trim());
-    }
+    if (product.brand?.trim()) fd.append('brand', product.brand.trim());
+    if (product.model?.trim()) fd.append('model', product.model.trim());
+    if (product.fuel?.trim()) fd.append('fuel', product.fuel.trim());
+    if (product.engine?.trim()) fd.append('engine', product.engine.trim());
+    if (product.power?.trim()) fd.append('power', product.power.trim());
+    if (product.section?.trim()) fd.append('section', product.section.trim());
+    if (product.subsection?.trim()) fd.append('subsection', product.subsection.trim());
+    if (product.title?.trim()) fd.append('title', product.title.trim());
 
     return this._http.post<object>(`${environment.apiUrl}/products`, fd);
+  }
+
+  public updateProduct(
+    id: string,
+    payload: Partial<Omit<CreateProductModel, 'image'>> & { name?: string; price?: number }
+  ): Observable<ProductModel> {
+    return this._http.put<ProductModel>(`${environment.apiUrl}/products/${id}`, payload);
+  }
+
+  public updateProductImage(id: string, image: File): Observable<ProductModel> {
+    const fd = new FormData();
+    fd.append('image', image);
+    return this._http.put<ProductModel>(`${environment.apiUrl}/products/${id}/image`, fd);
   }
 
   public getProducts(payload: ProductsListPayload): Observable<ProductsPaginationModel> {
