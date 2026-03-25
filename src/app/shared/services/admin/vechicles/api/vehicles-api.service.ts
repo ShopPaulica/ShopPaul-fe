@@ -1,21 +1,21 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {environment} from '../../../../../../environments/environment';
-import {VehiclesDTO} from '../models/vehiclesDTO';
-import {ApiItemResponse, ApiMessageResponse} from '../../../../interfaces/api/api-respons';
-import {DataProviderApiModel} from '../../model/data-provider-api.model';
-import {VehiclesFetchDataModel} from '../models/vehicles-fetch-data.model';
+import { environment } from '../../../../../../environments/environment';
+import { VehiclesDTO } from '../models/vehiclesDTO';
+import { ApiItemResponse, ApiMessageResponse } from '../../../../interfaces/api/api-respons';
+import { DataProviderApiModel } from '../../model/data-provider-api.model';
+import { VehiclesFetchDataModel } from '../models/vehicles-fetch-data.model';
 
 @Injectable({ providedIn: 'root' })
-export class VehiclesApiService  implements
+export class VehiclesApiService implements
   DataProviderApiModel<
     VehiclesDTO,
     VehiclesFetchDataModel
   > {
   constructor(private readonly _http: HttpClient) {}
 
-  fetchFilter(field: string, params: Record<string, string> = {}): Observable<string[]> {
+  public fetchFilter(field: string, params: Record<string, string> = {}): Observable<string[]> {
     return this._http.get<string[]>(`${environment.apiUrl}/vehicles/filters`, {
       params: { field, ...params },
     });
@@ -27,16 +27,24 @@ export class VehiclesApiService  implements
     });
   }
 
-  public saveData(product: VehiclesDTO): Observable<ApiItemResponse<VehiclesDTO>> {
-    const fd: FormData = new FormData();
+  public saveData(vehicle: VehiclesDTO): Observable<ApiItemResponse<VehiclesDTO>> {
+    return this._http.post<ApiItemResponse<VehiclesDTO>>(`${environment.apiUrl}/vehicles`, {
+      brand: vehicle.brand?.trim() || '',
+      model: String(vehicle.model ?? '').trim(),
+      fuel: vehicle.fuel?.trim() || '',
+      engine: String(vehicle.engine ?? '').trim(),
+      power: vehicle.power?.trim() || '',
+    });
+  }
 
-    if (product.brand?.trim()) fd.append('brand', product.brand);
-    if (String(product.model ?? '').trim()) fd.append('model', String(product.model));
-    if (product.fuel?.trim()) fd.append('fuel', product.fuel);
-    if (String(product.engine ?? '').trim()) fd.append('engine', String(product.engine));
-    if (product.power?.trim()) fd.append('power', product.power);
-
-    return this._http.post<ApiItemResponse<VehiclesDTO>>(`${environment.apiUrl}/vehicles`, fd);
+  public updateData(id: string, vehicle: Partial<VehiclesDTO>): Observable<ApiItemResponse<VehiclesDTO>> {
+    return this._http.put<ApiItemResponse<VehiclesDTO>>(`${environment.apiUrl}/vehicles/${id}`, {
+      ...(vehicle.brand !== undefined ? { brand: vehicle.brand?.trim() || '' } : {}),
+      ...(vehicle.model !== undefined ? { model: String(vehicle.model ?? '').trim() } : {}),
+      ...(vehicle.fuel !== undefined ? { fuel: vehicle.fuel?.trim() || '' } : {}),
+      ...(vehicle.engine !== undefined ? { engine: String(vehicle.engine ?? '').trim() } : {}),
+      ...(vehicle.power !== undefined ? { power: vehicle.power?.trim() || '' } : {}),
+    });
   }
 
   public deleteData(id: string): Observable<ApiMessageResponse> {

@@ -151,6 +151,15 @@
                 <div class="vehicles-commands">
                   <button
                     type="button"
+                    class="btn btn--warning"
+                    (click)="openEditModal(vehicle)"
+                    [disabled]="isLoading"
+                  >
+                    Modifică
+                  </button>
+
+                  <button
+                    type="button"
                     class="btn btn--danger"
                     (click)="deleteVehicleById(vehicle.id)"
                     [disabled]="isLoading"
@@ -190,3 +199,103 @@
     </button>
   </div>
 </div>
+
+@if (isEditModalOpen) {
+  <div class="vehicles-modal-overlay" (click)="closeEditModal()"></div>
+
+  <div class="vehicles-modal">
+    <div class="vehicles-modal__header">
+      <div>
+        <h3 class="vehicles-modal__title">Modifică vehicul</h3>
+        <p class="vehicles-modal__subtitle">Actualizează valorile vehiculului selectat</p>
+      </div>
+
+      <button
+        type="button"
+        class="vehicles-modal__close"
+        (click)="closeEditModal()"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div class="vehicles-modal__body" [formGroup]="editForm">
+      <div class="vehicles-filters__grid">
+        <div class="vehicles-field">
+          <label class="vehicles-field__label" for="edit-brand">Brand</label>
+          <input
+            id="edit-brand"
+            type="text"
+            formControlName="brand"
+            class="vehicles-field__input"
+            placeholder="Ex: BMW"
+          />
+        </div>
+
+        <div class="vehicles-field">
+          <label class="vehicles-field__label" for="edit-model">Model</label>
+          <input
+            id="edit-model"
+            type="text"
+            formControlName="model"
+            class="vehicles-field__input"
+            placeholder="Ex: X5"
+          />
+        </div>
+
+        <div class="vehicles-field">
+          <label class="vehicles-field__label" for="edit-fuel">Fuel</label>
+          <input
+            id="edit-fuel"
+            type="text"
+            formControlName="fuel"
+            class="vehicles-field__input"
+            placeholder="Ex: Diesel"
+          />
+        </div>
+
+        <div class="vehicles-field">
+          <label class="vehicles-field__label" for="edit-engine">Engine</label>
+          <input
+            id="edit-engine"
+            type="text"
+            formControlName="engine"
+            class="vehicles-field__input"
+            placeholder="Ex: 3.0"
+          />
+        </div>
+
+        <div class="vehicles-field">
+          <label class="vehicles-field__label" for="edit-power">Power</label>
+          <input
+            id="edit-power"
+            type="text"
+            formControlName="power"
+            class="vehicles-field__input"
+            placeholder="Ex: 286"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="vehicles-modal__actions">
+      <button
+        type="button"
+        class="btn btn--secondary"
+        (click)="closeEditModal()"
+        [disabled]="isLoading"
+      >
+        Anulează
+      </button>
+
+      <button
+        type="button"
+        class="btn btn--green"
+        (click)="saveEdit()"
+        [disabled]="isLoading || editForm.invalid"
+      >
+        Save
+      </button>
+    </div>
+  </div>
+}

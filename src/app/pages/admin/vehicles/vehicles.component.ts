@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, takeUntil, tap, throwError } from 'rxjs';
@@ -33,6 +33,10 @@ import { VehiclesFetchDataModel } from '../../../shared/services/admin/vechicles
 export class VehiclesComponent extends AdminCrudActionsBase<VehiclesDTO, VehicleArgs, VehicleState> implements OnInit {
   public vehicles: VehiclesDTO[] = [];
 
+  public isEditModalOpen = false;
+  public editingVehicleId = '';
+  public editForm!: FormGroup;
+
   constructor(
     fb: FormBuilder,
     @Inject(DATA_PROVIDER_TOKEN) protected override readonly dataProvider: VehiclesFacade,
@@ -43,6 +47,7 @@ export class VehiclesComponent extends AdminCrudActionsBase<VehiclesDTO, Vehicle
 
   public ngOnInit(): void {
     this.initGroupForm();
+    this.initEditForm();
     this.initBase();
   }
 
@@ -86,6 +91,82 @@ export class VehiclesComponent extends AdminCrudActionsBase<VehiclesDTO, Vehicle
         return throwError(() => err);
       })
     ).subscribe();
+  }
+
+  public openEditModal(vehicle: VehiclesDTO): void {
+    this.editingVehicleId = vehicle.id || '';
+    this.isEditModalOpen = true;
+
+    this.editForm.reset({
+      brand: vehicle.brand || '',
+      model: vehicle.model || '',
+      fuel: vehicle.fuel || '',
+      engine: vehicle.engine || '',
+      power: vehicle.power || '',
+    });
+  }
+
+  public closeEditModal(): void {
+    this.isEditModalOpen = false;
+    this.editingVehicleId = '';
+    this.editForm.reset({
+      brand: '',
+      model: '',
+      fuel: '',
+      engine: '',
+      power: '',
+    });
+  }
+
+  public saveEdit(): void {
+    if (!this.editingVehicleId.trim()) {
+      this._ns.error('Lipsește ID-ul vehiculului.', {
+        title: 'Edit Vehicle',
+        durationMs: 4000
+      });
+      return;
+    }
+
+    if (this.editForm.invalid) {
+      this.editForm.markAllAsTouched();
+      this._ns.error('Completează toate câmpurile obligatorii.', {
+        title: 'Edit Vehicle',
+        durationMs: 4000
+      });
+      return;
+    }
+
+    const raw = this.editForm.getRawValue();
+
+    this.isLoading = true;
+
+    this.dataProvider.updateData(this.editingVehicleId, {
+      brand: raw.brand?.trim() || '',
+      model: raw.model?.trim() || '',
+      fuel: raw.fuel?.trim() || '',
+      engine: raw.engine?.trim() || '',
+      power: raw.power?.trim() || '',
+    }).subscribe({
+      next: () => {
+        this._ns.success('Vehiculul a fost modificat cu succes.', {
+          title: 'Edit Vehicle',
+          durationMs: 4000
+        });
+
+        this.closeEditModal();
+        this.fetchData();
+      },
+      error: (err: HttpErrorResponse) => {
+        this.isLoading = false;
+        this._ns.error(
+          err?.error?.message ?? 'Nu am putut modifica vehiculul.',
+          {
+            title: 'Edit Vehicle',
+            durationMs: 4000
+          }
+        );
+      }
+    });
   }
 
   public onSearch(): void {
@@ -187,6 +268,16 @@ export class VehiclesComponent extends AdminCrudActionsBase<VehiclesDTO, Vehicle
 
   protected initGroupForm(): void {
     this.formGroup = this._fb.group({
+      brand: ['', [Validators.required]],
+      model: ['', [Validators.required]],
+      fuel: ['', [Validators.required]],
+      engine: ['', [Validators.required]],
+      power: ['', [Validators.required]],
+    });
+  }
+
+  private initEditForm(): void {
+    this.editForm = this._fb.group({
       brand: ['', [Validators.required]],
       model: ['', [Validators.required]],
       fuel: ['', [Validators.required]],
