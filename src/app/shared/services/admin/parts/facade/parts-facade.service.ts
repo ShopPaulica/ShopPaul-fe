@@ -14,8 +14,7 @@ export class PartsFacade implements
     PartsDTO,
     PartArgs,
     PartsState
-  >
-{
+  > {
   private readonly _parts$ = new BehaviorSubject<PartFetchDataModel | null>(null);
   readonly parts$ = this._parts$.asObservable();
 
@@ -36,9 +35,6 @@ export class PartsFacade implements
 
   constructor(private readonly _api: PartsApiService) {}
 
-  /**
-   * Pentru tabel: GET /parts
-   */
   public fetchData(params: IPartsFilters = {}): void {
     this._loading$.next(true);
     this._error$.next(null);
@@ -65,9 +61,6 @@ export class PartsFacade implements
       .subscribe();
   }
 
-  /**
-   * Pentru dropdown-uri: GET /parts/filters
-   */
   public fetchFiltersData(section?: string, subsection?: string, title?: string): void {
     const { field, params } = this.resolveFilterRequest(section, subsection, title);
 
@@ -88,6 +81,10 @@ export class PartsFacade implements
 
   public saveData(data: PartsDTO): Observable<ApiItemResponse<PartsDTO>> {
     return this._api.saveData(data);
+  }
+
+  public updateData(id: string, data: Partial<PartsDTO>): Observable<ApiItemResponse<PartsDTO>> {
+    return this._api.updateData(id, data);
   }
 
   public deleteData(id: string): Observable<ApiMessageResponse> {

@@ -125,6 +125,15 @@
                 <div class="parts-commands">
                   <button
                     type="button"
+                    class="btn btn--warning"
+                    (click)="openEditModal(part)"
+                    [disabled]="isLoading"
+                  >
+                    Modifică
+                  </button>
+
+                  <button
+                    type="button"
                     class="btn btn--danger"
                     (click)="deletePartById(part.id)"
                     [disabled]="isLoading"
@@ -164,3 +173,81 @@
     </button>
   </div>
 </div>
+
+@if (isEditModalOpen) {
+  <div class="parts-modal-overlay" (click)="closeEditModal()"></div>
+
+  <div class="parts-modal">
+    <div class="parts-modal__header">
+      <div>
+        <h3 class="parts-modal__title">Modifică part</h3>
+        <p class="parts-modal__subtitle">Actualizează informațiile elementului selectat</p>
+      </div>
+
+      <button
+        type="button"
+        class="parts-modal__close"
+        (click)="closeEditModal()"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div class="parts-modal__body" [formGroup]="editForm">
+      <div class="parts-filters__grid">
+        <div class="parts-field">
+          <label class="parts-field__label" for="edit-section">Section</label>
+          <input
+            id="edit-section"
+            type="text"
+            formControlName="section"
+            class="parts-field__input"
+            placeholder="Ex: MOTOR"
+          />
+        </div>
+
+        <div class="parts-field">
+          <label class="parts-field__label" for="edit-subsection">Subsection</label>
+          <input
+            id="edit-subsection"
+            type="text"
+            formControlName="subsection"
+            class="parts-field__input"
+            placeholder="Ex: Ungere"
+          />
+        </div>
+
+        <div class="parts-field">
+          <label class="parts-field__label" for="edit-title">Title</label>
+          <input
+            id="edit-title"
+            type="text"
+            formControlName="title"
+            class="parts-field__input"
+            placeholder="Ex: Filtru ulei"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="parts-modal__actions">
+      <button
+        type="button"
+        class="btn btn--secondary"
+        (click)="closeEditModal()"
+        [disabled]="isLoading"
+      >
+        Anulează
+      </button>
+
+      <button
+        type="button"
+        class="btn btn--green"
+        (click)="saveEdit()"
+        [disabled]="isLoading || editForm.invalid"
+      >
+        Save
+      </button>
+    </div>
+  </div>
+}
