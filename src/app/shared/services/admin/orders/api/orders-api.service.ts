@@ -21,6 +21,14 @@ OrderFetchDataModel
     });
   }
 
+  public updateData(id: string, data: Partial<OrderDTO>): Observable<ApiItemResponse<OrderDTO>> {
+    return this._http.put<ApiItemResponse<OrderDTO>>(`${environment.apiUrl}/orders/${id}`, data);
+  }
+
+  public getOrderDetails(id: string): Observable<ApiItemResponse<OrderDTO>> {
+    return this._http.get<ApiItemResponse<OrderDTO>>(`${environment.apiUrl}/orders/${id}/details`);
+  }
+
   public saveData(data: OrderDTO): Observable<ApiItemResponse<OrderDTO>> {
     return this._http.post<ApiItemResponse<OrderDTO>>(`${environment.apiUrl}/orders`, data);
   }

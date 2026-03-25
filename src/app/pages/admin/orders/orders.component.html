@@ -54,11 +54,21 @@
     </div>
 
     <div class="orders-filters__actions">
-      <button type="button" class="btn btn--primary" (click)="onSearch()" [disabled]="isLoading">
+      <button
+        type="button"
+        class="btn btn--primary"
+        (click)="onSearch()"
+        [disabled]="isLoading"
+      >
         Caută
       </button>
 
-      <button type="button" class="btn btn--secondary" (click)="onReset()" [disabled]="isLoading">
+      <button
+        type="button"
+        class="btn btn--secondary"
+        (click)="onReset()"
+        [disabled]="isLoading"
+      >
         Resetează
       </button>
     </div>
@@ -84,56 +94,77 @@
   <div class="orders-table-wrapper">
     @if (isLoading) {
       <div class="orders-state">
-      Se încarcă comenzile...
+        Se încarcă comenzile...
       </div>
     }
 
     @if (!isLoading && !orders.length) {
-    <div class="orders-state orders-state--empty">
-      Nu există comenzi pentru filtrele selectate.
-    </div>
+      <div class="orders-state orders-state--empty">
+        Nu există comenzi pentru filtrele selectate.
+      </div>
     }
 
     @if (!isLoading && orders.length) {
-    <table class="orders-table">
-      <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nume</th>
-        <th>Total</th>
-        <th>Email</th>
-        <th>Telefon</th>
-        <th>VIN</th>
-        <th>Descriere</th>
-        <th>Creată la</th>
-        <th>Comenzi</th>
-      </tr>
-      </thead>
+      <table class="orders-table">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nume</th>
+          <th>Total</th>
+          <th>Email</th>
+          <th>Telefon</th>
+          <th>VIN</th>
+          <th>Descriere</th>
+          <th>Creată la</th>
+          <th>Comenzi</th>
+        </tr>
+        </thead>
 
-      <tbody>
-        @for (order of orders; track order.id) {
-      <tr >
-        <td class="orders-table__id">{{ order.id }}</td>
-        <td>{{ order.name }}</td>
-        <td>{{ order.total }}</td>
-        <td>{{ order.email }}</td>
-        <td>{{ order.phone }}</td>
-        <td>{{ order.vin }}</td>
-        <td class="orders-table__description">
-          {{ order.description || '-' }}
-        </td>
-        <td>{{ order.createdAt | date: 'dd.MM.yyyy HH:mm' }}</td>
-        <td >
-          <div class="order-commands">
-          <button  class="btn btn--green">Factureazǎ</button>
-            <button  class="btn btn--primary">Modificǎ</button>
-          <button (click)="deleteData(order?.id)" class="btn btn--danger">Delete</button>
-          </div>
-        </td>
-      </tr>
-        }
-      </tbody>
-    </table>
+        <tbody>
+          @for (order of orders; track order.id) {
+            <tr>
+              <td class="orders-table__id">{{ order.id }}</td>
+              <td>{{ order.name }}</td>
+              <td>{{ order.total | number:'1.2-2' }}</td>
+              <td>{{ order.email }}</td>
+              <td>{{ order.phone }}</td>
+              <td>{{ order.vin }}</td>
+              <td class="orders-table__description">
+                {{ order.description || '-' }}
+              </td>
+              <td>{{ order.createdAt | date: 'dd.MM.yyyy HH:mm' }}</td>
+              <td>
+                <div class="order-commands">
+                  <button
+                    type="button"
+                    class="btn btn--green"
+                  >
+                    Factureazǎ
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn btn--primary"
+                    (click)="openEditModal(order)"
+                    [disabled]="isLoading"
+                  >
+                    Modificǎ
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn btn--danger"
+                    (click)="deleteData(order?.id)"
+                    [disabled]="isLoading"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     }
   </div>
 
@@ -161,3 +192,229 @@
     </button>
   </div>
 </div>
+
+@if (isEditModalOpen) {
+  <div class="orders-modal-overlay" (click)="closeEditModal()"></div>
+
+  <div class="orders-modal">
+    <div class="orders-modal__header">
+      <div>
+        <h3 class="orders-modal__title">Modifică comandă</h3>
+        <p class="orders-modal__subtitle">Editează datele și produsele comenzii</p>
+      </div>
+
+      <button
+        type="button"
+        class="orders-modal__close"
+        (click)="closeEditModal()"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div class="orders-modal__body" [formGroup]="editForm">
+      <div class="orders-filters__grid">
+        <div class="orders-field">
+          <label class="orders-field__label" for="edit-name">Nume</label>
+          <input
+            id="edit-name"
+            type="text"
+            formControlName="name"
+            class="orders-field__input"
+            placeholder="Ex: Andrei"
+          />
+        </div>
+
+        <div class="orders-field">
+          <label class="orders-field__label" for="edit-email">Email</label>
+          <input
+            id="edit-email"
+            type="text"
+            formControlName="email"
+            class="orders-field__input"
+            placeholder="Ex: andrei@gmail.com"
+          />
+        </div>
+
+        <div class="orders-field">
+          <label class="orders-field__label" for="edit-phone">Telefon</label>
+          <input
+            id="edit-phone"
+            type="text"
+            formControlName="phone"
+            class="orders-field__input"
+            placeholder="Ex: 072..."
+          />
+        </div>
+
+        <div class="orders-field">
+          <label class="orders-field__label" for="edit-vin">VIN</label>
+          <input
+            id="edit-vin"
+            type="text"
+            formControlName="vin"
+            class="orders-field__input"
+            placeholder="Ex: WBA..."
+          />
+        </div>
+      </div>
+
+      <div class="orders-field orders-field--full">
+        <label class="orders-field__label" for="edit-description">Descriere</label>
+        <textarea
+          id="edit-description"
+          formControlName="description"
+          class="orders-field__textarea"
+          placeholder="Detalii comandă..."></textarea>
+      </div>
+
+      <div class="order-items-editor">
+        <div class="order-items-editor__top">
+          <h4 class="order-items-editor__title">Produse comandă</h4>
+
+          <div class="order-items-editor__actions">
+            <button
+              type="button"
+              class="btn btn--green"
+              (click)="addCustomItem()"
+            >
+              + Produs custom
+            </button>
+          </div>
+        </div>
+
+        <div class="order-products-picker">
+          <label class="orders-field__label">Adaugă produs existent</label>
+
+          <div class="order-products-picker__row">
+            <select
+              class="orders-field__input"
+              [(ngModel)]="selectedProductToAddId"
+              [ngModelOptions]="{ standalone: true }"
+            >
+              <option value="">Selectează produs</option>
+
+              @for (product of availableProducts; track product.id) {
+                <option [value]="product.id">
+                  {{ product.name }} - {{ product.price | number:'1.2-2' }} lei
+                </option>
+              }
+            </select>
+
+            <button
+              type="button"
+              class="btn btn--primary"
+              (click)="addSelectedProduct()"
+            >
+              Adaugă
+            </button>
+          </div>
+        </div>
+
+        @if (!editableItems.length) {
+          <div class="orders-state orders-state--empty">
+            Nu există produse în această comandă.
+          </div>
+        }
+
+        @for (item of editableItems; track $index; let i = $index) {
+          <div class="order-item-card">
+            <div class="order-item-card__grid">
+              <div class="orders-field">
+                <label class="orders-field__label">Titlu</label>
+                <input
+                  class="orders-field__input"
+                  type="text"
+                  [(ngModel)]="item.title"
+                  [ngModelOptions]="{ standalone: true }"
+                  (ngModelChange)="recalculateItem(i)"
+                />
+              </div>
+
+              <div class="orders-field">
+                <label class="orders-field__label">Preț</label>
+                <input
+                  class="orders-field__input"
+                  type="number"
+                  [(ngModel)]="item.price"
+                  [ngModelOptions]="{ standalone: true }"
+                  (ngModelChange)="recalculateItem(i)"
+                />
+              </div>
+
+              <div class="orders-field">
+                <label class="orders-field__label">Cantitate</label>
+                <input
+                  class="orders-field__input"
+                  type="number"
+                  [(ngModel)]="item.quantity"
+                  [ngModelOptions]="{ standalone: true }"
+                  (ngModelChange)="recalculateItem(i)"
+                />
+              </div>
+
+              <div class="orders-field">
+                <label class="orders-field__label">Total item</label>
+                <input
+                  class="orders-field__input"
+                  type="number"
+                  [value]="item.total"
+                  disabled
+                />
+              </div>
+            </div>
+
+            <div class="order-item-card__footer">
+              <div class="order-item-card__meta">
+                @if (item.isCustom) {
+                  <span class="order-item-card__badge">Custom</span>
+                } @else {
+                  <span class="order-item-card__badge order-item-card__badge--catalog">
+                    Din catalog
+                  </span>
+                }
+
+                @if (item.productId) {
+                  <span class="order-item-card__id">ID: {{ item.productId }}</span>
+                }
+              </div>
+
+              <button
+                type="button"
+                class="btn btn--danger"
+                (click)="removeItem(i)"
+              >
+                Șterge
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="order-total-box">
+        <span>Total comandă</span>
+        <strong>{{ editOrderTotal | number:'1.2-2' }} lei</strong>
+      </div>
+    </div>
+
+    <div class="orders-modal__actions">
+      <button
+        type="button"
+        class="btn btn--secondary"
+        (click)="closeEditModal()"
+        [disabled]="isLoading"
+      >
+        Anulează
+      </button>
+
+      <button
+        type="button"
+        class="btn btn--green"
+        (click)="saveEdit()"
+        [disabled]="isLoading || editForm.invalid"
+      >
+        Save
+      </button>
+    </div>
+  </div>
+}

@@ -53,6 +53,14 @@ export class OrdersFacade implements
       .subscribe();
   }
 
+  public updateData(id: string, data: Partial<OrderDTO>): Observable<ApiItemResponse<OrderDTO>> {
+    return this._api.updateData(id, data);
+  }
+
+  public getOrderDetails(id: string): Observable<ApiItemResponse<OrderDTO>> {
+    return this._api.getOrderDetails(id);
+  }
+
   public saveData(data: OrderDTO): Observable<ApiItemResponse<OrderDTO>> {
     return this._api.saveData(data);
   }
