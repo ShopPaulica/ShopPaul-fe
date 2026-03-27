@@ -287,19 +287,58 @@
           <label class="orders-field__label">Adaugă produs existent</label>
 
           <div class="order-products-picker__row">
-            <select
-              class="orders-field__input"
-              [(ngModel)]="selectedProductToAddId"
-              [ngModelOptions]="{ standalone: true }"
-            >
-              <option value="">Selectează produs</option>
+            <div class="product-picker">
+              <button
+                type="button"
+                class="product-picker__trigger"
+                (click)="toggleProductDropdown()"
+              >
+                <span>{{ getSelectedProductLabel() }}</span>
+                <span>▾</span>
+              </button>
 
-              @for (product of availableProducts; track product.id) {
-                <option [value]="product.id">
-                  {{ product.name }} - {{ product.price | number:'1.2-2' }} lei
-                </option>
+              @if (isProductDropdownOpen) {
+                <div class="product-picker__dropdown">
+                  <div class="product-picker__search">
+                    <input
+                      type="text"
+                      [(ngModel)]="productSearch"
+                      [ngModelOptions]="{ standalone: true }"
+                      (ngModelChange)="onProductSearchChange()"
+                      class="orders-field__input"
+                      placeholder="Caută produs..."
+                    />
+                  </div>
+
+                  <div
+                    class="product-picker__list"
+                    (scroll)="onProductsDropdownScroll($event)"
+                  >
+                    @if (!visibleProducts.length) {
+                      <div class="product-picker__empty">
+                        Nu există produse.
+                      </div>
+                    }
+
+                    @for (product of visibleProducts; track product.id) {
+                      <button
+                        type="button"
+                        class="product-picker__item"
+                        (click)="selectProductToAdd(product)"
+                      >
+                        <div class="product-picker__item-title">
+                          {{ product.name }}
+                        </div>
+
+                        <div class="product-picker__item-meta">
+                          {{ product.price | number:'1.2-2' }} lei
+                        </div>
+                      </button>
+                    }
+                  </div>
+                </div>
               }
-            </select>
+            </div>
 
             <button
               type="button"
@@ -317,7 +356,7 @@
           </div>
         }
 
-        @for (item of editableItems; track $index; let i = $index) {
+        @for (item of editableItems; track item; let i = $index) {
           <div class="order-item-card">
             <div class="order-item-card__grid">
               <div class="orders-field">
@@ -392,8 +431,33 @@
       </div>
 
       <div class="order-total-box">
-        <span>Total comandă</span>
-        <strong>{{ editOrderTotal | number:'1.2-2' }} lei</strong>
+        <div class="order-total-box__left">
+          <span>Total comandă</span>
+
+          <label class="order-total-box__toggle">
+            <input
+              type="checkbox"
+              [checked]="isManualTotal"
+              (change)="onManualTotalToggle()"
+            />
+            Modifică manual
+          </label>
+        </div>
+
+        @if (!isManualTotal) {
+          <strong>{{ editOrderTotal | number:'1.2-2' }} lei</strong>
+        } @else {
+          <div class="order-total-box__manual">
+            <input
+              type="number"
+              [(ngModel)]="manualTotalValue"
+              [ngModelOptions]="{ standalone: true }"
+              (ngModelChange)="onManualTotalChange()"
+              class="orders-field__input"
+            />
+            <span>lei</span>
+          </div>
+        }
       </div>
     </div>
 

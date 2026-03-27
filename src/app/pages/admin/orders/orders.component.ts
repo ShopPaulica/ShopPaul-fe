@@ -1,15 +1,24 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { DatePipe, DecimalPipe, NgIf } from '@angular/common';
-import { FormsModule, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { catchError, takeUntil, tap, throwError } from 'rxjs';
+import { takeUntil } from 'rxjs';
 
 import { NotificationService } from '../../../shared/services/notification.service';
 import { DATA_PROVIDER_TOKEN } from '../../../shared/services/admin/const/data-provider-token';
 import { AdminCrudActionsBase } from '../models/admin-crud-actions';
 import { OrderDTO } from '../../../shared/services/admin/orders/models/orderDTO';
 import { OrdersState } from '../../../shared/services/admin/orders/models/order-state-model';
-import { OrderArgs, IOrdersFilters } from '../../../shared/services/admin/orders/models/order-filters-model';
+import {
+  IOrdersFilters,
+  OrderArgs,
+} from '../../../shared/services/admin/orders/models/order-filters-model';
 import { OrderFetchDataModel } from '../../../shared/services/admin/orders/models/order-fetch-data.model';
 import { ProductsServices } from '../../../shared/services/products.services';
 import { ProductModel } from '../../../shared/interfaces/product.model';
@@ -37,13 +46,16 @@ type EditableOrderItem = {
     {
       provide: DATA_PROVIDER_TOKEN,
       useExisting: OrdersFacade,
-    }
+    },
   ],
   templateUrl: './orders.component.html',
   standalone: true,
-  styleUrl: './orders.component.scss'
+  styleUrl: './orders.component.scss',
 })
-export class OrdersComponent extends AdminCrudActionsBase<OrderDTO, OrderArgs, OrdersState> implements OnInit {
+export class OrdersComponent
+  extends AdminCrudActionsBase<OrderDTO, OrderArgs, OrdersState>
+  implements OnInit
+{
   public orders: OrderDTO[] = [];
 
   public filters: IOrdersFilters = {
@@ -60,12 +72,23 @@ export class OrdersComponent extends AdminCrudActionsBase<OrderDTO, OrderArgs, O
   public editableItems: EditableOrderItem[] = [];
   public editOrderTotal = 0;
 
+  public isManualTotal = false;
+  public manualTotalValue: number | null = null;
+
   public availableProducts: ProductModel[] = [];
   public selectedProductToAddId = '';
 
+  public isProductDropdownOpen = false;
+  public productSearch = '';
+  public filteredProducts: ProductModel[] = [];
+  public visibleProducts: ProductModel[] = [];
+  public productPageSize = 20;
+  public productVisibleCount = 20;
+
   constructor(
     fb: FormBuilder,
-    @Inject(DATA_PROVIDER_TOKEN) protected override readonly dataProvider: OrdersFacade,
+    @Inject(DATA_PROVIDER_TOKEN)
+    protected override readonly dataProvider: OrdersFacade,
     private readonly _ns: NotificationService,
     private readonly _productsService: ProductsServices
   ) {
@@ -118,7 +141,7 @@ export class OrdersComponent extends AdminCrudActionsBase<OrderDTO, OrderArgs, O
     if (!id?.trim()) {
       this._ns.error('ID-ul comenzii lipsește.', {
         title: 'Delete Order',
-        durationMs: 4000
+        durationMs: 4000,
       });
       return;
     }
@@ -127,7 +150,7 @@ export class OrdersComponent extends AdminCrudActionsBase<OrderDTO, OrderArgs, O
       next: () => {
         this._ns.success('Comanda a fost ștearsă cu succes.', {
           title: 'Delete Order',
-          durationMs: 4000
+          durationMs: 4000,
         });
 
         this.fetchData();
@@ -137,10 +160,10 @@ export class OrdersComponent extends AdminCrudActionsBase<OrderDTO, OrderArgs, O
           err?.error?.message ?? 'Nu am putut șterge comanda.',
           {
             title: 'Delete Order',
-            durationMs: 4000
+            durationMs: 4000,
           }
         );
-      }
+      },
     });
   }
 
@@ -148,7 +171,7 @@ export class OrdersComponent extends AdminCrudActionsBase<OrderDTO, OrderArgs, O
     if (!order.id?.trim()) {
       this._ns.error('ID-ul comenzii lipsește.', {
         title: 'Edit Order',
-        durationMs: 4000
+        durationMs: 4000,
       });
       return;
     }
@@ -156,9 +179,12 @@ export class OrdersComponent extends AdminCrudActionsBase<OrderDTO, OrderArgs, O
     this.isLoading = true;
     this.editingOrderId = order.id;
     this.selectedProductToAddId = '';
+    this.isProductDropdownOpen = false;
+    this.productSearch = '';
+    this.productVisibleCount = this.productPageSize;
 
     this.dataProvider.getOrderDetails(order.id).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         const item = res?.item;
 
         this.editForm.reset({
@@ -180,12 +206,18 @@ export class OrdersComponent extends AdminCrudActionsBase<OrderDTO, OrderArgs, O
             title: entry?.title || entry?.name || entry?.product?.name || '',
             price,
             quantity: qty,
-            total: Number(entry?.total ?? (price * qty)),
+            total: Number(entry?.total ?? price * qty),
             isCustom: Boolean(entry?.isCustom),
           };
         });
 
+        this.isManualTotal = false;
+        this.editOrderTotal = Number(item?.total || 0);
+        this.manualTotalValue = Number(item?.total || 0);
+
         this.recalculateOrderTotal();
+        this.applyProductFilter();
+
         this.isEditModalOpen = true;
         this.isLoading = false;
       },
@@ -195,10 +227,10 @@ export class OrdersComponent extends AdminCrudActionsBase<OrderDTO, OrderArgs, O
           err?.error?.message ?? 'Nu am putut încărca detaliile comenzii.',
           {
             title: 'Edit Order',
-            durationMs: 4000
+            durationMs: 4000,
           }
         );
-      }
+      },
     });
   }
 
@@ -207,7 +239,15 @@ export class OrdersComponent extends AdminCrudActionsBase<OrderDTO, OrderArgs, O
     this.editingOrderId = '';
     this.editableItems = [];
     this.editOrderTotal = 0;
+    this.manualTotalValue = null;
+    this.isManualTotal = false;
     this.selectedProductToAddId = '';
+
+    this.isProductDropdownOpen = false;
+    this.productSearch = '';
+    this.productVisibleCount = this.productPageSize;
+    this.filteredProducts = [];
+    this.visibleProducts = [];
 
     this.editForm.reset({
       name: '',
@@ -235,17 +275,19 @@ export class OrdersComponent extends AdminCrudActionsBase<OrderDTO, OrderArgs, O
     if (!this.selectedProductToAddId) {
       this._ns.error('Selectează un produs.', {
         title: 'Add Product',
-        durationMs: 3000
+        durationMs: 3000,
       });
       return;
     }
 
-    const product = this.availableProducts.find((item) => item.id === this.selectedProductToAddId);
+    const product = this.availableProducts.find(
+      (item) => item.id === this.selectedProductToAddId
+    );
 
     if (!product) {
       this._ns.error('Produsul selectat nu a fost găsit.', {
         title: 'Add Product',
-        durationMs: 3000
+        durationMs: 3000,
       });
       return;
     }
@@ -260,6 +302,7 @@ export class OrdersComponent extends AdminCrudActionsBase<OrderDTO, OrderArgs, O
     });
 
     this.selectedProductToAddId = '';
+    this.isProductDropdownOpen = false;
     this.recalculateOrderTotal();
   }
 
@@ -287,16 +330,103 @@ export class OrdersComponent extends AdminCrudActionsBase<OrderDTO, OrderArgs, O
   }
 
   public recalculateOrderTotal(): void {
-    this.editOrderTotal = this.editableItems.reduce((sum, item) => {
+    const calculatedTotal = this.editableItems.reduce((sum, item) => {
       return sum + Number(item.total || 0);
     }, 0);
+
+    if (!this.isManualTotal) {
+      this.editOrderTotal = calculatedTotal;
+      this.manualTotalValue = calculatedTotal;
+    }
+  }
+
+  public onManualTotalToggle(): void {
+    this.isManualTotal = !this.isManualTotal;
+
+    if (!this.isManualTotal) {
+      this.recalculateOrderTotal();
+    } else {
+      this.manualTotalValue = this.editOrderTotal;
+    }
+  }
+
+  public onManualTotalChange(): void {
+    this.editOrderTotal = Number(this.manualTotalValue || 0);
+  }
+
+  public toggleProductDropdown(): void {
+    this.isProductDropdownOpen = !this.isProductDropdownOpen;
+
+    if (this.isProductDropdownOpen) {
+      this.productSearch = '';
+      this.productVisibleCount = this.productPageSize;
+      this.applyProductFilter();
+    }
+  }
+
+  public onProductSearchChange(): void {
+    this.productVisibleCount = this.productPageSize;
+    this.applyProductFilter();
+  }
+
+  public applyProductFilter(): void {
+    const search = this.productSearch.trim().toLowerCase();
+
+    this.filteredProducts = this.availableProducts.filter((product) => {
+      if (!search) {
+        return true;
+      }
+
+      return (
+        product.name?.toLowerCase().includes(search) ||
+        product.description?.toLowerCase().includes(search) ||
+        product.brand?.toLowerCase().includes(search) ||
+        product.model?.toLowerCase().includes(search)
+      );
+    });
+
+    this.visibleProducts = this.filteredProducts.slice(0, this.productVisibleCount);
+  }
+
+  public onProductsDropdownScroll(event: Event): void {
+    const target = event.target as HTMLElement;
+    const nearBottom =
+      target.scrollTop + target.clientHeight >= target.scrollHeight - 20;
+
+    if (!nearBottom) {
+      return;
+    }
+
+    if (this.visibleProducts.length >= this.filteredProducts.length) {
+      return;
+    }
+
+    this.productVisibleCount += this.productPageSize;
+    this.visibleProducts = this.filteredProducts.slice(0, this.productVisibleCount);
+  }
+
+  public selectProductToAdd(product: ProductModel): void {
+    this.selectedProductToAddId = product.id || '';
+    this.isProductDropdownOpen = false;
+  }
+
+  public getSelectedProductLabel(): string {
+    if (!this.selectedProductToAddId) {
+      return 'Selectează produs';
+    }
+
+    const product = this.availableProducts.find(
+      (item) => item.id === this.selectedProductToAddId
+    );
+
+    return product?.name || 'Produs selectat';
   }
 
   public saveEdit(): void {
     if (!this.editingOrderId.trim()) {
       this._ns.error('Lipsește ID-ul comenzii.', {
         title: 'Edit Order',
-        durationMs: 4000
+        durationMs: 4000,
       });
       return;
     }
@@ -305,7 +435,7 @@ export class OrdersComponent extends AdminCrudActionsBase<OrderDTO, OrderArgs, O
       this.editForm.markAllAsTouched();
       this._ns.error('Completează câmpurile necesare.', {
         title: 'Edit Order',
-        durationMs: 4000
+        durationMs: 4000,
       });
       return;
     }
@@ -313,7 +443,7 @@ export class OrdersComponent extends AdminCrudActionsBase<OrderDTO, OrderArgs, O
     if (!this.editableItems.length) {
       this._ns.error('Comanda trebuie să conțină cel puțin un produs.', {
         title: 'Edit Order',
-        durationMs: 4000
+        durationMs: 4000,
       });
       return;
     }
@@ -345,7 +475,7 @@ export class OrdersComponent extends AdminCrudActionsBase<OrderDTO, OrderArgs, O
       next: () => {
         this._ns.success('Comanda a fost modificată cu succes.', {
           title: 'Edit Order',
-          durationMs: 4000
+          durationMs: 4000,
         });
 
         this.closeEditModal();
@@ -357,10 +487,10 @@ export class OrdersComponent extends AdminCrudActionsBase<OrderDTO, OrderArgs, O
           err?.error?.message ?? 'Nu am putut modifica comanda.',
           {
             title: 'Edit Order',
-            durationMs: 4000
+            durationMs: 4000,
           }
         );
-      }
+      },
     });
   }
 
@@ -420,13 +550,16 @@ export class OrdersComponent extends AdminCrudActionsBase<OrderDTO, OrderArgs, O
   }
 
   private loadAvailableProducts(): void {
-    this._productsService.getProducts({ page: 1 }).subscribe({
-      next: (res) => {
+    this._productsService.getProducts({ page: 1 } as any).subscribe({
+      next: (res: any) => {
         this.availableProducts = res.items ?? [];
+        this.applyProductFilter();
       },
       error: () => {
         this.availableProducts = [];
-      }
+        this.filteredProducts = [];
+        this.visibleProducts = [];
+      },
     });
   }
 }

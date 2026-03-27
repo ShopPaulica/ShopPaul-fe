@@ -344,7 +344,6 @@
   grid-template-columns: 46px 1fr 46px;
   gap: 10px;
   align-items: center;
-  margin-top: auto;
 
   input {
     width: 100%;
@@ -448,13 +447,6 @@ footer {
     padding: 20px 16px 30px;
   }
 
-  .filters-section {
-    position: relative;
-    z-index: 100;
-    padding: 16px;
-    border-radius: 18px;
-  }
-
   .all-filters-grid {
     grid-template-columns: repeat(2, minmax(180px, 1fr));
   }
@@ -497,10 +489,6 @@ footer {
     padding: 14px 12px 24px;
   }
 
-  .filters-section {
-    padding: 12px;
-    border-radius: 16px;
-  }
 
   .search-wrapper {
     margin-bottom: 12px;
