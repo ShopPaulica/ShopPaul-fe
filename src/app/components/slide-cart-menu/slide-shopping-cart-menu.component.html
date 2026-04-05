@@ -40,12 +40,12 @@
 
                   <div class="cart-item__pricing-row">
                     <span>Cantitate</span>
-                    <strong>{{ isInCart(item.id) ?? 0 }}</strong>
+                    <strong>{{ isInCart(item.id) }}</strong>
                   </div>
 
                   <div class="cart-item__pricing-row cart-item__pricing-row--total">
                     <span>Total produs</span>
-                    <strong>{{ ((item.price ?? 0) * (isInCart(item.id) ?? 0)) | number:'1.2-2' }} RON</strong>
+                    <strong>{{ ((item.price ?? 0) * (isInCart(item.id))) | number:'1.2-2' }} RON</strong>
                   </div>
                 </div>
 
@@ -64,7 +64,7 @@
                       class="cart-qty__input"
                       type="number"
                       [disabled]="true"
-                      [value]="isInCart(item.id) ?? 0"
+                      [value]="isInCart(item.id)"
                     />
 
                     <button

@@ -17,9 +17,9 @@ import { SlideMenuComponent } from '../../components/slide-menu/slide-menu.compo
 import { detailsModalComponent } from '../../components/details-modal/details-modal.component';
 import { NotificationService } from '../../shared/services/notification.service';
 import { AuthService } from '../../shared/services/auth.service';
-import { DropdownComponent } from '../../components/dropdown/dropdown.component';
 import { VehiclesFacade } from '../../shared/services/admin/vechicles/facade/vehicles.facade';
 import { PartsFacade } from '../../shared/services/admin/parts/facade/parts-facade.service';
+import {DropdownComponent} from '../../components/dropdown/dropdown.component';
 
 @Component({
   selector: 'app-products',

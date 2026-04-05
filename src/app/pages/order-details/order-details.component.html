@@ -57,7 +57,7 @@
                   class="qty-control__input"
                   type="number"
                   [disabled]="true"
-                  [value]="isInCart(item.id) ?? 0"
+                  [value]="isInCart(item.id)"
                 />
 
                 <button class="qty-control__btn" type="button" (click)="addOne(item)">

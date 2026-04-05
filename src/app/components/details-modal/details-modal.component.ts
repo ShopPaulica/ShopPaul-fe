@@ -8,9 +8,9 @@ import { CartService } from '../../shared/services/cart.service';
 import { ProductsServices } from '../../shared/services/products.services';
 import { NotificationService } from '../../shared/services/notification.service';
 import { AuthService } from '../../shared/services/auth.service';
-import { DropdownComponent } from '../dropdown/dropdown.component';
 import { VehiclesFacade } from '../../shared/services/admin/vechicles/facade/vehicles.facade';
 import { PartsFacade } from '../../shared/services/admin/parts/facade/parts-facade.service';
+import {DropdownComponent} from '../dropdown/dropdown.component';
 
 @Component({
   selector: 'app-details-modal',

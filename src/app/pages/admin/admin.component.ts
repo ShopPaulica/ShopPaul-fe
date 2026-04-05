@@ -1,10 +1,6 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {Component} from '@angular/core';
+import {ReactiveFormsModule} from '@angular/forms';
 import {ordersListComponent} from '../../components/commands-list/orders-list.component';
-import {ProductsServices} from '../../shared/services/products.services';
-import {NotificationService} from '../../shared/services/notification.service';
-import {catchError, throwError} from 'rxjs';
-import {HttpErrorResponse} from '@angular/common/http';
 import {VehiclesComponent} from './vehicles/vehicles.component';
 import {PartsComponent} from './parts/parts.component';
 import {OrdersComponent} from './orders/orders.component';
