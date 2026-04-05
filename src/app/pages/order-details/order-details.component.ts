@@ -1,10 +1,12 @@
-import { Component, DestroyRef, Inject, inject, OnInit } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, DestroyRef, Inject, OnInit, inject } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { ShoppingCartProduct } from '../../shared/interfaces/shopping-cart-product.model';
 import { ProductModel } from '../../shared/interfaces/product.model';
+import { ApiItemResponse } from '../../shared/interfaces/api/api-respons';
+
 import { CartService } from '../../shared/services/cart.service';
 import { NotificationService } from '../../shared/services/notification.service';
 import { NavigationService } from '../../shared/services/router-service';
@@ -16,10 +18,12 @@ import { DataProviderModel } from '../../shared/services/admin/model/data-provid
 import { OrderDTO } from '../../shared/services/admin/orders/models/orderDTO';
 import { OrderArgs } from '../../shared/services/admin/orders/models/order-filters-model';
 import { OrdersState } from '../../shared/services/admin/orders/models/order-state-model';
-import { HttpClient } from '@angular/common/http';
+import {PayuApiService} from '../../shared/services/payments/payu/payu.service';
+import {PayuInitResponseItem} from '../../shared/services/payments/payu/payu-init-response-item';
 
 @Component({
   selector: 'app-order-details',
+  standalone: true,
   imports: [
     ReactiveFormsModule,
     DecimalPipe
@@ -31,14 +35,14 @@ import { HttpClient } from '@angular/common/http';
     }
   ],
   templateUrl: './order-details.component.html',
-  standalone: true,
   styleUrl: './order-details.component.scss'
 })
 export class OrderDetailsComponent implements OnInit {
   public shoppingCart: ShoppingCartProduct[] = [];
-  private readonly destroyRef = inject(DestroyRef);
   public formDetails!: FormGroup;
   public isSubmitting = false;
+
+  private readonly destroyRef = inject(DestroyRef);
 
   public get getTotal(): number {
     return this.cartService.getTotal;
@@ -58,8 +62,9 @@ export class OrderDetailsComponent implements OnInit {
     private readonly _ns: NotificationService,
     private readonly router: NavigationService,
     private readonly authService: AuthService,
-    private readonly http: HttpClient,
-    @Inject(DATA_PROVIDER_TOKEN) private readonly dataProvider: DataProviderModel<OrderDTO, OrderArgs, OrdersState>,
+    private readonly payuApiService: PayuApiService,
+    @Inject(DATA_PROVIDER_TOKEN)
+    private readonly dataProvider: DataProviderModel<OrderDTO, OrderArgs, OrdersState>,
   ) {}
 
   public ngOnInit(): void {
@@ -99,7 +104,10 @@ export class OrderDetailsComponent implements OnInit {
 
   public getBgImage(product: ProductModel): string {
     const img = product?.image;
-    if (!img?.base64 || !img?.contentType) return 'none';
+    if (!img?.base64 || !img?.contentType) {
+      return 'none';
+    }
+
     return `url("data:${img.contentType};base64,${img.base64}")`;
   }
 
@@ -261,7 +269,7 @@ export class OrderDetailsComponent implements OnInit {
         this.cartService.cleanCart();
         this.router.goToHome();
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isSubmitting = false;
 
         this._ns.error(
@@ -280,7 +288,7 @@ export class OrderDetailsComponent implements OnInit {
 
     const raw = this.formDetails.getRawValue();
 
-    this.http.post<any>('http://localhost:3000/payment-payu/init', {
+    this.payuApiService.initPayment({
       firstName: raw.name,
       lastName: raw.name,
       email: raw.email,
@@ -288,7 +296,7 @@ export class OrderDetailsComponent implements OnInit {
       amount: this.getTotal,
       productInfo: this.getPayuProductInfo(),
     }).subscribe({
-      next: (response) => {
+      next: (response: ApiItemResponse<PayuInitResponseItem>) => {
         this.isSubmitting = false;
 
         const action = response?.item?.action;
@@ -302,9 +310,9 @@ export class OrderDetailsComponent implements OnInit {
           return;
         }
 
-        this.submitToPayU(action, params);
+        this.payuApiService.submitToPayU(action, params);
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isSubmitting = false;
 
         this._ns.error(
@@ -316,33 +324,6 @@ export class OrderDetailsComponent implements OnInit {
         );
       }
     });
-  }
-
-  private submitToPayU(action: string, params: Record<string, any>): void {
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = action;
-
-    Object.entries(params).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach((item) => {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = `${key}[]`;
-          input.value = String(item);
-          form.appendChild(input);
-        });
-      } else {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = String(value);
-        form.appendChild(input);
-      }
-    });
-
-    document.body.appendChild(form);
-    form.submit();
   }
 
   private buildOrderDescription(): string {
