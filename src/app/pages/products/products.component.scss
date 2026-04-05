@@ -151,11 +151,6 @@
       0 22px 44px rgba(0, 0, 0, 0.3),
       0 0 0 1px rgba(255, 122, 0, 0.04);
 
-    .card-product__info-hover {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
     .card-product__img {
       transform: scale(1.035);
     }
@@ -176,8 +171,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  opacity: 0;
-  transform: translateY(-8px);
+  opacity: 1;
   transition:
     opacity 180ms ease,
     transform 180ms ease;
