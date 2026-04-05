@@ -1,19 +1,22 @@
 import { Component, DestroyRef, Inject, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ShoppingCartProduct } from '../../shared/interfaces/shopping-cart-product.model';
-import { CartService } from '../../shared/services/cart.service';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+
+import { ShoppingCartProduct } from '../../shared/interfaces/shopping-cart-product.model';
 import { ProductModel } from '../../shared/interfaces/product.model';
+import { CartService } from '../../shared/services/cart.service';
+import { NotificationService } from '../../shared/services/notification.service';
+import { NavigationService } from '../../shared/services/router-service';
+import { AuthService } from '../../shared/services/auth.service';
+
 import { DATA_PROVIDER_TOKEN } from '../../shared/services/admin/const/data-provider-token';
 import { OrdersFacade } from '../../shared/services/admin/orders/facade/orders-facade.service';
 import { DataProviderModel } from '../../shared/services/admin/model/data-provider-facade.model';
 import { OrderDTO } from '../../shared/services/admin/orders/models/orderDTO';
 import { OrderArgs } from '../../shared/services/admin/orders/models/order-filters-model';
 import { OrdersState } from '../../shared/services/admin/orders/models/order-state-model';
-import { NotificationService } from '../../shared/services/notification.service';
-import { NavigationService } from '../../shared/services/router-service';
-import { AuthService } from '../../shared/services/auth.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-order-details',
@@ -35,6 +38,7 @@ export class OrderDetailsComponent implements OnInit {
   public shoppingCart: ShoppingCartProduct[] = [];
   private readonly destroyRef = inject(DestroyRef);
   public formDetails!: FormGroup;
+  public isSubmitting = false;
 
   public get getTotal(): number {
     return this.cartService.getTotal;
@@ -44,12 +48,17 @@ export class OrderDetailsComponent implements OnInit {
     return this.authService.isLoggedIn;
   }
 
+  public get paymentMethodValue(): string {
+    return this.formDetails?.get('paymentMethod')?.value ?? 'cash';
+  }
+
   constructor(
     private readonly cartService: CartService,
     private readonly _fb: FormBuilder,
     private readonly _ns: NotificationService,
     private readonly router: NavigationService,
     private readonly authService: AuthService,
+    private readonly http: HttpClient,
     @Inject(DATA_PROVIDER_TOKEN) private readonly dataProvider: DataProviderModel<OrderDTO, OrderArgs, OrdersState>,
   ) {}
 
@@ -66,6 +75,13 @@ export class OrderDetailsComponent implements OnInit {
       phone: ['', [Validators.required]],
       vin: ['', [Validators.required]],
       details: ['', [Validators.required]],
+
+      city: ['', [Validators.required]],
+      county: ['', [Validators.required]],
+      street: ['', [Validators.required]],
+      streetNumber: ['', [Validators.required]],
+
+      paymentMethod: ['cash', [Validators.required]],
     });
   }
 
@@ -108,58 +124,6 @@ export class OrderDetailsComponent implements OnInit {
     }
 
     this.cartService.updatePrice(item.id, value);
-  }
-
-  public sendOrder(): void {
-    if (this.formDetails.invalid) {
-      this.formDetails.markAllAsTouched();
-
-      this._ns.error('Completează toate câmpurile obligatorii.', {
-        title: 'Formular invalid',
-        durationMs: 4000
-      });
-      return;
-    }
-
-    if (!this.shoppingCart.length) {
-      this._ns.error('Coșul este gol.', {
-        title: 'Comandă invalidă',
-        durationMs: 4000
-      });
-      return;
-    }
-
-    this.dataProvider.saveData({
-      ...this.formDetails.getRawValue(),
-      description: this.formDetails.getRawValue().details,
-      total: this.getTotal,
-      items: this.shoppingCart.map((item: ShoppingCartProduct) => ({
-        productId: item.id ?? '',
-        name: item.name,
-        price: item.price,
-        qty: item.howMany,
-      }))
-    } as OrderDTO).subscribe({
-      next: () => {
-        this._ns.success('Comanda a fost trimisă cu succes.', {
-          title: 'Comandă trimisă',
-          durationMs: 4000
-        });
-
-        this.formDetails.reset();
-        this.cartService.cleanCart();
-        this.router.goToHome();
-      },
-      error: (err) => {
-        this._ns.error(
-          err?.error?.message ?? 'A apărut o eroare la trimiterea comenzii.',
-          {
-            title: 'Eroare comandă',
-            durationMs: 5000
-          }
-        );
-      }
-    });
   }
 
   public updateCartTotal(event: Event): void {
@@ -223,11 +187,7 @@ export class OrderDetailsComponent implements OnInit {
             const price =
               cartItem.id === item.id
                 ? newPrice
-                : Number(
-                  (
-                    ((Number(cartItem.price) || 0) * ratio)
-                  ).toFixed(2)
-                );
+                : Number((((Number(cartItem.price) || 0) * ratio)).toFixed(2));
 
             return sum + price * (cartItem.howMany ?? 0);
           }, 0);
@@ -239,5 +199,169 @@ export class OrderDetailsComponent implements OnInit {
 
       this.cartService.updatePrice(item.id, newPrice);
     });
+  }
+
+  public sendOrder(): void {
+    if (this.formDetails.invalid) {
+      this.formDetails.markAllAsTouched();
+
+      this._ns.error('Completează toate câmpurile obligatorii.', {
+        title: 'Formular invalid',
+        durationMs: 4000
+      });
+      return;
+    }
+
+    if (!this.shoppingCart.length) {
+      this._ns.error('Coșul este gol.', {
+        title: 'Comandă invalidă',
+        durationMs: 4000
+      });
+      return;
+    }
+
+    if (this.paymentMethodValue === 'payu') {
+      this.startPayuPayment();
+      return;
+    }
+
+    this.createCashOrder();
+  }
+
+  private createCashOrder(): void {
+    this.isSubmitting = true;
+
+    const raw = this.formDetails.getRawValue();
+
+    this.dataProvider.saveData({
+      name: raw.name,
+      email: raw.email,
+      phone: raw.phone,
+      vin: raw.vin,
+      description: this.buildOrderDescription(),
+      total: this.getTotal,
+      items: this.shoppingCart.map((item: ShoppingCartProduct) => ({
+        productId: item.id ?? '',
+        name: item.name,
+        price: item.price,
+        qty: item.howMany,
+      }))
+    } as OrderDTO).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+
+        this._ns.success('Comanda a fost trimisă cu succes. Plata se va face ramburs.', {
+          title: 'Comandă trimisă',
+          durationMs: 4000
+        });
+
+        this.formDetails.reset({
+          paymentMethod: 'cash'
+        });
+        this.cartService.cleanCart();
+        this.router.goToHome();
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+
+        this._ns.error(
+          err?.error?.message ?? 'A apărut o eroare la trimiterea comenzii.',
+          {
+            title: 'Eroare comandă',
+            durationMs: 5000
+          }
+        );
+      }
+    });
+  }
+
+  private startPayuPayment(): void {
+    this.isSubmitting = true;
+
+    const raw = this.formDetails.getRawValue();
+
+    this.http.post<any>('http://localhost:3000/payment-payu/init', {
+      firstName: raw.name,
+      lastName: raw.name,
+      email: raw.email,
+      mobile: raw.phone,
+      amount: this.getTotal,
+      productInfo: this.getPayuProductInfo(),
+    }).subscribe({
+      next: (response) => {
+        this.isSubmitting = false;
+
+        const action = response?.item?.action;
+        const params = response?.item?.params;
+
+        if (!action || !params) {
+          this._ns.error('Răspuns invalid de la serviciul de plată.', {
+            title: 'Eroare PayU',
+            durationMs: 5000
+          });
+          return;
+        }
+
+        this.submitToPayU(action, params);
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+
+        this._ns.error(
+          err?.error?.message ?? 'Nu s-a putut inițializa plata PayU.',
+          {
+            title: 'Eroare plată',
+            durationMs: 5000
+          }
+        );
+      }
+    });
+  }
+
+  private submitToPayU(action: string, params: Record<string, any>): void {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = action;
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        value.forEach((item) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = `${key}[]`;
+          input.value = String(item);
+          form.appendChild(input);
+        });
+      } else {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = String(value);
+        form.appendChild(input);
+      }
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+  private buildOrderDescription(): string {
+    const raw = this.formDetails.getRawValue();
+
+    return [
+      raw.details ? `Detalii client: ${raw.details}` : '',
+      `Adresa livrare: ${raw.city}, jud. ${raw.county}, str. ${raw.street}, nr. ${raw.streetNumber}`,
+      `Metoda plata: ${raw.paymentMethod === 'payu' ? 'Card online PayU' : 'Ramburs'}`
+    ]
+      .filter(Boolean)
+      .join('\n');
+  }
+
+  private getPayuProductInfo(): string {
+    if (this.shoppingCart.length === 1) {
+      return `Comanda ${this.shoppingCart[0].name}`;
+    }
+
+    return `Comanda magazin - ${this.shoppingCart.length} produse`;
   }
 }

@@ -76,33 +76,87 @@
       <div class="order-summary-card__header">
         <h2 class="order-summary-card__title">Date comandă</h2>
         <p class="order-summary-card__subtitle">
-          Completează datele tale pentru trimiterea cererii.
+          Completează datele tale, adresa și metoda de plată.
         </p>
       </div>
 
-      <div class="input-wrapper">
-        <label>Nume</label>
-        <input type="text" formControlName="name" />
+      <div class="form-section">
+        <h3 class="form-section__title">Date contact</h3>
+
+        <div class="input-wrapper">
+          <label>Nume</label>
+          <input type="text" formControlName="name" />
+        </div>
+
+        <div class="input-wrapper">
+          <label>Email</label>
+          <input type="text" formControlName="email" />
+        </div>
+
+        <div class="input-wrapper">
+          <label>Telefon</label>
+          <input type="text" formControlName="phone" />
+        </div>
+
+        <div class="input-wrapper">
+          <label>VIN</label>
+          <input type="text" formControlName="vin" />
+        </div>
+
+        <div class="input-wrapper">
+          <label>Detalii</label>
+          <textarea formControlName="details"></textarea>
+        </div>
       </div>
 
-      <div class="input-wrapper">
-        <label>Email</label>
-        <input type="text" formControlName="email" />
+      <div class="form-section">
+        <h3 class="form-section__title">Adresa livrare</h3>
+
+        <div class="input-grid">
+          <div class="input-wrapper">
+            <label>Oraș</label>
+            <input type="text" formControlName="city" />
+          </div>
+
+          <div class="input-wrapper">
+            <label>Județ</label>
+            <input type="text" formControlName="county" />
+          </div>
+        </div>
+
+        <div class="input-grid">
+          <div class="input-wrapper">
+            <label>Stradă</label>
+            <input type="text" formControlName="street" />
+          </div>
+
+          <div class="input-wrapper">
+            <label>Număr</label>
+            <input type="text" formControlName="streetNumber" />
+          </div>
+        </div>
       </div>
 
-      <div class="input-wrapper">
-        <label>Telefon</label>
-        <input type="text" formControlName="phone" />
-      </div>
+      <div class="form-section">
+        <h3 class="form-section__title">Metoda de plată</h3>
 
-      <div class="input-wrapper">
-        <label>VIN</label>
-        <input type="text" formControlName="vin" />
-      </div>
+        <div class="payment-methods">
+          <label class="payment-option">
+            <input type="radio" formControlName="paymentMethod" value="cash" />
+            <div class="payment-option__content">
+              <strong>Plată ramburs</strong>
+              <span>Plătești la livrare.</span>
+            </div>
+          </label>
 
-      <div class="input-wrapper">
-        <label>Detalii</label>
-        <textarea formControlName="details"></textarea>
+          <label class="payment-option">
+            <input type="radio" formControlName="paymentMethod" value="payu" />
+            <div class="payment-option__content">
+              <strong>Card online prin PayU</strong>
+              <span>Vei fi redirecționat către pagina securizată PayU.</span>
+            </div>
+          </label>
+        </div>
       </div>
 
       <div class="order-summary-card__total">
@@ -125,8 +179,14 @@
         }
       </div>
 
-      <button class="save-button" type="button" (click)="sendOrder()">
-        Trimite comanda
+      <button class="save-button" type="button" [disabled]="isSubmitting" (click)="sendOrder()">
+        @if (isSubmitting) {
+          Se procesează...
+        } @else if (paymentMethodValue === 'payu') {
+          Continuă către PayU
+        } @else {
+          Trimite comanda
+        }
       </button>
     </div>
   </aside>
