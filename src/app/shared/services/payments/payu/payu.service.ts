@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {PayuInitDTO} from './payu-init-dto';
-import {ApiItemResponse} from '../../../interfaces/api/api-respons';
-import {PayuInitResponseItem} from './payu-init-response-item';
-import {environment} from '../../../../../environments/environment';
+import { PayuInitDTO } from './payu-init-dto';
+import { ApiItemResponse } from '../../../interfaces/api/api-respons';
+import { PayuInitResponseItem } from './payu-init-response-item';
+import { environment } from '../../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class PayuApiService {
@@ -20,6 +20,10 @@ export class PayuApiService {
         mobile: payload.mobile?.trim() || '',
         amount: Number(payload.amount || 0),
         productInfo: payload.productInfo?.trim() || '',
+        city: payload.city?.trim() || '',
+        county: payload.county?.trim() || '',
+        street: payload.street?.trim() || '',
+        streetNumber: payload.streetNumber?.trim() || '',
       }
     );
   }
@@ -30,30 +34,7 @@ export class PayuApiService {
     );
   }
 
-  public submitToPayU(action: string, params: Record<string, any>): void {
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = action;
-
-    Object.entries(params).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach((item) => {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = `${key}[]`;
-          input.value = String(item);
-          form.appendChild(input);
-        });
-      } else {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = String(value);
-        form.appendChild(input);
-      }
-    });
-
-    document.body.appendChild(form);
-    form.submit();
+  public redirectToPayU(redirectUri: string): void {
+    window.location.href = redirectUri;
   }
 }

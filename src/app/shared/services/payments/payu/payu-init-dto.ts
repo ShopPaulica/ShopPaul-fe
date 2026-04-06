@@ -5,4 +5,8 @@ export interface PayuInitDTO {
   mobile: string;
   amount: number;
   productInfo: string;
+  city?: string;
+  county?: string;
+  street?: string;
+  streetNumber?: string;
 }

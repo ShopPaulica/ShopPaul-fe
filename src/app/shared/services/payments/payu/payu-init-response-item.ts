@@ -1,19 +1,15 @@
 export interface PayuInitResponseItem {
   id: string;
   txnId: string;
-  firstName: string;
-  email: string;
-  mobile: string;
   amount: number;
+  currencyCode: string;
   productInfo: string;
   status: string;
-  hash: string;
-  gatewayPaymentId: string;
-  isHashValid: boolean;
-  gatewayResponse: unknown;
+  orderId: string;
+  payuOrderId: string;
+  redirectUri: string;
+  continueUrl: string;
+  notifyUrl: string;
   createdAt: string;
   updatedAt: string;
-  action: string;
-  method: 'POST';
-  params: Record<string, any>;
 }

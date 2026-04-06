@@ -18,8 +18,9 @@ import { DataProviderModel } from '../../shared/services/admin/model/data-provid
 import { OrderDTO } from '../../shared/services/admin/orders/models/orderDTO';
 import { OrderArgs } from '../../shared/services/admin/orders/models/order-filters-model';
 import { OrdersState } from '../../shared/services/admin/orders/models/order-state-model';
-import {PayuApiService} from '../../shared/services/payments/payu/payu.service';
-import {PayuInitResponseItem} from '../../shared/services/payments/payu/payu-init-response-item';
+
+import { PayuApiService } from '../../shared/services/payments/payu/payu.service';
+import { PayuInitResponseItem } from '../../shared/services/payments/payu/payu-init-response-item';
 
 @Component({
   selector: 'app-order-details',
@@ -295,14 +296,17 @@ export class OrderDetailsComponent implements OnInit {
       mobile: raw.phone,
       amount: this.getTotal,
       productInfo: this.getPayuProductInfo(),
+      city: raw.city,
+      county: raw.county,
+      street: raw.street,
+      streetNumber: raw.streetNumber,
     }).subscribe({
       next: (response: ApiItemResponse<PayuInitResponseItem>) => {
         this.isSubmitting = false;
 
-        const action = response?.item?.action;
-        const params = response?.item?.params;
+        const redirectUri = response?.item?.redirectUri;
 
-        if (!action || !params) {
+        if (!redirectUri) {
           this._ns.error('Răspuns invalid de la serviciul de plată.', {
             title: 'Eroare PayU',
             durationMs: 5000
@@ -310,7 +314,7 @@ export class OrderDetailsComponent implements OnInit {
           return;
         }
 
-        this.payuApiService.submitToPayU(action, params);
+        this.payuApiService.redirectToPayU(redirectUri);
       },
       error: (err: any) => {
         this.isSubmitting = false;
